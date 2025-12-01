@@ -1,7 +1,7 @@
 import axios from "axios";
 import { ParsedExpense, Expense } from "../types";
 
-const API_URL = "https://app.spentiva.com/api";
+const API_URL = "https://api.spentiva.com/api";
 
 export const api = {
   parseExpense: async (message: string, trackerId?: string): Promise<ParsedExpense | { error: string }> => {

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "https://app.spentiva.com/api";
+const API_URL = "https://api.spentiva.com/api";
 
 export interface AnalyticsSummary {
   total: number;
