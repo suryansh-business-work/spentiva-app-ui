@@ -1,0 +1,1 @@
+.chat-container-mui{display:flex;flex-direction:column;min-height:calc(100vh - 150px)}.chat-container-mui .chat-messages{flex:1;max-height:500px}.transactions-container{min-height:calc(100vh - 150px)}
