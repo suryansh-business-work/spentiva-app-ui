@@ -50,7 +50,7 @@ const Login: React.FC = () => {
     setError('');
 
     try {
-      const response = await axios.post('/api/auth/send-otp', {
+      const response = await axios.post('https://api.spentiva.com/api/auth/send-otp', {
         phone,
         type: 'phone',
       });
@@ -74,7 +74,7 @@ const Login: React.FC = () => {
     setError('');
 
     try {
-      const response = await axios.post('/api/auth/verify-otp', {
+      const response = await axios.post('https://api.spentiva.com/api/auth/verify-otp', {
         phone,
         otp,
       });
@@ -114,9 +114,9 @@ const Login: React.FC = () => {
     >
       <Container maxWidth="sm">
         <Fade in timeout={800}>
-          <Paper 
+          <Paper
             elevation={isMobile ? 2 : 8}
-            sx={{ 
+            sx={{
               p: { xs: 3, sm: 5 },
               borderRadius: { xs: 1, sm: 1 },
               background: 'rgba(255, 255, 255, 0.98)',
@@ -124,10 +124,10 @@ const Login: React.FC = () => {
             }}
           >
             {/* Logo Section */}
-            <Box 
-              sx={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
                 mb: { xs: 2, sm: 3 }
               }}
             >
@@ -136,20 +136,20 @@ const Login: React.FC = () => {
 
             {/* Header */}
             <Box sx={{ textAlign: 'center', mb: { xs: 3, sm: 4 } }}>
-              <Typography 
+              <Typography
                 variant={isMobile ? 'h5' : 'h4'}
                 component="h1"
-                gutterBottom 
-                sx={{ 
-                  fontWeight: 700, 
+                gutterBottom
+                sx={{
+                  fontWeight: 700,
                   color: '#667eea',
                   mb: 1
                 }}
               >
                 Welcome Back
               </Typography>
-              <Typography 
-                variant="body2" 
+              <Typography
+                variant="body2"
                 color="text.secondary"
                 sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}
               >
@@ -158,9 +158,9 @@ const Login: React.FC = () => {
             </Box>
 
             {/* Progress Stepper */}
-            <Stepper 
-              activeStep={activeStep} 
-              sx={{ 
+            <Stepper
+              activeStep={activeStep}
+              sx={{
                 mb: { xs: 3, sm: 4 },
                 '& .MuiStepLabel-label': {
                   fontSize: { xs: '0.75rem', sm: '0.875rem' }
@@ -178,8 +178,8 @@ const Login: React.FC = () => {
             {/* Error Alert */}
             {error && (
               <Fade in>
-                <Alert 
-                  severity="error" 
+                <Alert
+                  severity="error"
                   sx={{ mb: 3 }}
                   onClose={() => setError('')}
                 >
@@ -191,8 +191,8 @@ const Login: React.FC = () => {
             {/* Dev OTP Alert */}
             {devOtp && (
               <Fade in>
-                <Alert 
-                  severity="info" 
+                <Alert
+                  severity="info"
                   sx={{ mb: 3 }}
                   onClose={() => setDevOtp('')}
                 >
@@ -378,19 +378,19 @@ const Login: React.FC = () => {
             )}
 
             {/* Footer */}
-            <Box 
-              sx={{ 
-                textAlign: 'center', 
-                mt: { xs: 3, sm: 4 }, 
-                pt: { xs: 2, sm: 3 }, 
-                borderTop: '1px solid rgba(0, 0, 0, 0.08)' 
+            <Box
+              sx={{
+                textAlign: 'center',
+                mt: { xs: 3, sm: 4 },
+                pt: { xs: 2, sm: 3 },
+                borderTop: '1px solid rgba(0, 0, 0, 0.08)'
               }}
             >
-              <Typography 
-                variant="caption" 
-                color="text.secondary" 
-                sx={{ 
-                  fontSize: { xs: '0.7rem', sm: '0.75rem' }, 
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{
+                  fontSize: { xs: '0.7rem', sm: '0.75rem' },
                   display: 'block',
                   mb: 1
                 }}
@@ -399,28 +399,28 @@ const Login: React.FC = () => {
                 {' '}
                 <Box component="span" sx={{ opacity: 0.7 }}>By Exyconn</Box>
                 {' • '}
-                <Box 
-                  component="span" 
+                <Box
+                  component="span"
                   onClick={() => navigate('/privacy-policy')}
-                  sx={{ 
+                  sx={{
                     cursor: 'pointer',
-                    '&:hover': { 
-                      color: '#667eea', 
-                      textDecoration: 'underline' 
+                    '&:hover': {
+                      color: '#667eea',
+                      textDecoration: 'underline'
                     }
                   }}
                 >
                   Privacy Policy
                 </Box>
                 {' • '}
-                <Box 
-                  component="span" 
+                <Box
+                  component="span"
                   onClick={() => navigate('/terms-and-conditions')}
-                  sx={{ 
+                  sx={{
                     cursor: 'pointer',
-                    '&:hover': { 
-                      color: '#667eea', 
-                      textDecoration: 'underline' 
+                    '&:hover': {
+                      color: '#667eea',
+                      textDecoration: 'underline'
                     }
                   }}
                 >

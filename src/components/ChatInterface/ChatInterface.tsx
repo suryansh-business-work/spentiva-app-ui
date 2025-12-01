@@ -41,9 +41,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
 
   const getPhotoUrl = () => {
     if (user?.profilePhoto) {
-      return user.profilePhoto.startsWith('http') 
-        ? user.profilePhoto 
-        : `http://localhost:8002${user.profilePhoto}`;
+      return user.profilePhoto.startsWith('http')
+        ? user.profilePhoto
+        : `https://api.spentiva.com${user.profilePhoto}`;
     }
     return '';
   };
@@ -81,7 +81,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
     // Get current usage data
     const storedUsage = localStorage.getItem('usage_data');
     const currentMonth = new Date().toISOString().slice(0, 7);
-    
+
     let usageData = storedUsage ? JSON.parse(storedUsage) : {
       totalMessages: 0,
       trackerUsage: {},
@@ -114,7 +114,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
   const checkUsageLimit = (): boolean => {
     const storedUsage = localStorage.getItem('usage_data');
     const storedPlan = localStorage.getItem('subscription_plan') || 'Free';
-    
+
     const plans: { [key: string]: number } = {
       Free: 50,
       Pro: 500,
@@ -184,7 +184,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
         // Create the expense
         const expenseData = { ...parsed, trackerId };
         const expense = await api.createExpense(expenseData);
-        
+
         const successMessage: Message = {
           id: (Date.now() + 1).toString(),
           role: "assistant",
@@ -192,9 +192,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
           expense,
           timestamp: new Date(),
         };
-        
+
         setMessages((prev: Message[]) => [...prev, successMessage]);
-        
+
         // Notify parent component
         if (onExpenseAdded) {
           onExpenseAdded();
@@ -230,14 +230,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100% - 300px)', px: 2, py: 1.5 }}>
-      <Box 
-        className="chat-messages" 
-        sx={{ 
-          flexGrow: 1, 
+      <Box
+        className="chat-messages"
+        sx={{
+          flexGrow: 1,
           minHeight: 'calc(100vh - 320px)',
           overflowY: "auto",
           overflowX: "hidden",
-          mb: 2, 
+          mb: 2,
           pr: 1,
           '&::-webkit-scrollbar': {
             width: '8px',
@@ -255,137 +255,137 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
           },
         }}
       >
-          {messages.map((message) => (
-            <Box
-              key={message.id}
-              className={`message ${message.role}`}
+        {messages.map((message) => (
+          <Box
+            key={message.id}
+            className={`message ${message.role}`}
+            sx={{
+              display: "flex",
+              justifyContent: message.role === "user" ? "flex-end" : "flex-start",
+              mb: 2,
+              gap: 1.5,
+              flexDirection: message.role === "user" ? "row-reverse" : "row",
+            }}
+          >
+            {/* Avatar */}
+            <Avatar
+              src={message.role === "user" ? getPhotoUrl() : undefined}
               sx={{
-                display: "flex",
-                justifyContent: message.role === "user" ? "flex-end" : "flex-start",
-                mb: 2,
-                gap: 1.5,
-                flexDirection: message.role === "user" ? "row-reverse" : "row",
+                width: 40,
+                height: 40,
+                background: message.role === "user"
+                  ? "linear-gradient(135deg, #10b981 0%, #059669 100%)"
+                  : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                flexShrink: 0,
               }}
             >
-              {/* Avatar */}
-              <Avatar
-                src={message.role === "user" ? getPhotoUrl() : undefined}
-                sx={{
-                  width: 40,
-                  height: 40,
-                  background: message.role === "user" 
-                    ? "linear-gradient(135deg, #10b981 0%, #059669 100%)"
-                    : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-                  flexShrink: 0,
-                }}
-              >
-                {message.role === "user" ? (
-                  user?.name ? user.name.charAt(0).toUpperCase() : <PersonIcon />
-                ) : (
-                  <SmartToyIcon />
-                )}
-              </Avatar>
-
-              {/* Message Content */}
-              <Paper
-                elevation={2}
-                sx={{
-                  p: 1.5,
-                  maxWidth: "75%",
-                  backgroundColor: message.role === "user" ? "#10b981" : "#fff",
-                  color: message.role === "user" ? "#fff" : "#333",
-                  borderRadius: 2,
-                }}
-              >
-                <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
-                  {message.content}
-                </Typography>
-                {message.expense && (
-                  <Card sx={{ mt: 2, backgroundColor: "rgba(0,0,0,0.05)" }}>
-                    <CardContent>
-                      <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                          <Typography variant="body2" color="text.secondary">
-                            Amount:
-                          </Typography>
-                          <Typography variant="body1" fontWeight="bold">
-                            ₹{message.expense.amount}
-                          </Typography>
-                        </Box>
-                        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                          <Typography variant="body2" color="text.secondary">
-                            Category:
-                          </Typography>
-                          <Typography variant="body1" fontWeight="bold">
-                            {message.expense.subcategory}
-                          </Typography>
-                        </Box>
-                        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                          <Typography variant="body2" color="text.secondary">
-                            Payment:
-                          </Typography>
-                          <Typography variant="body1" fontWeight="bold">
-                            {message.expense.paymentMethod}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </CardContent>
-                  </Card>
-                )}
-              </Paper>
-            </Box>
-          ))}
-          {isLoading && (
-            <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 2, gap: 1.5 }}>
-              <Avatar
-                sx={{
-                  width: 40,
-                  height: 40,
-                  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-                }}
-              >
+              {message.role === "user" ? (
+                user?.name ? user.name.charAt(0).toUpperCase() : <PersonIcon />
+              ) : (
                 <SmartToyIcon />
-              </Avatar>
-              <Paper elevation={2} sx={{ p: 2, minWidth: "200px", borderRadius: 2 }}>
-                <Skeleton variant="text" width="100%" />
-                <Skeleton variant="text" width="80%" />
-                <Skeleton variant="rectangular" height={60} sx={{ mt: 1 }} />
-              </Paper>
-            </Box>
-          )}
-          <div ref={messagesEndRef} />
-        </Box>
+              )}
+            </Avatar>
 
-        {/* Input Form - Fixed at bottom */}
-        <Paper elevation={3} sx={{ p: 2, position: 'sticky', bottom: 0 }}>
-          <form onSubmit={handleSubmit}>
-            <Box sx={{ display: "flex", gap: 2 }}>
-              <TextField
-                fullWidth
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Type your expense... (e.g., 'spend food 50 from credit card')"
-                disabled={isLoading}
-                variant="outlined"
-                size="medium"
-              />
-              <Button
-                type="submit"
-                variant="contained"
-                disabled={isLoading || !input.trim()}
-                endIcon={<SendIcon />}
-                sx={{
-                  background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-                  minWidth: "120px",
-                }}
-              >
-                Send
-              </Button>
-            </Box>
-          </form>
-        </Paper>
+            {/* Message Content */}
+            <Paper
+              elevation={2}
+              sx={{
+                p: 1.5,
+                maxWidth: "75%",
+                backgroundColor: message.role === "user" ? "#10b981" : "#fff",
+                color: message.role === "user" ? "#fff" : "#333",
+                borderRadius: 2,
+              }}
+            >
+              <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
+                {message.content}
+              </Typography>
+              {message.expense && (
+                <Card sx={{ mt: 2, backgroundColor: "rgba(0,0,0,0.05)" }}>
+                  <CardContent>
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                        <Typography variant="body2" color="text.secondary">
+                          Amount:
+                        </Typography>
+                        <Typography variant="body1" fontWeight="bold">
+                          ₹{message.expense.amount}
+                        </Typography>
+                      </Box>
+                      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                        <Typography variant="body2" color="text.secondary">
+                          Category:
+                        </Typography>
+                        <Typography variant="body1" fontWeight="bold">
+                          {message.expense.subcategory}
+                        </Typography>
+                      </Box>
+                      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                        <Typography variant="body2" color="text.secondary">
+                          Payment:
+                        </Typography>
+                        <Typography variant="body1" fontWeight="bold">
+                          {message.expense.paymentMethod}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </CardContent>
+                </Card>
+              )}
+            </Paper>
+          </Box>
+        ))}
+        {isLoading && (
+          <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 2, gap: 1.5 }}>
+            <Avatar
+              sx={{
+                width: 40,
+                height: 40,
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+              }}
+            >
+              <SmartToyIcon />
+            </Avatar>
+            <Paper elevation={2} sx={{ p: 2, minWidth: "200px", borderRadius: 2 }}>
+              <Skeleton variant="text" width="100%" />
+              <Skeleton variant="text" width="80%" />
+              <Skeleton variant="rectangular" height={60} sx={{ mt: 1 }} />
+            </Paper>
+          </Box>
+        )}
+        <div ref={messagesEndRef} />
+      </Box>
+
+      {/* Input Form - Fixed at bottom */}
+      <Paper elevation={3} sx={{ p: 2, position: 'sticky', bottom: 0 }}>
+        <form onSubmit={handleSubmit}>
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <TextField
+              fullWidth
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Type your expense... (e.g., 'spend food 50 from credit card')"
+              disabled={isLoading}
+              variant="outlined"
+              size="medium"
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={isLoading || !input.trim()}
+              endIcon={<SendIcon />}
+              sx={{
+                background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                minWidth: "120px",
+              }}
+            >
+              Send
+            </Button>
+          </Box>
+        </form>
+      </Paper>
     </Box>
   );
 };

@@ -81,30 +81,30 @@ const Header: React.FC = () => {
 
   const getPhotoUrl = () => {
     if (user?.profilePhoto) {
-      return user.profilePhoto.startsWith('http') 
-        ? user.profilePhoto 
-        : `http://localhost:8002${user.profilePhoto}`;
+      return user.profilePhoto.startsWith('http')
+        ? user.profilePhoto
+        : `https://api.spentiva.com${user.profilePhoto}`;
     }
     return '';
   };
 
   return (
     <>
-      <AppBar 
-        position="sticky" 
+      <AppBar
+        position="sticky"
         elevation={0}
-        sx={{ 
+        sx={{
           background: '#f8f9fa',
           borderBottom: `1px solid ${palette.border.light}`,
           boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)',
         }}
       >
         <Toolbar sx={{ minHeight: { xs: 56, sm: 60 }, px: { xs: 2, sm: 2.5 } }}>
-          <Box 
-            sx={{ 
-              display: "flex", 
-              alignItems: "center", 
-              gap: 1.5, 
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
               flexGrow: 1,
               cursor: 'pointer'
             }}
@@ -117,7 +117,7 @@ const Header: React.FC = () => {
             <IconButton
               onClick={toggleTheme}
               size="small"
-              sx={{ 
+              sx={{
                 color: palette.text.secondary,
                 background: palette.background.subtle,
                 "&:hover": {
@@ -134,7 +134,7 @@ const Header: React.FC = () => {
               <IconButton
                 edge="end"
                 onClick={() => setDrawerOpen(true)}
-                sx={{ 
+                sx={{
                   ml: 0.5,
                   color: palette.text.secondary,
                   background: palette.background.subtle,
@@ -153,8 +153,8 @@ const Header: React.FC = () => {
                   size="small"
                   onClick={() => navigate("/trackers")}
                   sx={{
-                    color: location.pathname === "/trackers" || isInTrackerView 
-                      ? '#fff' 
+                    color: location.pathname === "/trackers" || isInTrackerView
+                      ? '#fff'
                       : palette.text.primary,
                     textTransform: "none",
                     fontWeight: 600,
@@ -162,11 +162,11 @@ const Header: React.FC = () => {
                     px: 2,
                     py: 0.75,
                     borderRadius: 2,
-                    background: location.pathname === "/trackers" || isInTrackerView 
+                    background: location.pathname === "/trackers" || isInTrackerView
                       ? palette.gradients.primary
                       : palette.background.subtle,
                     "&:hover": {
-                      background: location.pathname === "/trackers" || isInTrackerView 
+                      background: location.pathname === "/trackers" || isInTrackerView
                         ? palette.gradients.primary
                         : palette.border.light,
                     },
@@ -180,7 +180,7 @@ const Header: React.FC = () => {
                   onClick={() => navigate("/usage")}
                   sx={{
                     color: location.pathname === "/usage"
-                      ? '#fff' 
+                      ? '#fff'
                       : palette.text.primary,
                     textTransform: "none",
                     fontWeight: 600,
@@ -243,9 +243,9 @@ const Header: React.FC = () => {
         </Toolbar>
       </AppBar>
 
-      <Drawer 
-        anchor="right" 
-        open={drawerOpen} 
+      <Drawer
+        anchor="right"
+        open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         PaperProps={{
           sx: {
@@ -259,9 +259,9 @@ const Header: React.FC = () => {
         <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
           <Box sx={{ p: 3, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-              <Avatar 
-                sx={{ 
-                  width: 48, 
+              <Avatar
+                sx={{
+                  width: 48,
                   height: 48,
                   background: palette.gradients.primary,
                   boxShadow: `0 4px 12px ${palette.shadows.medium}`,
@@ -273,10 +273,10 @@ const Header: React.FC = () => {
                 <Typography variant="subtitle1" sx={{ fontWeight: 700, fontSize: "1.1em", color: palette.text.primary }}>
                   Expense Tracker
                 </Typography>
-                <Chip 
-                  label="Premium" 
-                  size="small" 
-                  sx={{ 
+                <Chip
+                  label="Premium"
+                  size="small"
+                  sx={{
                     height: 20,
                     fontSize: "0.7em",
                     fontWeight: 600,
@@ -284,13 +284,13 @@ const Header: React.FC = () => {
                     color: palette.primary.main,
                     mt: 0.5,
                     border: `1px solid ${palette.border.light}`,
-                  }} 
+                  }}
                 />
               </Box>
             </Box>
-            <IconButton 
+            <IconButton
               onClick={() => setDrawerOpen(false)}
-              sx={{ 
+              sx={{
                 color: palette.text.secondary,
                 "&:hover": {
                   background: palette.background.subtle,
@@ -333,7 +333,7 @@ const Header: React.FC = () => {
                   <ListItemIcon sx={{ color: palette.text.secondary, minWidth: 40 }}>
                     {item.icon}
                   </ListItemIcon>
-                  <ListItemText 
+                  <ListItemText
                     primary={item.text}
                     primaryTypographyProps={{
                       fontWeight: location.pathname === item.path ? 700 : 500,
@@ -369,7 +369,7 @@ const Header: React.FC = () => {
               <ListItemIcon sx={{ color: palette.text.accent, minWidth: 40 }}>
                 <LogoutIcon />
               </ListItemIcon>
-              <ListItemText 
+              <ListItemText
                 primary="Logout"
                 primaryTypographyProps={{
                   fontWeight: 600,

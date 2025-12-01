@@ -71,7 +71,7 @@ const Profile: React.FC = () => {
       const formData = new FormData();
       formData.append('photo', photoFile);
 
-      const response = await axios.post('/api/auth/profile-photo', formData, {
+      const response = await axios.post('https://api.spentiva.com/api/auth/profile-photo', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
@@ -102,7 +102,7 @@ const Profile: React.FC = () => {
 
     try {
       const response = await axios.put(
-        '/api/auth/profile',
+        'https://api.spentiva.com/api/auth/profile',
         { name, email: email || undefined },
         {
           headers: {
@@ -131,7 +131,7 @@ const Profile: React.FC = () => {
 
     try {
       const response = await axios.post(
-        '/api/auth/send-email-otp',
+        'https://api.spentiva.com/api/auth/send-email-otp',
         { email },
         {
           headers: {
@@ -162,7 +162,7 @@ const Profile: React.FC = () => {
 
     try {
       const response = await axios.post(
-        '/api/auth/verify-email-otp',
+        'https://api.spentiva.com/api/auth/verify-email-otp',
         { email: emailToVerify, otp: emailOtp },
         {
           headers: {
@@ -186,7 +186,7 @@ const Profile: React.FC = () => {
   const getPhotoUrl = () => {
     if (photoPreview) return photoPreview;
     if (user?.profilePhoto) {
-      return `http://localhost:8002${user.profilePhoto}`;
+      return `https://api.spentiva.com${user.profilePhoto}`;
     }
     return undefined;
   };
@@ -198,11 +198,11 @@ const Profile: React.FC = () => {
           <Box>
             {/* Header Section */}
             <Box sx={{ mb: 4, textAlign: 'center' }}>
-              <Typography 
-                variant="h3" 
-                sx={{ 
-                  fontWeight: 800, 
-                  color: '#fff', 
+              <Typography
+                variant="h3"
+                sx={{
+                  fontWeight: 800,
+                  color: '#fff',
                   mb: 1,
                   textShadow: '0 2px 4px rgba(0,0,0,0.1)',
                 }}
@@ -217,9 +217,9 @@ const Profile: React.FC = () => {
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '350px 1fr' }, gap: 3 }}>
               {/* Left Card - Profile Photo */}
               <Grow in={true} timeout={600}>
-                <Card 
+                <Card
                   elevation={0}
-                  sx={{ 
+                  sx={{
                     borderRadius: 4,
                     background: '#fff',
                     overflow: 'visible',
@@ -245,8 +245,8 @@ const Profile: React.FC = () => {
                       >
                         <Avatar
                           src={getPhotoUrl()}
-                          sx={{ 
-                            width: 140, 
+                          sx={{
+                            width: 140,
                             height: 140,
                             border: '4px solid #fff',
                             boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
@@ -269,7 +269,7 @@ const Profile: React.FC = () => {
                           width: 44,
                           height: 44,
                           boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
-                          '&:hover': { 
+                          '&:hover': {
                             background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
                             transform: 'scale(1.1)',
                           },
@@ -330,7 +330,7 @@ const Profile: React.FC = () => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            background: user?.accountType === 'business' 
+                            background: user?.accountType === 'business'
                               ? 'rgba(102, 126, 234, 0.1)'
                               : 'rgba(16, 185, 129, 0.1)',
                           }}
@@ -360,7 +360,7 @@ const Profile: React.FC = () => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            background: user?.phoneVerified 
+                            background: user?.phoneVerified
                               ? 'rgba(16, 185, 129, 0.1)'
                               : 'rgba(239, 68, 68, 0.1)',
                           }}
@@ -387,9 +387,9 @@ const Profile: React.FC = () => {
 
               {/* Right Card - Profile Details */}
               <Grow in={true} timeout={800}>
-                <Card 
+                <Card
                   elevation={0}
-                  sx={{ 
+                  sx={{
                     borderRadius: 4,
                     background: '#fff',
                   }}
@@ -416,9 +416,9 @@ const Profile: React.FC = () => {
                     </Box>
 
                     {message && (
-                      <Alert 
-                        severity="success" 
-                        sx={{ mb: 3, borderRadius: 2 }} 
+                      <Alert
+                        severity="success"
+                        sx={{ mb: 3, borderRadius: 2 }}
                         onClose={() => setMessage('')}
                       >
                         {message}
@@ -426,9 +426,9 @@ const Profile: React.FC = () => {
                     )}
 
                     {error && (
-                      <Alert 
-                        severity="error" 
-                        sx={{ mb: 3, borderRadius: 2 }} 
+                      <Alert
+                        severity="error"
+                        sx={{ mb: 3, borderRadius: 2 }}
                         onClose={() => setError('')}
                       >
                         {error}
@@ -438,10 +438,10 @@ const Profile: React.FC = () => {
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                       {/* Name Field */}
                       <Box>
-                        <Typography 
-                          variant="caption" 
-                          sx={{ 
-                            color: 'text.secondary', 
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: 'text.secondary',
                             fontWeight: 600,
                             textTransform: 'uppercase',
                             letterSpacing: 0.5,
@@ -472,10 +472,10 @@ const Profile: React.FC = () => {
 
                       {/* Phone Field */}
                       <Box>
-                        <Typography 
-                          variant="caption" 
-                          sx={{ 
-                            color: 'text.secondary', 
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: 'text.secondary',
                             fontWeight: 600,
                             textTransform: 'uppercase',
                             letterSpacing: 0.5,
@@ -530,10 +530,10 @@ const Profile: React.FC = () => {
 
                       {/* Email Field */}
                       <Box>
-                        <Typography 
-                          variant="caption" 
-                          sx={{ 
-                            color: 'text.secondary', 
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: 'text.secondary',
                             fontWeight: 600,
                             textTransform: 'uppercase',
                             letterSpacing: 0.5,
@@ -602,11 +602,11 @@ const Profile: React.FC = () => {
                               mt: 2,
                               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                               textTransform: 'none',
-                            fontWeight: 600,
-                            py: 1.5,
-                            fontSize: '1em',
-                            borderRadius: 2,
-                            boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
+                              fontWeight: 600,
+                              py: 1.5,
+                              fontSize: '1em',
+                              borderRadius: 2,
+                              boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
                               '&:hover': {
                                 boxShadow: '0 6px 16px rgba(102, 126, 234, 0.4)',
                                 transform: 'translateY(-2px)',
@@ -628,8 +628,8 @@ const Profile: React.FC = () => {
       </Container>
 
       {/* Email Verification Dialog */}
-      <Dialog 
-        open={emailDialogOpen} 
+      <Dialog
+        open={emailDialogOpen}
         onClose={() => !loading && setEmailDialogOpen(false)}
         PaperProps={{
           sx: {
@@ -643,8 +643,8 @@ const Profile: React.FC = () => {
         </DialogTitle>
         <DialogContent sx={{ pt: 2 }}>
           {devOtp && (
-            <Alert 
-              severity="info" 
+            <Alert
+              severity="info"
               sx={{ mb: 2, borderRadius: 2 }}
               icon={<CheckCircleIcon />}
             >
@@ -669,9 +669,9 @@ const Profile: React.FC = () => {
             disabled={loading}
             inputProps={{
               maxLength: 6,
-              style: { 
-                textAlign: 'center', 
-                fontSize: '1.5em', 
+              style: {
+                textAlign: 'center',
+                fontSize: '1.5em',
                 letterSpacing: '0.5em',
                 fontWeight: 700,
               },
@@ -684,8 +684,8 @@ const Profile: React.FC = () => {
           />
         </DialogContent>
         <DialogActions sx={{ p: 3, pt: 2 }}>
-          <Button 
-            onClick={() => setEmailDialogOpen(false)} 
+          <Button
+            onClick={() => setEmailDialogOpen(false)}
             disabled={loading}
             sx={{
               textTransform: 'none',

@@ -55,7 +55,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const fetchCurrentUser = async (authToken: string) => {
     try {
-      const response = await axios.get('/api/auth/me', {
+      const response = await axios.get('https://api.spentiva.com/api/auth/me', {
         headers: { Authorization: `Bearer ${authToken}` }
       });
       setUser(response.data.user);

@@ -110,7 +110,7 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
         ...(trackerId && { trackerId }),
       });
 
-      const response = await fetch(`http://localhost:8002/api/reports/download?${params}`, {
+      const response = await fetch(`https://api.spentiva.comhttps://api.spentiva.com/api/reports/download?${params}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -141,7 +141,7 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
       setEmailLoading(true);
       const token = localStorage.getItem('token');
 
-      const response = await fetch('http://localhost:8002/api/reports/email', {
+      const response = await fetch('https://api.spentiva.comhttps://api.spentiva.com/api/reports/email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -246,9 +246,9 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
     <Container maxWidth="xl" sx={{ py: { xs: 2, md: 3 }, px: { xs: 2, sm: 3 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3 }, mb: 3 }}>
         <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, justifyContent: "space-between", alignItems: { xs: "stretch", md: "center" }, mb: 2, gap: 2 }}>
-          <Box sx={{ 
-            display: "flex", 
-            flexWrap: "nowrap", 
+          <Box sx={{
+            display: "flex",
+            flexWrap: "nowrap",
             gap: 1,
             width: { xs: "100%", md: "auto" },
             overflowX: "auto",
@@ -268,7 +268,7 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
                   variant={filter === filterOption ? "contained" : "outlined"}
                   onClick={() => handleFilterChange(filterOption)}
                   size="small"
-                  sx={{ 
+                  sx={{
                     textTransform: "none",
                     fontSize: { xs: "0.75em", sm: "0.875em" },
                     px: { xs: 1, sm: 1.5 },
@@ -280,14 +280,14 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
                   {filterOption === "last7days"
                     ? "Last 7 Days"
                     : filterOption === "lastMonth"
-                    ? "Last Month"
-                    : filterOption === "thisMonth"
-                    ? "This Month"
-                    : filterOption === "indiaFY"
-                    ? "India FY"
-                    : filterOption === "thisYear"
-                    ? "This Year"
-                    : filterOption.charAt(0).toUpperCase() + filterOption.slice(1)}
+                      ? "Last Month"
+                      : filterOption === "thisMonth"
+                        ? "This Month"
+                        : filterOption === "indiaFY"
+                          ? "India FY"
+                          : filterOption === "thisYear"
+                            ? "This Year"
+                            : filterOption.charAt(0).toUpperCase() + filterOption.slice(1)}
                 </Button>
               )
             )}
@@ -300,7 +300,7 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
               onClick={handleDownloadReport}
               size="small"
               fullWidth
-              sx={{ 
+              sx={{
                 textTransform: "none",
                 fontSize: { xs: "0.8em", sm: "0.875em" },
                 flex: 1,
@@ -317,7 +317,7 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
               disabled={emailLoading}
               size="small"
               fullWidth
-              sx={{ 
+              sx={{
                 textTransform: "none",
                 fontSize: { xs: "0.8em", sm: "0.875em" },
                 flex: 1,
@@ -335,11 +335,11 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
         </Box>
 
         {filter === "custom" && (
-          <Box sx={{ 
-            display: "flex", 
+          <Box sx={{
+            display: "flex",
             flexDirection: { xs: "column", sm: "row" },
-            gap: 2, 
-            mt: 2 
+            gap: 2,
+            mt: 2
           }}>
             <TextField
               type="date"
@@ -400,9 +400,9 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
       ) : (
         <>
           <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" }, gap: 3, mb: 3 }}>
-            <Card 
-              elevation={4} 
-              sx={{ 
+            <Card
+              elevation={4}
+              sx={{
                 background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                 color: "white",
                 position: "relative",
@@ -430,24 +430,24 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
                   <Typography variant="caption" sx={{ fontSize: "0.75em" }}>
                     Overall Score
                   </Typography>
-                  <Chip 
-                    label="8/10" 
-                    size="small" 
-                    sx={{ 
-                      height: 18, 
+                  <Chip
+                    label="8/10"
+                    size="small"
+                    sx={{
+                      height: 18,
                       fontSize: "0.7em",
                       backgroundColor: "rgba(255, 255, 255, 0.2)",
                       color: "white",
                       fontWeight: 600
-                    }} 
+                    }}
                   />
                 </Box>
               </CardContent>
             </Card>
 
-            <Card 
-              elevation={4} 
-              sx={{ 
+            <Card
+              elevation={4}
+              sx={{
                 background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
                 color: "white",
                 position: "relative",
@@ -476,24 +476,24 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
                   <Typography variant="caption" sx={{ fontSize: "0.75em" }}>
                     Ranking
                   </Typography>
-                  <Chip 
-                    label="25" 
-                    size="small" 
-                    sx={{ 
-                      height: 18, 
+                  <Chip
+                    label="25"
+                    size="small"
+                    sx={{
+                      height: 18,
                       fontSize: "0.7em",
                       backgroundColor: "rgba(255, 255, 255, 0.2)",
                       color: "white",
                       fontWeight: 600
-                    }} 
+                    }}
                   />
                 </Box>
               </CardContent>
             </Card>
 
-            <Card 
-              elevation={4} 
-              sx={{ 
+            <Card
+              elevation={4}
+              sx={{
                 background: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
                 color: "white",
                 position: "relative",
@@ -521,16 +521,16 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
                   <Typography variant="caption" sx={{ fontSize: "0.75em" }}>
                     Incentives worth
                   </Typography>
-                  <Chip 
-                    label="$15" 
-                    size="small" 
-                    sx={{ 
-                      height: 18, 
+                  <Chip
+                    label="$15"
+                    size="small"
+                    sx={{
+                      height: 18,
                       fontSize: "0.7em",
                       backgroundColor: "rgba(255, 255, 255, 0.2)",
                       color: "white",
                       fontWeight: 600
-                    }} 
+                    }}
                   />
                 </Box>
               </CardContent>
@@ -557,11 +557,11 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
           </Box>
 
           <Paper elevation={3} sx={{ p: { xs: 2, md: 3 }, mb: 3 }}>
-            <Box sx={{ 
-              display: "flex", 
+            <Box sx={{
+              display: "flex",
               flexDirection: { xs: "column", sm: "row" },
-              justifyContent: "space-between", 
-              alignItems: { xs: "flex-start", sm: "center" }, 
+              justifyContent: "space-between",
+              alignItems: { xs: "flex-start", sm: "center" },
               mb: 2,
               gap: 2
             }}>
@@ -588,15 +588,15 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
             <Box sx={{ display: "flex", flexDirection: "column", gap: { xs: 1.5, md: 2 } }}>
               {categoryData.map((item, index) => (
                 <Card key={index} variant="outlined">
-                  <CardContent sx={{ 
-                    display: "flex", 
+                  <CardContent sx={{
+                    display: "flex",
                     flexDirection: { xs: "column", sm: "row" },
-                    justifyContent: "space-between", 
+                    justifyContent: "space-between",
                     alignItems: { xs: "flex-start", sm: "center" },
                     gap: { xs: 1, sm: 0 },
-                    py: { xs: 1.5, md: 1.5 }, 
+                    py: { xs: 1.5, md: 1.5 },
                     px: { xs: 2, md: 2 },
-                    "&:last-child": { pb: { xs: 1.5, md: 1.5 } } 
+                    "&:last-child": { pb: { xs: 1.5, md: 1.5 } }
                   }}>
                     <Box>
                       <Typography variant="body1" fontWeight="600" sx={{ fontSize: { xs: "0.95em", md: "1em" } }}>
@@ -609,8 +609,8 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
                     <Chip
                       label={`₹${item.total.toLocaleString("en-IN")}`}
                       color="primary"
-                      sx={{ 
-                        fontWeight: "bold", 
+                      sx={{
+                        fontWeight: "bold",
                         fontSize: { xs: "0.85em", md: "1em" },
                         alignSelf: { xs: "flex-start", sm: "center" }
                       }}
