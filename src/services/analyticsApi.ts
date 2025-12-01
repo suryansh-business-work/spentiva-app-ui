@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "/api";
+const API_URL = "https://app.spentiva.com/api";
 
 export interface AnalyticsSummary {
   total: number;
@@ -29,7 +29,7 @@ export const analyticsApi = {
     if (customEnd) params.customEnd = customEnd;
     if (categoryId) params.categoryId = categoryId;
     if (trackerId) params.trackerId = trackerId;
-    
+
     const response = await axios.get(`${API_URL}/analytics/summary`, { params });
     return response.data;
   },
@@ -40,7 +40,7 @@ export const analyticsApi = {
     if (customStart) params.customStart = customStart;
     if (customEnd) params.customEnd = customEnd;
     if (trackerId) params.trackerId = trackerId;
-    
+
     const response = await axios.get(`${API_URL}/analytics/by-category`, { params });
     return response.data;
   },
