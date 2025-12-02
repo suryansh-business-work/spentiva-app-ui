@@ -38,15 +38,15 @@ export const endpoints = {
     delete: (id: string) => `${getApiUrl()}/delete/tracker/${id}`,
     byId: (id: string) => `${getApiUrl()}/trackers/${id}`,
   },
-  expenses: {
-    base: `${getApiUrl()}/expenses`,
-    byId: (id: string) => `${getApiUrl()}/expenses/${id}`,
-    parse: `${getApiUrl()}/parse-expense`,
-  },
   categories: {
     base: `${getApiUrl()}/categories`,
     categories: (trackerId: string) => `${getApiUrl()}/trackers/${trackerId}/categories`,
     category: (trackerId: string, categoryId: string) => `${getApiUrl()}/trackers/${trackerId}/categories/${categoryId}`,
+  },
+  expenses: {
+    base: `${getApiUrl()}/expenses`,
+    byId: (id: string) => `${getApiUrl()}/expenses/${id}`,
+    parse: `${getApiUrl()}/parse-expense`,
   },
   analytics: {
     summary: `${getApiUrl()}/analytics/summary`,
