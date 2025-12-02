@@ -38,7 +38,8 @@ import {
   ShowChart as ShowChartIcon,
   ListAlt as ListAltIcon,
 } from '@mui/icons-material';
-import { api } from '../../config/api';
+import { endpoints } from '../../config/api';
+import { getRequest } from '../../utils/http';
 
 interface UsageData {
   overall: {
@@ -124,7 +125,8 @@ const Usage = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await api.usage.getOverall();
+      const response = await getRequest(endpoints.usage.overall);
+      const data = response.data?.data || response.data;
       console.log('Usage data received:', data);
 
       // Ensure data has the proper structure
@@ -154,7 +156,8 @@ const Usage = () => {
 
   const loadTrackers = async () => {
     try {
-      const trackersData = await api.trackers.getAll();
+      const response = await getRequest(endpoints.trackers.getAll);
+      const trackersData = response.data?.trackers || response.data?.data?.trackers || [];
       setTrackers(trackersData);
     } catch (err: any) {
       console.error('Error loading trackers:', err);
@@ -166,7 +169,8 @@ const Usage = () => {
     setError(null);
     try {
       console.log('Loading tracker usage for:', trackerId);
-      const data = await api.usage.getTracker(trackerId);
+      const response = await getRequest(endpoints.usage.tracker(trackerId));
+      const data = response.data?.data || response.data;
       console.log('Tracker usage data received:', data);
       setTrackerUsageData(data);
     } catch (err: any) {

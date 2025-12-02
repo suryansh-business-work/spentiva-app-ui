@@ -23,7 +23,8 @@ import EmailIcon from '@mui/icons-material/Email';
 import BusinessIcon from '@mui/icons-material/Business';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useAuth } from '../../contexts/AuthContext';
-import { api, API_BASE } from '../../config/api';
+import { endpoints, getApiUrl } from '../../config/api';
+import { putRequest, getRequest, postRequest } from '../../utils/http';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
@@ -51,14 +52,11 @@ const Profile: React.FC = () => {
       setMessage('');
 
       try {
-        const response: any = await api.auth.updateProfile(
-          { name: values.name },
-          token!
-        );
+        const response = await putRequest(endpoints.auth.profile, { name: values.name });
 
         // The API returns nested data structure: { message, data: { message, user } }
         // We need to handle this correctly based on the actual response
-        const updatedUser = response.data?.user || response.user;
+        const updatedUser = response.data?.user || response.data?.data?.user;
 
         if (updatedUser) {
           updateUser(updatedUser);
@@ -69,9 +67,9 @@ const Profile: React.FC = () => {
           setMessage('Profile updated successfully');
           setIsEditing(false);
           // Optionally reload user data
-          const userResponse = await api.auth.getCurrentUser(token!);
-          if (userResponse.user) {
-            updateUser(userResponse.user);
+          const userResponse = await getRequest(endpoints.auth.me, {}, token!);
+          if (userResponse.data?.data?.user) {
+            updateUser(userResponse.data.data.user);
           }
         }
       } catch (err: any) {
@@ -83,67 +81,46 @@ const Profile: React.FC = () => {
     },
   });
 
-  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        setError('File size should be less than 5MB');
-        return;
-      }
-
-      // Show preview immediately
-      setPhotoPreview(URL.createObjectURL(file));
-
-      // Auto upload
-      await uploadPhoto(file);
-    }
-  };
-
-  const uploadPhoto = async (file: File) => {
-    setLoading(true);
-    setError('');
-    setMessage('');
-
-    try {
-      const response: any = await api.auth.uploadProfilePhoto(file, token!);
-
-      if (user) {
-        const newPhotoUrl = response.data?.photoUrl || response.photoUrl;
-
-        if (newPhotoUrl) {
-          updateUser({
-            ...user,
-            profilePhoto: newPhotoUrl,
-          });
-          setMessage('Profile photo updated successfully');
-        } else {
-          // Fallback reload
-          const userResponse = await api.auth.getCurrentUser(token!);
-          if (userResponse.user) {
-            updateUser(userResponse.user);
-          }
-          setMessage('Profile photo updated successfully');
-        }
-      }
-    } catch (err: any) {
-      console.error('Photo upload error:', err);
-      setError(err.response?.data?.message || 'Failed to upload photo');
-      // Revert preview on error
-      setPhotoPreview(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const getPhotoUrl = () => {
     if (photoPreview) return photoPreview;
     if (user?.profilePhoto) {
       if (user.profilePhoto.startsWith('http')) {
         return user.profilePhoto;
       }
-      return `${API_BASE}${user.profilePhoto}`;
+      return `${getApiUrl()}/${user.profilePhoto}`;
     }
     return undefined;
+  };
+
+  const handlePhotoChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setLoading(true);
+      const formData = new FormData();
+      formData.append('photo', file);
+
+      try {
+        const response = await postRequest(endpoints.auth.profilePhoto, formData);
+        const updatedUser = response.data?.user || response.data?.data?.user;
+
+        if (updatedUser) {
+          updateUser(updatedUser);
+          setMessage('Profile photo updated successfully');
+        }
+
+        // Update preview
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPhotoPreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      } catch (error) {
+        console.error('Error uploading photo:', error);
+        setError('Failed to upload profile photo');
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   return (

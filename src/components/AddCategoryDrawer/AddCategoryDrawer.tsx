@@ -11,7 +11,8 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
-import { api } from "../../config/api";
+import { endpoints } from "../../config/api";
+import { postRequest } from "../../utils/http";
 
 interface AddCategoryDrawerProps {
   open: boolean;
@@ -53,7 +54,7 @@ const AddCategoryDrawer: React.FC<AddCategoryDrawerProps> = ({
         ? [{ id: Date.now().toString(), name: subcategoryName.trim() }]
         : [];
 
-      await api.trackers.createCategory(trackerId, {
+      await postRequest(endpoints.categories.categories(trackerId), {
         name: categoryName.trim(),
         subcategories,
       });

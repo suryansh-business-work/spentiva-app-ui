@@ -14,7 +14,8 @@ import SendIcon from "@mui/icons-material/Send";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
 import PersonIcon from "@mui/icons-material/Person";
 import { Message } from "../../types";
-import { api } from "../../config/api";
+import { endpoints } from "../../config/api";
+import { getRequest, postRequest } from "../../utils/http";
 import { notifyExpenseAdded } from "../../services/notificationService";
 import { useAuth } from "../../contexts/AuthContext";
 import "./ChatInterface.scss";
@@ -68,14 +69,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
   const loadCategories = async () => {
     if (!trackerId) return;
     try {
-      const data = await api.trackers.getCategories(trackerId);
+      const response = await getRequest(endpoints.categories.categories(trackerId));
+      const data = response.data?.categories || response.data?.data || [];
       setCategories(data);
     } catch (error) {
       console.error("Error loading categories:", error);
     }
   };
-
-
 
   const trackMessageUsage = (trackerId?: string) => {
     // Get current usage data
@@ -170,9 +170,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
       trackMessageUsage(trackerId);
 
       // Parse the expense using ChatGPT (now includes message logging)
-      const parsed = await api.expenses.parse(input, trackerId);
+      const parseResponse = await postRequest(endpoints.expenses.parse, { input, trackerId });
+      const parsed = parseResponse.data?.data || parseResponse.data;
 
-      if ("error" in parsed) {
+      if (parsed.error) {
         const errorMessage: Message = {
           id: (Date.now() + 1).toString(),
           role: "assistant",
@@ -183,7 +184,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
       } else {
         // Create the expense
         const expenseData = { ...parsed, trackerId };
-        const expense = await api.expenses.create(expenseData);
+        const createResponse = await postRequest(endpoints.expenses.base, expenseData);
+        const expense = createResponse.data?.expense || createResponse.data?.data;
 
         const successMessage: Message = {
           id: (Date.now() + 1).toString(),

@@ -27,7 +27,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FolderIcon from "@mui/icons-material/Folder";
 import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
-import { api } from "../../config/api";
+import { endpoints } from "../../config/api";
+import { getRequest, postRequest, putRequest, deleteRequest } from "../../utils/http";
 
 interface SubCategory {
   id: string;
@@ -69,7 +70,8 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
   const loadCategories = async () => {
     setLoading(true);
     try {
-      const data = await api.trackers.getCategories(trackerId);
+      const response = await getRequest(endpoints.categories.categories(trackerId));
+      const data = response.data?.categories || response.data?.data || [];
       setCategories(data);
     } catch (error) {
       console.error("Error loading categories:", error);
@@ -108,7 +110,7 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
   const handleDeleteCategory = async (category: Category) => {
     if (window.confirm(`Are you sure you want to delete "${category.name}" and all its subcategories?`)) {
       try {
-        await api.trackers.deleteCategory(trackerId, category.id);
+        await deleteRequest(endpoints.categories.category(trackerId, category.id));
         setSnackbar({ open: true, message: "Category deleted successfully", severity: "success" });
         loadCategories();
       } catch (error) {
@@ -140,7 +142,7 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
     if (window.confirm(`Are you sure you want to delete "${subcategory.name}"?`)) {
       try {
         const updatedSubcategories = category.subcategories.filter((sub) => sub.id !== subcategory.id);
-        await api.trackers.updateCategory(trackerId, category.id, {
+        await putRequest(endpoints.categories.category(trackerId, category.id), {
           name: category.name,
           subcategories: updatedSubcategories,
         });
@@ -162,13 +164,13 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
 
       try {
         if (dialogMode === "add") {
-          await api.trackers.createCategory(trackerId, {
+          await postRequest(endpoints.categories.categories(trackerId), {
             name: categoryName,
             subcategories: [],
           });
           setSnackbar({ open: true, message: "Category added successfully", severity: "success" });
         } else if (selectedCategory) {
-          await api.trackers.updateCategory(trackerId, selectedCategory.id, {
+          await putRequest(endpoints.categories.category(trackerId, selectedCategory.id), {
             name: categoryName,
             subcategories: selectedCategory.subcategories,
           });
@@ -194,7 +196,7 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
             name: subcategoryName,
           };
           const updatedSubcategories = [...selectedCategory.subcategories, newSubcategory];
-          await api.trackers.updateCategory(trackerId, selectedCategory.id, {
+          await putRequest(endpoints.categories.category(trackerId, selectedCategory.id), {
             name: selectedCategory.name,
             subcategories: updatedSubcategories,
           });
@@ -203,7 +205,7 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
           const updatedSubcategories = selectedCategory.subcategories.map((sub) =>
             sub.id === selectedSubcategory.id ? { ...sub, name: subcategoryName } : sub
           );
-          await api.trackers.updateCategory(trackerId, selectedCategory.id, {
+          await putRequest(endpoints.categories.category(trackerId, selectedCategory.id), {
             name: selectedCategory.name,
             subcategories: updatedSubcategories,
           });

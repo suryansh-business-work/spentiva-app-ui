@@ -467,9 +467,6 @@ const Header: React.FC = () => {
           <Typography variant="body2" sx={{ fontWeight: 700, color: palette.text.primary, fontSize: '0.875em' }}>
             {user?.name}
           </Typography>
-          <Typography variant="caption" sx={{ color: palette.text.secondary, fontSize: '0.75em' }}>
-            {user?.phone}
-          </Typography>
         </Box>
         <MenuItem
           onClick={handleProfileClick}
@@ -492,7 +489,7 @@ const Header: React.FC = () => {
               color: palette.text.primary,
             }}
           />
-        </MenuItem>
+        </MenuItem >
         <MenuItem
           onClick={handleLogout}
           sx={{
@@ -515,7 +512,7 @@ const Header: React.FC = () => {
             }}
           />
         </MenuItem>
-      </Menu>
+      </Menu >
     </>
   );
 };

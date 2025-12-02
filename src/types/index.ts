@@ -28,3 +28,13 @@ export interface ParsedExpense {
   description?: string;
   timestamp?: string;
 }
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  profilePhoto?: string;
+  accountType?: string;
+  emailVerified?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}

@@ -20,7 +20,8 @@ import {
   CheckCircle as CheckCircleIcon,
   VpnKey as VpnKeyIcon,
 } from '@mui/icons-material';
-import { api } from '../../config/api';
+import { endpoints } from '../../config/api';
+import { postRequest } from '../../utils/http';
 
 const ResetPassword: React.FC = () => {
   const navigate = useNavigate();
@@ -86,19 +87,23 @@ const ResetPassword: React.FC = () => {
     setError('');
 
     try {
-      await api.auth.resetPassword({
+      const response = await postRequest(endpoints.auth.resetPassword, {
         email,
         otp,
         newPassword,
         confirmPassword,
       });
 
-      setSuccess(true);
+      if (response.data.success) {
+        setSuccess(true);
 
-      // Redirect to login after 2 seconds
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
+        // Redirect to login after 2 seconds
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+      } else {
+        setError(response.data.message || 'Failed to reset password. Please check your OTP.');
+      }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to reset password. Please check your OTP.');
     } finally {

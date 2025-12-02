@@ -25,7 +25,8 @@ import {
   ArrowForward as ArrowForwardIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
-import { api } from '../../config/api';
+import { endpoints } from '../../config/api';
+import { postRequest } from '../../utils/http';
 
 // Validation schema using Yup
 const validationSchema = Yup.object({
@@ -63,27 +64,34 @@ const Signup: React.FC = () => {
       setError('');
 
       try {
-        const response = await api.auth.signup({
+        const response = await postRequest(endpoints.auth.signup, {
           name: values.name,
           email: values.email,
           password: values.password,
           role: values.role as 'user' | 'business' | 'individual',
         });
 
-        // Save user information to localStorage
-        localStorage.setItem('authToken', response.token);
-        localStorage.setItem('user', JSON.stringify(response.user));
+        const data = response.data;
+        if (data.status === 'success') {
+          const { token, user } = data.data;
 
-        // Set flag for showing verification message
-        if (!response.user.emailVerified) {
-          localStorage.setItem('showEmailVerification', 'true');
+          // Save user information to localStorage
+          localStorage.setItem('authToken', token);
+          localStorage.setItem('user', JSON.stringify(user));
+
+          // Set flag for showing verification message
+          if (!user.emailVerified) {
+            localStorage.setItem('showEmailVerification', 'true');
+          }
+
+          // Update auth context
+          login(token, user);
+
+          // Redirect to trackers page
+          navigate('/trackers');
+        } else {
+          setError(data.message || 'Failed to create account. Please try again.');
         }
-
-        // Update auth context
-        login(response.token, response.user);
-
-        // Redirect to trackers page
-        navigate('/trackers');
       } catch (err: any) {
         setError(err.response?.data?.message || 'Failed to create account. Please try again.');
       } finally {

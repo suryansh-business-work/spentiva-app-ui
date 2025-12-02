@@ -27,8 +27,8 @@ import {
   Legend,
 } from "chart.js";
 import { Bar, Pie, Line } from "react-chartjs-2";
-import { api } from "../../config/api";
-import type { AnalyticsSummary, CategoryAnalytics, MonthlyAnalytics } from "../../config/api";
+import { endpoints } from "../../config/api";
+import { getRequest } from "../../utils/http";
 import DownloadIcon from "@mui/icons-material/Download";
 import EmailIcon from "@mui/icons-material/Email";
 
@@ -52,9 +52,9 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
   const [filter, setFilter] = useState("thisMonth");
   const [customStartDate, setCustomStartDate] = useState("");
   const [customEndDate, setCustomEndDate] = useState("");
-  const [summary, setSummary] = useState<AnalyticsSummary>({ total: 0, average: 0, count: 0 });
-  const [categoryData, setCategoryData] = useState<CategoryAnalytics[]>([]);
-  const [monthlyData, setMonthlyData] = useState<MonthlyAnalytics[]>([]);
+  const [summary, setSummary] = useState({ total: 0, average: 0, count: 0 });
+  const [categoryData, setCategoryData] = useState([]);
+  const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [emailLoading, setEmailLoading] = useState(false);
@@ -77,14 +77,20 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
     setLoading(true);
     try {
       const [summaryRes, categoryRes, monthlyRes] = await Promise.all([
-        api.analytics.getSummary(filter, customStartDate, customEndDate, undefined, trackerId),
-        api.analytics.getByCategory(filter, customStartDate, customEndDate, trackerId),
-        api.analytics.getByMonth(selectedYear, trackerId),
+        getRequest(endpoints.analytics.summary, {
+          params: { filter, startDate: customStartDate, endDate: customEndDate, trackerId }
+        }),
+        getRequest(endpoints.analytics.byCategory, {
+          params: { filter, startDate: customStartDate, endDate: customEndDate, trackerId }
+        }),
+        getRequest(endpoints.analytics.byMonth, {
+          params: { year: selectedYear, trackerId }
+        }),
       ]);
 
-      setSummary(summaryRes.stats);
-      setCategoryData(categoryRes.data);
-      setMonthlyData(monthlyRes.data);
+      setSummary(summaryRes.data?.stats || summaryRes.data?.data?.stats || { total: 0, average: 0, count: 0 });
+      setCategoryData(categoryRes.data?.data || categoryRes.data || []);
+      setMonthlyData(monthlyRes.data?.data || monthlyRes.data || []);
     } catch (error) {
       console.error("Error loading analytics:", error);
     } finally {
@@ -171,11 +177,11 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
   };
 
   const categoryChartData = {
-    labels: categoryData.map((item) => item.category),
+    labels: categoryData.map((item: any) => item.category),
     datasets: [
       {
         label: "Total Expenses",
-        data: categoryData.map((item) => item.total),
+        data: categoryData.map((item: any) => item.total),
         backgroundColor: [
           "rgba(255, 99, 132, 0.6)",
           "rgba(54, 162, 235, 0.6)",
@@ -210,7 +216,7 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
     datasets: [
       {
         label: `Expenses ${selectedYear}`,
-        data: monthlyData.map((item) => item.total),
+        data: monthlyData.map((item: any) => item.total),
         borderColor: "rgba(102, 126, 234, 1)",
         backgroundColor: "rgba(102, 126, 234, 0.2)",
         tension: 0.4,
@@ -220,11 +226,11 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
   };
 
   const categoryBarData = {
-    labels: categoryData.map((item) => item.category),
+    labels: categoryData.map((item: any) => item.category),
     datasets: [
       {
         label: "Total Expenses",
-        data: categoryData.map((item) => item.total),
+        data: categoryData.map((item: any) => item.total),
         backgroundColor: "rgba(102, 126, 234, 0.6)",
         borderColor: "rgba(102, 126, 234, 1)",
         borderWidth: 1,
@@ -586,7 +592,7 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
               Category Breakdown
             </Typography>
             <Box sx={{ display: "flex", flexDirection: "column", gap: { xs: 1.5, md: 2 } }}>
-              {categoryData.map((item, index) => (
+              {categoryData.map((item: any, index) => (
                 <Card key={index} variant="outlined">
                   <CardContent sx={{
                     display: "flex",

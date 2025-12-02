@@ -21,7 +21,8 @@ import {
   VisibilityOff,
 } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
-import { api } from '../../config/api';
+import { endpoints } from '../../config/api';
+import { postRequest } from '../../utils/http';
 
 // Validation schema using Yup
 const validationSchema = Yup.object({
@@ -51,17 +52,24 @@ const Login: React.FC = () => {
       setError('');
 
       try {
-        const response = await api.auth.login(values.email, values.password);
+        const response = await postRequest(endpoints.auth.login, { email: values.email, password: values.password });
 
-        // Save user information to localStorage
-        localStorage.setItem('authToken', response.token);
-        localStorage.setItem('user', JSON.stringify(response.user));
+        const data = response.data;
+        if (data.status === 'success') {
+          const { token, user } = data.data;
 
-        // Update auth context
-        login(response.token, response.user);
+          // Save user information to localStorage
+          localStorage.setItem('authToken', token);
+          localStorage.setItem('user', JSON.stringify(user));
 
-        // Redirect to trackers page
-        navigate('/trackers');
+          // Update auth context
+          login(token, user);
+
+          // Redirect to trackers page
+          navigate('/trackers');
+        } else {
+          setError(data.message || 'Login failed');
+        }
       } catch (err: any) {
         setError(err.response?.data?.message || 'Invalid email or password. Please try again.');
       } finally {

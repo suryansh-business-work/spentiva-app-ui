@@ -38,7 +38,8 @@ import BusinessIcon from "@mui/icons-material/Business";
 import PersonIcon from "@mui/icons-material/Person";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import AddToHomeScreenIcon from "@mui/icons-material/AddToHomeScreen";
-import { api } from "../../config/api";
+import { endpoints } from "../../config/api";
+import { getRequest, postRequest, putRequest, deleteRequest } from "../../utils/http";
 import palette from "../../theme/palette";
 
 interface Tracker {
@@ -77,9 +78,11 @@ const Trackers: React.FC = () => {
   const loadTrackers = async () => {
     setLoading(true);
     try {
-      const data = await api.trackers.getAll();
-      // The API now returns the array directly from our api.ts wrapper
-      setTrackers(data || []);
+      const response = await getRequest(endpoints.trackers.getAll);
+      // The API returns nested data structure: { message, data: { trackers } }
+      // We need to handle this correctly based on the actual response
+      const trackersData = response.data?.trackers || response.data?.data?.trackers || [];
+      setTrackers(trackersData);
     } catch (error) {
       console.error("Error loading trackers:", error);
       setSnackbar({ open: true, message: "Failed to load trackers", severity: "error" });
@@ -120,10 +123,10 @@ const Trackers: React.FC = () => {
   const handleSave = async () => {
     try {
       if (editMode && selectedTracker) {
-        await api.trackers.update(selectedTracker.id, formData);
+        await putRequest(endpoints.trackers.update(selectedTracker.id), formData);
         setSnackbar({ open: true, message: "Tracker updated successfully", severity: "success" });
       } else {
-        await api.trackers.create(formData);
+        await postRequest(endpoints.trackers.create, formData);
         setSnackbar({ open: true, message: "Tracker created successfully", severity: "success" });
       }
       handleCloseDialog();
@@ -143,7 +146,7 @@ const Trackers: React.FC = () => {
     if (!selectedTracker) return;
 
     try {
-      await api.trackers.delete(selectedTracker.id);
+      await deleteRequest(endpoints.trackers.delete(selectedTracker.id));
       setDeleteDialogOpen(false);
       setSnackbar({ open: true, message: "Tracker deleted successfully", severity: "success" });
       loadTrackers();

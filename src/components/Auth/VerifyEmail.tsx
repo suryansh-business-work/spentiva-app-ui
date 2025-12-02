@@ -17,7 +17,8 @@ import {
   CheckCircle as CheckCircleIcon,
   ArrowForward as ArrowForwardIcon,
 } from '@mui/icons-material';
-import { api } from '../../config/api';
+import { endpoints } from '../../config/api';
+import { postRequest } from '../../utils/http';
 
 const VerifyEmail: React.FC = () => {
   const navigate = useNavigate();
@@ -40,8 +41,8 @@ const VerifyEmail: React.FC = () => {
     setError('');
 
     try {
-      const response = await api.auth.sendVerificationOtp(email);
-      setDevOtp(response.devOtp || '');
+      const response = await postRequest(endpoints.auth.sendVerificationOtp, { email });
+      setDevOtp(response.data.devOtp || '');
       setOtpSent(true);
     } catch (err: any) {
       setError(err.response?.data?.error || 'Failed to send OTP');
@@ -60,7 +61,7 @@ const VerifyEmail: React.FC = () => {
     setError('');
 
     try {
-      await api.auth.verifyEmail(email, otp);
+      await postRequest(endpoints.auth.verifyEmail, { email, otp });
       setSuccess(true);
 
       // Redirect to login after 2 seconds

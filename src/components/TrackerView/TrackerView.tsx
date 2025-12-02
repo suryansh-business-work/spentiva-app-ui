@@ -20,7 +20,8 @@ import PersonIcon from "@mui/icons-material/Person";
 import ChatInterface from "../ChatInterface/ChatInterface";
 import Dashboard from "../Dashboard/Dashboard";
 import Transactions from "../Transactions/Transactions";
-import { api } from "../../config/api";
+import { endpoints } from "../../config/api";
+import { getRequest } from "../../utils/http";
 import { palette } from "../../theme/palette";
 
 interface TabPanelProps {
@@ -76,8 +77,10 @@ const TrackerView: React.FC = () => {
   const loadTracker = async () => {
     setLoading(true);
     try {
-      const data = await api.trackers.getOne(trackerId!);
-      setTracker(data);
+      const response = await getRequest(endpoints.trackers.byId(trackerId!));
+      // The API returns nested data structure: { message, data: { tracker } }
+      const trackerData = response.data?.tracker || response.data?.data?.tracker || null;
+      setTracker(trackerData);
     } catch (error) {
       console.error("Error loading tracker:", error);
     } finally {
