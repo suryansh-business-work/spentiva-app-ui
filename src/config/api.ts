@@ -50,9 +50,9 @@ export interface PhotoUploadResponse {
 // Environment-aware API URL
 const getApiUrl = () => {
   if (import.meta.env.MODE === 'development') {
-    return 'http://localhost:8002';
+    return 'http://localhost:8002/v1/api';
   }
-  return 'https://api.spentiva.com';
+  return 'https://api.spentiva.com/v1/api';
 };
 
 export const API_URL = getApiUrl();
@@ -81,27 +81,27 @@ apiClient.interceptors.request.use(
 export const endpoints = {
   auth: {
     // OTP-based authentication (existing)
-    sendOtp: `${API_URL}/auth/send-otp`,
-    verifyOtp: `${API_URL}/auth/verify-otp`,
+    sendOtp: `${API_URL}/send-otp`,
+    verifyOtp: `${API_URL}/verify-otp`,
 
     // Email/Password authentication (from Swagger)
-    login: `${API_URL}/auth/login`,
-    signup: `${API_URL}/auth/signup`,
+    login: `${API_URL}/login`,
+    signup: `${API_URL}/signup`,
 
     // User profile
-    me: `${API_URL}/auth/me`,
-    profile: `${API_URL}/auth/profile`,
-    profilePhoto: `${API_URL}/auth/profile-photo`,
+    me: `${API_URL}/me`,
+    profile: `${API_URL}/profile`,
+    profilePhoto: `${API_URL}/profile-photo`,
 
     // Email verification
-    sendEmailOtp: `${API_URL}/auth/send-email-otp`,
-    verifyEmailOtp: `${API_URL}/auth/verify-email-otp`,
-    sendVerificationOtp: `${API_URL}/auth/send-verification-otp`,
-    verifyEmail: `${API_URL}/auth/verify-email`,
+    sendEmailOtp: `${API_URL}/send-email-otp`,
+    verifyEmailOtp: `${API_URL}/verify-email-otp`,
+    sendVerificationOtp: `${API_URL}/send-verification-otp`,
+    verifyEmail: `${API_URL}/verify-email`,
 
     // Password management
-    forgotPassword: `${API_URL}/auth/forgot-password`,
-    resetPassword: `${API_URL}/auth/reset-password`,
+    forgotPassword: `${API_URL}/forgot-password`,
+    resetPassword: `${API_URL}/reset-password`,
   },
   expenses: {
     base: `${API_URL}/expenses`,
@@ -113,6 +113,7 @@ export const endpoints = {
   },
   trackers: {
     base: `${API_URL}/trackers`,
+    create: `${API_URL}/create/tracker`,
     byId: (id: string) => `${API_URL}/trackers/${id}`,
     categories: (trackerId: string) => `${API_URL}/trackers/${trackerId}/categories`,
     category: (trackerId: string, categoryId: string) => `${API_URL}/trackers/${trackerId}/categories/${categoryId}`,
@@ -167,7 +168,7 @@ export const api = {
 
     // Email/Password authentication
     login: async (email: string, password: string): Promise<AuthResponse> => {
-      const response = await apiClient.post('/v1/api/login', { email, password });
+      const response = await apiClient.post(endpoints.auth.login, { email, password });
       // Transform the response to match AuthResponse interface
       return {
         success: response.data.status === 'success',
@@ -178,7 +179,7 @@ export const api = {
     },
 
     signup: async (data: { name: string; email: string; password: string; role?: 'user' | 'business' | 'individual' }): Promise<AuthResponse> => {
-      const response = await apiClient.post('/v1/api/signup', data);
+      const response = await apiClient.post(endpoints.auth.signup, data);
       return {
         success: response.data.status === 'success',
         token: response.data.data.token,
@@ -192,7 +193,7 @@ export const api = {
       const response = await axios.get(endpoints.auth.me, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      return response.data;
+      return response.data.data;
     },
 
     updateProfile: async (data: { name?: string; email?: string; phone?: string; accountType?: 'personal' | 'business' }, token: string): Promise<ProfileUpdateResponse> => {
@@ -300,22 +301,22 @@ export const api = {
   trackers: {
     getAll: async (): Promise<any[]> => {
       const response = await apiClient.get(endpoints.trackers.base);
-      return response.data.trackers;
+      return response.data.data.trackers;
     },
 
     getOne: async (id: string): Promise<any> => {
       const response = await apiClient.get(endpoints.trackers.byId(id));
-      return response.data.tracker;
+      return response.data.data.tracker;
     },
 
     create: async (tracker: any): Promise<any> => {
-      const response = await apiClient.post(endpoints.trackers.base, tracker);
-      return response.data.tracker;
+      const response = await apiClient.post(endpoints.trackers.create, tracker);
+      return response.data.data.tracker;
     },
 
     update: async (id: string, tracker: any): Promise<any> => {
       const response = await apiClient.put(endpoints.trackers.byId(id), tracker);
-      return response.data.tracker;
+      return response.data.data.tracker;
     },
 
     delete: async (id: string): Promise<void> => {

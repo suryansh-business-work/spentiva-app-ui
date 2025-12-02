@@ -78,7 +78,8 @@ const Trackers: React.FC = () => {
     setLoading(true);
     try {
       const data = await api.trackers.getAll();
-      setTrackers(data);
+      // The API now returns the array directly from our api.ts wrapper
+      setTrackers(data || []);
     } catch (error) {
       console.error("Error loading trackers:", error);
       setSnackbar({ open: true, message: "Failed to load trackers", severity: "error" });

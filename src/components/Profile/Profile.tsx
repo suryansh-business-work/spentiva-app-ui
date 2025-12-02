@@ -9,146 +9,127 @@ import {
   IconButton,
   Alert,
   CircularProgress,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Chip,
   Card,
   CardContent,
   Divider,
   Fade,
   Grow,
+  Chip,
 } from '@mui/material';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
 import EditIcon from '@mui/icons-material/Edit';
 import PersonIcon from '@mui/icons-material/Person';
 import EmailIcon from '@mui/icons-material/Email';
-import PhoneIcon from '@mui/icons-material/Phone';
 import BusinessIcon from '@mui/icons-material/Business';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useAuth } from '../../contexts/AuthContext';
 import { api, API_BASE } from '../../config/api';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 const Profile: React.FC = () => {
   const { user, updateUser, token } = useAuth();
-  const [name, setName] = useState(user?.name || '');
-  const [email, setEmail] = useState(user?.email || '');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-
-  // Email verification dialog
-  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
-  const [emailOtp, setEmailOtp] = useState('');
-  const [emailToVerify, setEmailToVerify] = useState('');
-  const [devOtp, setDevOtp] = useState('');
   const [isEditing, setIsEditing] = useState(false);
 
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const formik = useFormik({
+    initialValues: {
+      name: user?.name || '',
+      email: user?.email || '',
+    },
+    enableReinitialize: true,
+    validationSchema: Yup.object({
+      name: Yup.string().required('Name is required'),
+      email: Yup.string().email('Invalid email address').required('Email is required'),
+    }),
+    onSubmit: async (values) => {
+      setLoading(true);
+      setError('');
+      setMessage('');
+
+      try {
+        const response: any = await api.auth.updateProfile(
+          { name: values.name },
+          token!
+        );
+
+        // The API returns nested data structure: { message, data: { message, user } }
+        // We need to handle this correctly based on the actual response
+        const updatedUser = response.data?.user || response.user;
+
+        if (updatedUser) {
+          updateUser(updatedUser);
+          setMessage('Profile updated successfully');
+          setIsEditing(false);
+        } else {
+          // Fallback if user object isn't directly available but operation succeeded
+          setMessage('Profile updated successfully');
+          setIsEditing(false);
+          // Optionally reload user data
+          const userResponse = await api.auth.getCurrentUser(token!);
+          if (userResponse.user) {
+            updateUser(userResponse.user);
+          }
+        }
+      } catch (err: any) {
+        console.error('Profile update error:', err);
+        setError(err.response?.data?.message || err.message || 'Failed to update profile');
+      } finally {
+        setLoading(false);
+      }
+    },
+  });
+
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
         setError('File size should be less than 5MB');
         return;
       }
-      setPhotoFile(file);
+
+      // Show preview immediately
       setPhotoPreview(URL.createObjectURL(file));
+
+      // Auto upload
+      await uploadPhoto(file);
     }
   };
 
-  const handleUploadPhoto = async () => {
-    if (!photoFile) return;
-
+  const uploadPhoto = async (file: File) => {
     setLoading(true);
     setError('');
     setMessage('');
 
     try {
-      const response = await api.auth.uploadProfilePhoto(photoFile, token!);
+      const response: any = await api.auth.uploadProfilePhoto(file, token!);
 
       if (user) {
-        updateUser({
-          ...user,
-          profilePhoto: response.photoUrl,
-        });
+        const newPhotoUrl = response.data?.photoUrl || response.photoUrl;
+
+        if (newPhotoUrl) {
+          updateUser({
+            ...user,
+            profilePhoto: newPhotoUrl,
+          });
+          setMessage('Profile photo updated successfully');
+        } else {
+          // Fallback reload
+          const userResponse = await api.auth.getCurrentUser(token!);
+          if (userResponse.user) {
+            updateUser(userResponse.user);
+          }
+          setMessage('Profile photo updated successfully');
+        }
       }
-
-      setMessage('Profile photo updated successfully');
-      setPhotoFile(null);
+    } catch (err: any) {
+      console.error('Photo upload error:', err);
+      setError(err.response?.data?.message || 'Failed to upload photo');
+      // Revert preview on error
       setPhotoPreview(null);
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to upload photo');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleUpdateProfile = async () => {
-    setLoading(true);
-    setError('');
-    setMessage('');
-
-    try {
-      const response = await api.auth.updateProfile(
-        { name, email: email || undefined },
-        token!
-      );
-
-      updateUser(response.user);
-      setMessage('Profile updated successfully');
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to update profile');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSendEmailOTP = async () => {
-    if (!email || !email.includes('@')) {
-      setError('Please enter a valid email');
-      return;
-    }
-
-    setLoading(true);
-    setError('');
-
-    try {
-      const response: any = await api.auth.sendEmailOtp(email, token!);
-
-      setDevOtp(response.devOtp);
-      setEmailToVerify(email);
-      setEmailDialogOpen(true);
-      setMessage('OTP sent to your email');
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to send OTP');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyEmail = async () => {
-    if (!emailOtp || emailOtp.length !== 6) {
-      setError('Please enter a valid 6-digit OTP');
-      return;
-    }
-
-    setLoading(true);
-    setError('');
-
-    try {
-      const response = await api.auth.verifyEmailOtp(emailToVerify, emailOtp, token!);
-
-      updateUser(response.user);
-      setEmailDialogOpen(false);
-      setEmailOtp('');
-      setDevOtp('');
-      setMessage('Email verified successfully');
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to verify email');
     } finally {
       setLoading(false);
     }
@@ -157,31 +138,34 @@ const Profile: React.FC = () => {
   const getPhotoUrl = () => {
     if (photoPreview) return photoPreview;
     if (user?.profilePhoto) {
+      if (user.profilePhoto.startsWith('http')) {
+        return user.profilePhoto;
+      }
       return `${API_BASE}${user.profilePhoto}`;
     }
     return undefined;
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', background: '#333', py: 4 }}>
+    <Box sx={{ minHeight: '100vh', background: '#f9fafb', py: 4, fontFamily: '"Inter", sans-serif' }}>
       <Container maxWidth="lg">
         <Fade in={true} timeout={500}>
           <Box>
             {/* Header Section */}
             <Box sx={{ mb: 4, textAlign: 'center' }}>
               <Typography
-                variant="h3"
+                variant="h4"
                 sx={{
                   fontWeight: 800,
-                  color: '#fff',
+                  color: '#111827',
                   mb: 1,
-                  textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                  letterSpacing: '-0.02em',
                 }}
               >
                 My Profile
               </Typography>
-              <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)' }}>
-                Manage your personal information and preferences
+              <Typography variant="body1" sx={{ color: '#6B7280' }}>
+                Manage your personal information and account settings
               </Typography>
             </Box>
 
@@ -193,6 +177,7 @@ const Profile: React.FC = () => {
                   sx={{
                     borderRadius: 4,
                     background: '#fff',
+                    border: '1px solid #E5E7EB',
                     overflow: 'visible',
                   }}
                 >
@@ -204,50 +189,78 @@ const Profile: React.FC = () => {
                           '&::before': {
                             content: '""',
                             position: 'absolute',
-                            top: -8,
-                            left: -8,
-                            right: -8,
-                            bottom: -8,
+                            top: -6,
+                            left: -6,
+                            right: -6,
+                            bottom: -6,
                             borderRadius: '50%',
-                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            opacity: 0.2,
+                            background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+                            opacity: 0.15,
                           },
                         }}
                       >
                         <Avatar
                           src={getPhotoUrl()}
                           sx={{
-                            width: 140,
-                            height: 140,
+                            width: 120,
+                            height: 120,
                             border: '4px solid #fff',
-                            boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
                             fontSize: '3em',
                             fontWeight: 700,
-                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+                            opacity: loading ? 0.5 : 1,
+                            transition: 'opacity 0.2s',
                           }}
                         >
-                          {user?.name.charAt(0).toUpperCase()}
+                          {user?.name?.charAt(0).toUpperCase()}
                         </Avatar>
+
+                        {/* Loading Overlay */}
+                        {loading && (
+                          <Box
+                            sx={{
+                              position: 'absolute',
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              borderRadius: '50%',
+                              backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                              zIndex: 10,
+                            }}
+                          >
+                            <CircularProgress size={40} sx={{ color: '#16a34a' }} />
+                          </Box>
+                        )}
                       </Box>
                       <IconButton
                         component="label"
+                        disabled={loading}
                         sx={{
                           position: 'absolute',
-                          bottom: 8,
-                          right: 8,
-                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                          bottom: 4,
+                          right: 4,
+                          background: '#16a34a',
                           color: 'white',
-                          width: 44,
-                          height: 44,
-                          boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
+                          width: 36,
+                          height: 36,
+                          boxShadow: '0 2px 8px rgba(22, 163, 74, 0.4)',
                           '&:hover': {
-                            background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
+                            background: '#15803d',
                             transform: 'scale(1.1)',
+                          },
+                          '&.Mui-disabled': {
+                            background: '#E5E7EB',
+                            color: '#9CA3AF',
                           },
                           transition: 'all 0.2s',
                         }}
                       >
-                        <PhotoCameraIcon />
+                        <PhotoCameraIcon fontSize="small" />
                         <input
                           type="file"
                           hidden
@@ -257,71 +270,16 @@ const Profile: React.FC = () => {
                       </IconButton>
                     </Box>
 
-                    <Typography variant="h5" sx={{ fontWeight: 700, mb: 0.5, color: '#1a1a1a' }}>
+                    <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5, color: '#111827' }}>
                       {user?.name}
                     </Typography>
-                    <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3 }}>
-                      {user?.phone}
+                    <Typography variant="body2" sx={{ color: '#6B7280', mb: 3 }}>
+                      {user?.email}
                     </Typography>
-
-                    {photoFile && (
-                      <Grow in={true}>
-                        <Button
-                          fullWidth
-                          variant="contained"
-                          onClick={handleUploadPhoto}
-                          disabled={loading}
-                          sx={{
-                            mb: 2,
-                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            textTransform: 'none',
-                            fontWeight: 600,
-                            py: 1.5,
-                            borderRadius: 2,
-                            boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
-                            '&:hover': {
-                              boxShadow: '0 6px 16px rgba(102, 126, 234, 0.4)',
-                            },
-                          }}
-                        >
-                          {loading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'Upload Photo'}
-                        </Button>
-                      </Grow>
-                    )}
 
                     <Divider sx={{ my: 3 }} />
 
                     <Box sx={{ textAlign: 'left' }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                        <Box
-                          sx={{
-                            width: 40,
-                            height: 40,
-                            borderRadius: 2,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            background: user?.accountType === 'business'
-                              ? 'rgba(102, 126, 234, 0.1)'
-                              : 'rgba(16, 185, 129, 0.1)',
-                          }}
-                        >
-                          {user?.accountType === 'business' ? (
-                            <BusinessIcon sx={{ color: '#667eea' }} />
-                          ) : (
-                            <PersonIcon sx={{ color: '#10b981' }} />
-                          )}
-                        </Box>
-                        <Box>
-                          <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>
-                            Account Type
-                          </Typography>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {user?.accountType === 'business' ? 'Business' : 'Personal'}
-                          </Typography>
-                        </Box>
-                      </Box>
-
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <Box
                           sx={{
@@ -331,23 +289,23 @@ const Profile: React.FC = () => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            background: user?.phoneVerified
-                              ? 'rgba(16, 185, 129, 0.1)'
-                              : 'rgba(239, 68, 68, 0.1)',
+                            background: user?.accountType === 'business'
+                              ? 'rgba(37, 99, 235, 0.1)'
+                              : 'rgba(22, 163, 74, 0.1)',
                           }}
                         >
-                          {user?.phoneVerified ? (
-                            <CheckCircleIcon sx={{ color: '#10b981' }} />
+                          {user?.accountType === 'business' ? (
+                            <BusinessIcon sx={{ color: '#2563eb' }} />
                           ) : (
-                            <CancelIcon sx={{ color: '#ef4444' }} />
+                            <PersonIcon sx={{ color: '#16a34a' }} />
                           )}
                         </Box>
                         <Box>
-                          <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>
-                            Phone Status
+                          <Typography variant="caption" sx={{ color: '#6B7280', display: 'block', fontWeight: 500 }}>
+                            Account Type
                           </Typography>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {user?.phoneVerified ? 'Verified' : 'Not Verified'}
+                          <Typography variant="body2" sx={{ fontWeight: 600, color: '#111827', textTransform: 'capitalize' }}>
+                            {user?.accountType || 'Personal'}
                           </Typography>
                         </Box>
                       </Box>
@@ -363,11 +321,12 @@ const Profile: React.FC = () => {
                   sx={{
                     borderRadius: 4,
                     background: '#fff',
+                    border: '1px solid #E5E7EB',
                   }}
                 >
                   <CardContent sx={{ p: 4 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-                      <Typography variant="h5" sx={{ fontWeight: 700, color: '#1a1a1a' }}>
+                      <Typography variant="h6" sx={{ fontWeight: 700, color: '#111827' }}>
                         Profile Information
                       </Typography>
                       <Button
@@ -376,13 +335,13 @@ const Profile: React.FC = () => {
                         sx={{
                           textTransform: 'none',
                           fontWeight: 600,
-                          color: '#667eea',
+                          color: '#16a34a',
                           '&:hover': {
-                            background: 'rgba(102, 126, 234, 0.1)',
+                            background: 'rgba(22, 163, 74, 0.05)',
                           },
                         }}
                       >
-                        {isEditing ? 'Cancel' : 'Edit'}
+                        {isEditing ? 'Cancel' : 'Edit Profile'}
                       </Button>
                     </Box>
 
@@ -406,13 +365,13 @@ const Profile: React.FC = () => {
                       </Alert>
                     )}
 
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <Box component="form" onSubmit={formik.handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                       {/* Name Field */}
                       <Box>
                         <Typography
                           variant="caption"
                           sx={{
-                            color: 'text.secondary',
+                            color: '#6B7280',
                             fontWeight: 600,
                             textTransform: 'uppercase',
                             letterSpacing: 0.5,
@@ -424,29 +383,43 @@ const Profile: React.FC = () => {
                         </Typography>
                         <TextField
                           fullWidth
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
+                          id="name"
+                          name="name"
+                          value={formik.values.name}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          error={formik.touched.name && Boolean(formik.errors.name)}
+                          helperText={formik.touched.name && formik.errors.name}
                           disabled={!isEditing || loading}
                           InputProps={{
                             startAdornment: (
-                              <PersonIcon sx={{ color: 'text.secondary', mr: 1 }} />
+                              <PersonIcon sx={{ color: '#9CA3AF', mr: 1.5 }} />
                             ),
                           }}
                           sx={{
                             '& .MuiOutlinedInput-root': {
                               borderRadius: 2,
-                              background: isEditing ? '#fff' : 'rgba(0,0,0,0.02)',
+                              backgroundColor: isEditing ? '#fff' : '#F9FAFB',
+                              '& fieldset': {
+                                borderColor: '#E5E7EB',
+                              },
+                              '&:hover fieldset': {
+                                borderColor: '#D1D5DB',
+                              },
+                              '&.Mui-focused fieldset': {
+                                borderColor: '#16a34a',
+                              },
                             },
                           }}
                         />
                       </Box>
 
-                      {/* Phone Field */}
+                      {/* Email Field */}
                       <Box>
                         <Typography
                           variant="caption"
                           sx={{
-                            color: 'text.secondary',
+                            color: '#6B7280',
                             fontWeight: 600,
                             textTransform: 'uppercase',
                             letterSpacing: 0.5,
@@ -454,19 +427,24 @@ const Profile: React.FC = () => {
                             display: 'block',
                           }}
                         >
-                          Phone Number
+                          Email Address
                         </Typography>
                         <TextField
                           fullWidth
-                          value={user?.phone || ''}
-                          disabled
+                          id="email"
+                          name="email"
+                          type="email"
+                          value={formik.values.email}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          disabled={true} // Email editing disabled for now as per requirements
                           InputProps={{
                             startAdornment: (
-                              <PhoneIcon sx={{ color: 'text.secondary', mr: 1 }} />
+                              <EmailIcon sx={{ color: '#9CA3AF', mr: 1.5 }} />
                             ),
-                            endAdornment: user?.phoneVerified ? (
+                            endAdornment: user?.emailVerified ? (
                               <Chip
-                                icon={<CheckCircleIcon />}
+                                icon={<CheckCircleIcon style={{ color: '#10b981' }} />}
                                 label="Verified"
                                 size="small"
                                 sx={{
@@ -478,8 +456,7 @@ const Profile: React.FC = () => {
                               />
                             ) : (
                               <Chip
-                                icon={<CancelIcon />}
-                                label="Not Verified"
+                                label="Unverified"
                                 size="small"
                                 sx={{
                                   background: 'rgba(239, 68, 68, 0.1)',
@@ -493,100 +470,62 @@ const Profile: React.FC = () => {
                           sx={{
                             '& .MuiOutlinedInput-root': {
                               borderRadius: 2,
-                              background: 'rgba(0,0,0,0.02)',
+                              backgroundColor: '#F9FAFB',
+                              '& fieldset': {
+                                borderColor: '#E5E7EB',
+                              },
                             },
                           }}
                         />
-                      </Box>
-
-                      {/* Email Field */}
-                      <Box>
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            color: 'text.secondary',
-                            fontWeight: 600,
-                            textTransform: 'uppercase',
-                            letterSpacing: 0.5,
-                            mb: 1,
-                            display: 'block',
-                          }}
-                        >
-                          Email Address
+                        <Typography variant="caption" sx={{ color: '#9CA3AF', mt: 0.5, display: 'block' }}>
+                          Email cannot be changed directly. Contact support for assistance.
                         </Typography>
-                        <TextField
-                          fullWidth
-                          type="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          disabled={!isEditing || loading}
-                          placeholder="Add your email"
-                          InputProps={{
-                            startAdornment: (
-                              <EmailIcon sx={{ color: 'text.secondary', mr: 1 }} />
-                            ),
-                            endAdornment: user?.emailVerified ? (
-                              <Chip
-                                icon={<CheckCircleIcon />}
-                                label="Verified"
-                                size="small"
-                                sx={{
-                                  background: 'rgba(16, 185, 129, 0.1)',
-                                  color: '#10b981',
-                                  fontWeight: 600,
-                                  border: 'none',
-                                }}
-                              />
-                            ) : email && isEditing ? (
-                              <Button
-                                size="small"
-                                onClick={handleSendEmailOTP}
-                                disabled={loading}
-                                sx={{
-                                  textTransform: 'none',
-                                  fontWeight: 600,
-                                  color: '#667eea',
-                                }}
-                              >
-                                Verify
-                              </Button>
-                            ) : null,
-                          }}
-                          sx={{
-                            '& .MuiOutlinedInput-root': {
-                              borderRadius: 2,
-                              background: isEditing ? '#fff' : 'rgba(0,0,0,0.02)',
-                            },
-                          }}
-                        />
                       </Box>
 
                       {isEditing && (
                         <Grow in={true}>
-                          <Button
-                            fullWidth
-                            variant="contained"
-                            size="large"
-                            onClick={handleUpdateProfile}
-                            disabled={loading || !name.trim()}
-                            sx={{
-                              mt: 2,
-                              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                              textTransform: 'none',
-                              fontWeight: 600,
-                              py: 1.5,
-                              fontSize: '1em',
-                              borderRadius: 2,
-                              boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
-                              '&:hover': {
-                                boxShadow: '0 6px 16px rgba(102, 126, 234, 0.4)',
-                                transform: 'translateY(-2px)',
-                              },
-                              transition: 'all 0.2s',
-                            }}
-                          >
-                            {loading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'Save Changes'}
-                          </Button>
+                          <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
+                            <Button
+                              variant="outlined"
+                              onClick={() => setIsEditing(false)}
+                              disabled={loading}
+                              sx={{
+                                flex: 1,
+                                textTransform: 'none',
+                                fontWeight: 600,
+                                py: 1.25,
+                                borderRadius: 2,
+                                borderColor: '#D1D5DB',
+                                color: '#374151',
+                                '&:hover': {
+                                  borderColor: '#9CA3AF',
+                                  background: '#F9FAFB',
+                                },
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              type="submit"
+                              variant="contained"
+                              disabled={loading || !formik.isValid}
+                              sx={{
+                                flex: 1,
+                                background: '#16a34a',
+                                textTransform: 'none',
+                                fontWeight: 600,
+                                py: 1.25,
+                                borderRadius: 2,
+                                boxShadow: '0 2px 4px rgba(22, 163, 74, 0.2)',
+                                '&:hover': {
+                                  background: '#15803d',
+                                  boxShadow: '0 4px 8px rgba(22, 163, 74, 0.3)',
+                                },
+                              }}
+                            >
+                              {loading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'Save Changes'}
+                            </Button>
+                          </Box>
                         </Grow>
                       )}
                     </Box>
@@ -597,94 +536,6 @@ const Profile: React.FC = () => {
           </Box>
         </Fade>
       </Container>
-
-      {/* Email Verification Dialog */}
-      <Dialog
-        open={emailDialogOpen}
-        onClose={() => !loading && setEmailDialogOpen(false)}
-        PaperProps={{
-          sx: {
-            borderRadius: 3,
-            minWidth: { xs: '90%', sm: 400 },
-          },
-        }}
-      >
-        <DialogTitle sx={{ fontWeight: 700, pb: 1 }}>
-          Verify Email Address
-        </DialogTitle>
-        <DialogContent sx={{ pt: 2 }}>
-          {devOtp && (
-            <Alert
-              severity="info"
-              sx={{ mb: 2, borderRadius: 2 }}
-              icon={<CheckCircleIcon />}
-            >
-              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                Development OTP: {devOtp}
-              </Typography>
-            </Alert>
-          )}
-          <Typography variant="body2" sx={{ mb: 3, color: 'text.secondary' }}>
-            Enter the 6-digit verification code sent to <strong>{emailToVerify}</strong>
-          </Typography>
-          <TextField
-            fullWidth
-            label="Enter OTP"
-            value={emailOtp}
-            onChange={(e) => {
-              const value = e.target.value.replace(/\D/g, '');
-              if (value.length <= 6) {
-                setEmailOtp(value);
-              }
-            }}
-            disabled={loading}
-            inputProps={{
-              maxLength: 6,
-              style: {
-                textAlign: 'center',
-                fontSize: '1.5em',
-                letterSpacing: '0.5em',
-                fontWeight: 700,
-              },
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                borderRadius: 2,
-              },
-            }}
-          />
-        </DialogContent>
-        <DialogActions sx={{ p: 3, pt: 2 }}>
-          <Button
-            onClick={() => setEmailDialogOpen(false)}
-            disabled={loading}
-            sx={{
-              textTransform: 'none',
-              fontWeight: 600,
-              color: 'text.secondary',
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleVerifyEmail}
-            variant="contained"
-            disabled={loading || emailOtp.length !== 6}
-            sx={{
-              textTransform: 'none',
-              fontWeight: 600,
-              px: 3,
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
-              '&:hover': {
-                boxShadow: '0 6px 16px rgba(102, 126, 234, 0.4)',
-              },
-            }}
-          >
-            {loading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'Verify Email'}
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 };
