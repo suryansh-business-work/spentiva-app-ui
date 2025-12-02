@@ -1,75 +1,150 @@
 import React from 'react';
-import { Box } from '@mui/material';
+import { Box, Typography, useTheme } from '@mui/material';
 
 interface LogoProps {
   width?: number;
   height?: number;
+  variant?: 'full' | 'icon' | 'horizontal';
+  showSubtitle?: boolean;
 }
 
-const Logo: React.FC<LogoProps> = ({ width = 140, height = 40 }) => {
-  return (
-    <Box
-      component="svg"
-      width={width}
-      height={height}
-      viewBox="0 0 140 40"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      sx={{ display: 'block' }}
-    >
-      {/* Gradient Definition */}
-      <defs>
-        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style={{ stopColor: '#845c58', stopOpacity: 1 }} />
-          <stop offset="100%" style={{ stopColor: '#b7bac3', stopOpacity: 1 }} />
-        </linearGradient>
-      </defs>
-      
-      {/* Icon - Wallet/Expense Symbol */}
-      <g transform="translate(0, 5)">
-        {/* Wallet Base */}
-        <rect x="2" y="12" width="26" height="18" rx="3" fill="url(#logoGradient)" />
-        
-        {/* Wallet Flap */}
-        <path
-          d="M 4 12 Q 4 6 10 6 L 20 6 Q 26 6 26 12"
-          fill="url(#logoGradient)"
-          opacity="0.7"
-        />
-        
-        {/* Card Detail */}
-        <rect x="6" y="18" width="16" height="8" rx="1.5" fill="white" opacity="0.3" />
-        
-        {/* Coin/Circle accent */}
-        <circle cx="22" cy="22" r="4" fill="white" opacity="0.4" />
-        <circle cx="22" cy="22" r="2" fill="white" opacity="0.6" />
-      </g>
+const Logo: React.FC<LogoProps> = ({
+  width,
+  height,
+  variant = 'horizontal',
+  showSubtitle = true
+}) => {
+  const theme = useTheme();
 
-      {/* Text - "spentiva" */}
-      <text
-        x="38"
-        y="26"
-        fontFamily="'Inter', 'Segoe UI', system-ui, sans-serif"
-        fontSize="20"
-        fontWeight="700"
-        fill="url(#logoGradient)"
-        letterSpacing="-0.5"
+  // Icon only variant
+  if (variant === 'icon') {
+    const iconSize = width || 36;
+    return (
+      <Box
+        sx={{
+          width: iconSize,
+          height: iconSize,
+          borderRadius: 2,
+          background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
       >
-        spentiva
-      </text>
-      
-      {/* Subtitle - "By exyconn" */}
-      <text
-        x="38"
-        y="38"
-        fontFamily="'Inter', 'Segoe UI', system-ui, sans-serif"
-        fontSize="10"
-        fontWeight="500"
-        fill="#333"
-        opacity="0.85"
+        <Typography sx={{ color: 'white', fontWeight: 700, fontSize: `${iconSize * 0.6}px` }}>
+          S
+        </Typography>
+      </Box>
+    );
+  }
+
+  // Horizontal variant (default) - used in header
+  if (variant === 'horizontal') {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+          width: width || 'auto',
+          height: height || 'auto',
+        }}
       >
-        By exyconn
-      </text>
+        <Box
+          sx={{
+            width: 36,
+            height: 36,
+            borderRadius: 2,
+            background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}
+        >
+          <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '1.3rem' }}>
+            S
+          </Typography>
+        </Box>
+        <Box>
+          <Typography
+            sx={{
+              fontWeight: 600,
+              fontSize: '1.2rem',
+              color: theme.palette.text.primary,
+              lineHeight: 1,
+              transition: 'color 0.3s ease',
+            }}
+          >
+            Spentiva
+          </Typography>
+          {showSubtitle && (
+            <Typography
+              sx={{
+                fontSize: '0.65rem',
+                color: theme.palette.text.secondary,
+                letterSpacing: '0.08em',
+                fontWeight: 500,
+                transition: 'color 0.3s ease',
+                textAlign: 'left',
+                marginTop: '1px',
+                marginLeft: '2px'
+              }}
+            >
+              By Exyconn
+            </Typography>
+          )}
+        </Box>
+      </Box>
+    );
+  }
+
+  // Full variant - stacked, for auth pages
+  return (
+    <Box sx={{ mb: showSubtitle ? 5 : 3 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box
+          sx={{
+            width: 36,
+            height: 36,
+            borderRadius: 2,
+            background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '1.3rem' }}>
+            S
+          </Typography>
+        </Box>
+        <Box>
+          <Typography
+            sx={{
+              fontWeight: 700,
+              fontSize: '1.5rem',
+              color: theme.palette.text.primary,
+              lineHeight: 1,
+              transition: 'color 0.3s ease',
+            }}
+          >
+            Spentiva
+          </Typography>
+          {showSubtitle && (
+            <Typography
+              sx={{
+                fontSize: '0.65rem',
+                color: theme.palette.text.secondary,
+                letterSpacing: '0.08em',
+                fontWeight: 500,
+                transition: 'color 0.3s ease',
+              }}
+            >
+              BY EXYCONN
+            </Typography>
+          )}
+        </Box>
+      </Box>
     </Box>
   );
 };

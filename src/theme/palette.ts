@@ -88,6 +88,93 @@ export const palette = {
 };
 
 /**
+ * Dark Mode Palette
+ */
+export const darkPalette = {
+  // Primary Colors - Dark Mode
+  primary: {
+    main: '#a8b2c9',        // Lighter variant for dark mode
+    light: '#c7cfd9',       // Even lighter for dark mode
+    lighter: '#e2e6eb',     // Very light
+    lightest: '#1e1e1e',    // Dark backgrounds
+    white: '#0a0a0a',       // Dark pure background
+    dark: '#a87873',        // Accent for dark mode
+  },
+
+  // Background Colors - Dark Mode
+  background: {
+    default: '#0a0a0a',     // Main dark background
+    paper: '#1a1a1a',       // Card backgrounds
+    subtle: '#242424',      // Subtle sections
+    hover: '#2a2a2a',       // Hover state
+  },
+
+  // Text Colors - Dark Mode with good contrast
+  text: {
+    primary: '#e8eaec',     // Light text for dark bg
+    secondary: '#b0b0b0',   // Medium gray
+    muted: '#707070',       // Muted text
+    light: '#404040',       // Very muted
+    accent: '#a87873',      // Accent text
+  },
+
+  // Header specific colors - Dark Mode
+  header: {
+    background: '#1a1a1a',  // Dark header
+    text: '#e8eaec',        // Light text
+    border: '#2a2a2a',      // Dark border
+  },
+
+  // Border Colors - Dark Mode
+  border: {
+    light: '#2a2a2a',       // Light dark border
+    default: '#3a3a3a',     // Default dark border
+    medium: '#4a4a4a',      // Medium dark border
+  },
+
+  // Status Colors - Dark Mode
+  status: {
+    success: {
+      main: '#a8b2c9',
+      light: '#c7cfd9',
+      bg: '#242424',
+    },
+    error: {
+      main: '#a87873',
+      light: '#c79893',
+      bg: '#2a1e1e',
+    },
+    warning: {
+      main: '#c7cfd9',
+      light: '#e2e6eb',
+      bg: '#242424',
+    },
+    info: {
+      main: '#a8b2c9',
+      light: '#c7cfd9',
+      bg: '#242424',
+    },
+  },
+
+  // Gradient Combinations - Dark Mode
+  gradients: {
+    primary: 'linear-gradient(135deg, #a8b2c9 0%, #c7cfd9 100%)',
+    subtle: 'linear-gradient(135deg, #242424 0%, #1a1a1a 100%)',
+    accent: 'linear-gradient(135deg, #a87873 0%, #a8b2c9 100%)',
+    card: 'linear-gradient(145deg, #1a1a1a 0%, #242424 100%)',
+    overlay: 'linear-gradient(to bottom, rgba(168, 178, 201, 0.05), rgba(0, 0, 0, 0))',
+  },
+
+  // Shadow Colors - Dark Mode
+  shadows: {
+    light: 'rgba(0, 0, 0, 0.3)',
+    medium: 'rgba(0, 0, 0, 0.5)',
+    strong: 'rgba(0, 0, 0, 0.7)',
+    subtle: 'rgba(0, 0, 0, 0.2)',
+  },
+};
+
+/**
  * Material-UI Theme Configuration
  */
 export const themeConfig = {
@@ -260,4 +347,60 @@ export const themeConfig = {
   },
 };
 
+/**
+ * Get dark mode theme configuration
+ */
+export const getDarkModeConfig = () => ({
+  palette: {
+    mode: 'dark' as const,
+    primary: {
+      main: darkPalette.primary.main,
+      light: darkPalette.primary.light,
+      dark: darkPalette.primary.dark,
+      contrastText: '#0a0a0a',
+    },
+    secondary: {
+      main: darkPalette.primary.dark,
+      light: darkPalette.primary.lighter,
+      dark: darkPalette.primary.main,
+      contrastText: '#0a0a0a',
+    },
+    background: {
+      default: darkPalette.background.default,
+      paper: darkPalette.background.paper,
+    },
+    text: {
+      primary: darkPalette.text.primary,
+      secondary: darkPalette.text.secondary,
+      disabled: darkPalette.text.muted,
+    },
+    divider: darkPalette.border.light,
+    error: {
+      main: darkPalette.status.error.main,
+      light: darkPalette.status.error.light,
+      dark: '#8b5a56',
+      contrastText: '#e8eaec',
+    },
+    success: {
+      main: darkPalette.primary.main,
+      light: darkPalette.primary.light,
+      dark: '#8892a9',
+      contrastText: '#0a0a0a',
+    },
+    warning: {
+      main: darkPalette.primary.light,
+      light: darkPalette.primary.lighter,
+      dark: darkPalette.primary.main,
+      contrastText: '#0a0a0a',
+    },
+    info: {
+      main: darkPalette.primary.main,
+      light: darkPalette.primary.light,
+      dark: darkPalette.primary.dark,
+      contrastText: '#0a0a0a',
+    },
+  },
+});
+
 export default palette;
+

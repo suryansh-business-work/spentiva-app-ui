@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Logo from '../Logo/Logo';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -128,30 +129,8 @@ const Signup: React.FC = () => {
         <Fade in={true} timeout={600}>
           <Box sx={{ width: '100%', maxWidth: 420, mx: 'auto', py: 3 }}>
             {/* Logo */}
-            <Box sx={{ mb: 4 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Box
-                  sx={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: 2,
-                    background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '1.3rem' }}>S</Typography>
-                </Box>
-                <Box>
-                  <Typography sx={{ fontWeight: 700, fontSize: '1.5rem', color: '#111827', lineHeight: 1 }}>
-                    Spentiva
-                  </Typography>
-                  <Typography sx={{ fontSize: '0.65rem', color: '#6B7280', letterSpacing: '0.08em', fontWeight: 500 }}>
-                    BY EXYCONN
-                  </Typography>
-                </Box>
-              </Box>
+            <Box sx={{ mb: 0 }}>
+              <Logo variant="full" showSubtitle={true} />
             </Box>
 
             {/* Header */}

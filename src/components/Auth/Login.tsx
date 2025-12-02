@@ -23,6 +23,7 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { endpoints } from '../../config/api';
 import { postRequest } from '../../utils/http';
+import Logo from '../Logo/Logo';
 
 // Validation schema using Yup
 const validationSchema = Yup.object({
@@ -106,31 +107,7 @@ const Login: React.FC = () => {
         <Fade in={true} timeout={600}>
           <Box sx={{ width: '100%', maxWidth: 420, mx: 'auto' }}>
             {/* Logo */}
-            <Box sx={{ mb: 5 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Box
-                  sx={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: 2,
-                    background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '1.3rem' }}>S</Typography>
-                </Box>
-                <Box>
-                  <Typography sx={{ fontWeight: 700, fontSize: '1.5rem', color: '#111827', lineHeight: 1 }}>
-                    Spentiva
-                  </Typography>
-                  <Typography sx={{ fontSize: '0.65rem', color: '#6B7280', letterSpacing: '0.08em', fontWeight: 500 }}>
-                    BY EXYCONN
-                  </Typography>
-                </Box>
-              </Box>
-            </Box>
+            <Logo variant="full" showSubtitle={true} />
 
             {/* Header */}
             <Box sx={{ mb: 4 }}>

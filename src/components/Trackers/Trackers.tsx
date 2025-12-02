@@ -27,6 +27,8 @@ import {
   ListItemText,
   Fade,
   Grow,
+  Fab,
+  useTheme,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
@@ -40,7 +42,6 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import AddToHomeScreenIcon from "@mui/icons-material/AddToHomeScreen";
 import { endpoints } from "../../config/api";
 import { getRequest, postRequest, putRequest, deleteRequest } from "../../utils/http";
-import palette from "../../theme/palette";
 
 interface Tracker {
   id: string;
@@ -54,6 +55,7 @@ interface Tracker {
 
 const Trackers: React.FC = () => {
   const navigate = useNavigate();
+  const theme = useTheme(); // Use MUI theme for theme-aware colors
   const [trackers, setTrackers] = useState<Tracker[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -338,17 +340,17 @@ const Trackers: React.FC = () => {
             p: { xs: 2.5, sm: 3 },
             mb: { xs: 2, sm: 3 },
             borderRadius: 3,
-            background: palette.background.paper,
-            border: `1px solid ${palette.border.light}`,
+            background: theme.palette.background.paper,
+            border: `1px solid ${theme.palette.divider}`,
             boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
           }}
         >
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
             <Box>
-              <Typography variant="h5" gutterBottom sx={{ fontWeight: 700, mb: 0.5, color: palette.text.primary, fontSize: { xs: '1.25em', sm: '1.5em' } }}>
+              <Typography variant="h5" gutterBottom sx={{ fontWeight: 700, mb: 0.5, color: theme.palette.text.primary, fontSize: { xs: '1.25em', sm: '1.5em' } }}>
                 Expense Trackers
               </Typography>
-              <Typography variant="body2" sx={{ color: palette.text.secondary, fontSize: { xs: '0.875em', sm: '0.9375em' } }}>
+              <Typography variant="body2" sx={{ color: theme.palette.text.secondary, fontSize: { xs: '0.875em', sm: '0.9375em' } }}>
                 Create separate trackers for different purposes
               </Typography>
             </Box>
@@ -357,9 +359,11 @@ const Trackers: React.FC = () => {
               size="small"
               startIcon={<AddIcon />}
               onClick={() => handleOpenDialog()}
+              aria-label="Create new expense tracker"
               sx={{
-                background: palette.gradients.primary,
-                color: "#fff",
+                display: { xs: 'none', md: 'inline-flex' },
+                background: theme.palette.primary.main,
+                color: theme.palette.primary.contrastText,
                 fontWeight: 600,
                 px: { xs: 2, sm: 2.5 },
                 py: { xs: 1, sm: 1.25 },
@@ -386,7 +390,7 @@ const Trackers: React.FC = () => {
                     borderRadius: 4,
                     transform: "scale(1)",
                     animation: "pulse 1.5s ease-in-out infinite",
-                    backgroundColor: palette.background.subtle,
+                    backgroundColor: theme.palette.action.hover,
                     "@keyframes pulse": {
                       "0%, 100%": { opacity: 1 },
                       "50%": { opacity: 0.5 },
@@ -404,15 +408,15 @@ const Trackers: React.FC = () => {
             p: 6,
             textAlign: "center",
             borderRadius: 4,
-            border: `1px solid ${palette.border.light}`,
-            background: palette.background.paper,
+            border: `1px solid ${theme.palette.divider}`,
+            background: theme.palette.background.paper,
           }}
         >
-          <AccountBalanceWalletIcon sx={{ fontSize: 80, color: palette.text.muted, mb: 2 }} />
-          <Typography variant="h6" sx={{ color: palette.text.secondary, mb: 1 }} gutterBottom>
+          <AccountBalanceWalletIcon sx={{ fontSize: 80, color: theme.palette.text.disabled, mb: 2 }} />
+          <Typography variant="h6" sx={{ color: theme.palette.text.secondary, mb: 1 }} gutterBottom>
             No trackers yet
           </Typography>
-          <Typography variant="body2" sx={{ color: palette.text.muted, mb: 3 }}>
+          <Typography variant="body2" sx={{ color: theme.palette.text.disabled, mb: 3 }}>
             Create your first tracker to start managing expenses
           </Typography>
           <Button
@@ -420,8 +424,8 @@ const Trackers: React.FC = () => {
             startIcon={<AddIcon />}
             onClick={() => handleOpenDialog()}
             sx={{
-              background: palette.gradients.primary,
-              boxShadow: `0 4px 12px ${palette.shadows.medium}`,
+              background: theme.palette.primary.main,
+              boxShadow: `0 4px 12px ${theme.shadows[3]}`,
             }}
           >
             Create Tracker
@@ -444,9 +448,9 @@ const Trackers: React.FC = () => {
                   transition: "all 0.2s ease",
                   cursor: "pointer",
                   border: "1px solid",
-                  borderColor: palette.border.light,
+                  borderColor: theme.palette.divider,
                   borderRadius: 3,
-                  background: palette.background.paper,
+                  background: theme.palette.background.paper,
                   position: "relative",
                   overflow: "hidden",
                   "&::before": {
@@ -456,12 +460,12 @@ const Trackers: React.FC = () => {
                     left: 0,
                     right: 0,
                     height: "3px",
-                    background: palette.gradients.primary,
+                    background: theme.palette.primary.main,
                   },
                   "&:hover": {
                     transform: "translateY(-4px)",
                     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-                    borderColor: palette.primary.main,
+                    borderColor: theme.palette.primary.main,
                   },
                 }}
                 onClick={() => navigate(`/tracker/${tracker.id}`)}
@@ -477,8 +481,8 @@ const Trackers: React.FC = () => {
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          background: palette.gradients.primary,
-                          boxShadow: `0 2px 8px ${palette.shadows.medium}`,
+                          background: theme.palette.primary.main,
+                          boxShadow: `0 2px 8px ${theme.shadows[3]}`,
                         }}
                       >
                         {tracker.type === "business" ? (
@@ -496,9 +500,9 @@ const Trackers: React.FC = () => {
                             fontWeight: 600,
                             fontSize: "0.7em",
                             height: 20,
-                            background: palette.status.success.bg,
-                            color: palette.primary.main,
-                            border: `1px solid ${palette.border.light}`,
+                            background: theme.palette.success.light,
+                            color: theme.palette.primary.main,
+                            border: `1px solid ${theme.palette.divider}`,
                           }}
                         />
                       </Box>
@@ -510,19 +514,21 @@ const Trackers: React.FC = () => {
                         sx={{
                           fontWeight: "bold",
                           fontSize: "0.85em",
-                          background: palette.background.subtle,
-                          color: palette.text.primary,
-                          border: `1px solid ${palette.border.light}`,
+                          background: theme.palette.action.hover,
+                          color: theme.palette.text.primary,
+                          border: `1px solid ${theme.palette.divider}`,
                         }}
                       />
                       <IconButton
                         size="small"
                         onClick={(e) => handleMenuOpen(e, tracker)}
+                        aria-label={`More actions for ${tracker.name}`}
+                        aria-haspopup="menu"
                         sx={{
-                          color: palette.text.secondary,
+                          color: theme.palette.text.secondary,
                           "&:hover": {
-                            background: palette.background.subtle,
-                            color: palette.text.primary,
+                            background: theme.palette.action.hover,
+                            color: theme.palette.text.primary,
                           },
                         }}
                       >
@@ -538,7 +544,7 @@ const Trackers: React.FC = () => {
                     sx={{
                       mb: 1,
                       fontSize: { xs: '1em', sm: '1.05em' },
-                      color: palette.text.primary,
+                      color: theme.palette.text.primary,
                     }}
                   >
                     {tracker.name}
@@ -554,7 +560,7 @@ const Trackers: React.FC = () => {
                         WebkitBoxOrient: "vertical",
                         overflow: "hidden",
                         lineHeight: 1.4,
-                        color: palette.text.secondary,
+                        color: theme.palette.text.secondary,
                         fontSize: { xs: '0.8125em', sm: '0.875em' },
                       }}
                     >
@@ -588,21 +594,21 @@ const Trackers: React.FC = () => {
                       e.stopPropagation();
                       navigate(`/tracker/${tracker.id}`);
                     }}
+                    aria-label={`Open ${tracker.name} tracker`}
                     sx={{
                       flexGrow: 1,
-                      background: tracker.type === "business"
-                        ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-                        : "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                      background: theme.palette.primary.main,
+                      color: theme.palette.primary.contrastText,
                       textTransform: "none",
                       fontWeight: 600,
                       borderRadius: 2,
                       py: 1,
                       boxShadow: "none",
                       "&:hover": {
-                        boxShadow: tracker.type === "business"
-                          ? "0 4px 12px rgba(102, 126, 234, 0.4)"
-                          : "0 4px 12px rgba(16, 185, 129, 0.4)",
+                        boxShadow: theme.shadows[4],
+                        transform: 'translateY(-1px)',
                       },
+                      transition: 'all 0.2s ease',
                     }}
                   >
                     Open Tracker
@@ -626,8 +632,8 @@ const Trackers: React.FC = () => {
             minWidth: 200,
             borderRadius: 3,
             mt: 1,
-            border: `1px solid ${palette.border.light}`,
-            boxShadow: `0 8px 24px ${palette.shadows.medium}`,
+            border: `1px solid ${theme.palette.divider}`,
+            boxShadow: `0 8px 24px ${theme.shadows[3]}`,
           },
         }}
       >
@@ -639,14 +645,14 @@ const Trackers: React.FC = () => {
             mx: 1,
             my: 0.5,
             "&:hover": {
-              background: palette.background.subtle,
+              background: theme.palette.action.hover,
             },
           }}
         >
           <ListItemIcon>
-            <AddToHomeScreenIcon fontSize="small" sx={{ color: palette.primary.main }} />
+            <AddToHomeScreenIcon fontSize="small" sx={{ color: theme.palette.primary.main }} />
           </ListItemIcon>
-          <ListItemText sx={{ color: palette.text.primary }}>Add to Desktop</ListItemText>
+          <ListItemText sx={{ color: theme.palette.text.primary }}>Add to Desktop</ListItemText>
         </MenuItem>
         <MenuItem
           onClick={() => menuTracker && handleMenuAction("settings", menuTracker)}
@@ -656,14 +662,14 @@ const Trackers: React.FC = () => {
             mx: 1,
             my: 0.5,
             "&:hover": {
-              background: palette.background.subtle,
+              background: theme.palette.action.hover,
             },
           }}
         >
           <ListItemIcon>
-            <SettingsIcon fontSize="small" sx={{ color: palette.primary.main }} />
+            <SettingsIcon fontSize="small" sx={{ color: theme.palette.primary.main }} />
           </ListItemIcon>
-          <ListItemText sx={{ color: palette.text.primary }}>Category Settings</ListItemText>
+          <ListItemText sx={{ color: theme.palette.text.primary }}>Category Settings</ListItemText>
         </MenuItem>
         <MenuItem
           onClick={() => menuTracker && handleMenuAction("edit", menuTracker)}
@@ -673,14 +679,14 @@ const Trackers: React.FC = () => {
             mx: 1,
             my: 0.5,
             "&:hover": {
-              background: palette.background.subtle,
+              background: theme.palette.action.hover,
             },
           }}
         >
           <ListItemIcon>
-            <EditIcon fontSize="small" sx={{ color: palette.primary.main }} />
+            <EditIcon fontSize="small" sx={{ color: theme.palette.primary.main }} />
           </ListItemIcon>
-          <ListItemText sx={{ color: palette.text.primary }}>Edit Tracker</ListItemText>
+          <ListItemText sx={{ color: theme.palette.text.primary }}>Edit Tracker</ListItemText>
         </MenuItem>
         <MenuItem
           onClick={() => menuTracker && handleMenuAction("delete", menuTracker)}
@@ -690,14 +696,14 @@ const Trackers: React.FC = () => {
             mx: 1,
             my: 0.5,
             "&:hover": {
-              background: palette.status.error.bg,
+              background: theme.palette.error.light,
             },
           }}
         >
           <ListItemIcon>
-            <DeleteIcon fontSize="small" sx={{ color: palette.status.error.main }} />
+            <DeleteIcon fontSize="small" sx={{ color: theme.palette.error.main }} />
           </ListItemIcon>
-          <ListItemText sx={{ color: palette.status.error.main }}>Delete Tracker</ListItemText>
+          <ListItemText sx={{ color: theme.palette.error.main }}>Delete Tracker</ListItemText>
         </MenuItem>
       </Menu>
 
@@ -794,6 +800,39 @@ const Trackers: React.FC = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      {/* Mobile FAB - Only visible on small screens */}
+      <Fab
+        color="primary"
+        aria-label="Create new tracker"
+        onClick={() => handleOpenDialog()}
+        sx={{
+          position: 'fixed',
+          bottom: { xs: 16, sm: 24 },
+          right: { xs: 16, sm: 24 },
+          display: { xs: 'flex', md: 'none' },
+          zIndex: 1000,
+          boxShadow: theme.shadows[6],
+        }}
+      >
+        <AddIcon />
+      </Fab>
+
+      {/* Screen reader live region for status updates */}
+      <Box
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        sx={{
+          position: 'absolute',
+          left: '-10000px',
+          width: '1px',
+          height: '1px',
+          overflow: 'hidden',
+        }}
+      >
+        {loading ? 'Loading trackers...' : `${trackers.length} tracker${trackers.length !== 1 ? 's' : ''} available`}
+      </Box>
     </Container>
   );
 };

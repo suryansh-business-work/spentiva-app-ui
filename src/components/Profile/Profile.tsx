@@ -15,6 +15,7 @@ import {
   Fade,
   Grow,
   Chip,
+  useTheme,
 } from '@mui/material';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import EditIcon from '@mui/icons-material/Edit';
@@ -30,6 +31,7 @@ import * as Yup from 'yup';
 
 const Profile: React.FC = () => {
   const { user, updateUser, token } = useAuth();
+  const theme = useTheme(); // Use MUI theme for theme-aware colors
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -124,7 +126,7 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', background: '#f9fafb', py: 4, fontFamily: '"Inter", sans-serif' }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', py: 4, fontFamily: '"Inter", sans-serif' }}>
       <Container maxWidth="lg">
         <Fade in={true} timeout={500}>
           <Box>
@@ -134,14 +136,14 @@ const Profile: React.FC = () => {
                 variant="h4"
                 sx={{
                   fontWeight: 800,
-                  color: '#111827',
+                  color: theme.palette.text.primary,
                   mb: 1,
                   letterSpacing: '-0.02em',
                 }}
               >
                 My Profile
               </Typography>
-              <Typography variant="body1" sx={{ color: '#6B7280' }}>
+              <Typography variant="body1" sx={{ color: theme.palette.text.secondary }}>
                 Manage your personal information and account settings
               </Typography>
             </Box>
@@ -153,9 +155,10 @@ const Profile: React.FC = () => {
                   elevation={0}
                   sx={{
                     borderRadius: 4,
-                    background: '#fff',
-                    border: '1px solid #E5E7EB',
+                    background: theme.palette.background.paper,
+                    border: `1px solid ${theme.palette.divider}`,
                     overflow: 'visible',
+                    transition: 'all 0.3s ease',
                   }}
                 >
                   <CardContent sx={{ p: 4, textAlign: 'center' }}>
@@ -171,7 +174,7 @@ const Profile: React.FC = () => {
                             right: -6,
                             bottom: -6,
                             borderRadius: '50%',
-                            background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+                            background: theme.palette.primary.main,
                             opacity: 0.15,
                           },
                         }}
@@ -181,11 +184,12 @@ const Profile: React.FC = () => {
                           sx={{
                             width: 120,
                             height: 120,
-                            border: '4px solid #fff',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                            border: `4px solid ${theme.palette.background.paper}`,
+                            boxShadow: theme.shadows[2],
                             fontSize: '3em',
                             fontWeight: 700,
-                            background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+                            background: theme.palette.primary.main,
+                            color: theme.palette.primary.contrastText,
                             opacity: loading ? 0.5 : 1,
                             transition: 'opacity 0.2s',
                           }}
@@ -206,11 +210,11 @@ const Profile: React.FC = () => {
                               alignItems: 'center',
                               justifyContent: 'center',
                               borderRadius: '50%',
-                              backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                              backgroundColor: theme.palette.action.disabledBackground,
                               zIndex: 10,
                             }}
                           >
-                            <CircularProgress size={40} sx={{ color: '#16a34a' }} />
+                            <CircularProgress size={40} sx={{ color: theme.palette.primary.main }} />
                           </Box>
                         )}
                       </Box>
@@ -221,18 +225,19 @@ const Profile: React.FC = () => {
                           position: 'absolute',
                           bottom: 4,
                           right: 4,
-                          background: '#16a34a',
-                          color: 'white',
+                          background: theme.palette.primary.main,
+                          color: theme.palette.primary.contrastText,
                           width: 36,
                           height: 36,
-                          boxShadow: '0 2px 8px rgba(22, 163, 74, 0.4)',
+                          boxShadow: theme.shadows[3],
                           '&:hover': {
-                            background: '#15803d',
+                            background: theme.palette.primary.dark,
                             transform: 'scale(1.1)',
+                            boxShadow: theme.shadows[6],
                           },
                           '&.Mui-disabled': {
-                            background: '#E5E7EB',
-                            color: '#9CA3AF',
+                            background: theme.palette.divider,
+                            color: theme.palette.text.disabled,
                           },
                           transition: 'all 0.2s',
                         }}
@@ -247,10 +252,10 @@ const Profile: React.FC = () => {
                       </IconButton>
                     </Box>
 
-                    <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5, color: '#111827' }}>
+                    <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5, color: theme.palette.text.primary }}>
                       {user?.name}
                     </Typography>
-                    <Typography variant="body2" sx={{ color: '#6B7280', mb: 3 }}>
+                    <Typography variant="body2" sx={{ color: theme.palette.text.secondary, mb: 3 }}>
                       {user?.email}
                     </Typography>
 
@@ -267,21 +272,21 @@ const Profile: React.FC = () => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             background: user?.accountType === 'business'
-                              ? 'rgba(37, 99, 235, 0.1)'
-                              : 'rgba(22, 163, 74, 0.1)',
+                              ? theme.palette.info.light
+                              : theme.palette.primary.light,
                           }}
                         >
                           {user?.accountType === 'business' ? (
-                            <BusinessIcon sx={{ color: '#2563eb' }} />
+                            <BusinessIcon sx={{ color: theme.palette.info.main }} />
                           ) : (
-                            <PersonIcon sx={{ color: '#16a34a' }} />
+                            <PersonIcon sx={{ color: theme.palette.primary.main }} />
                           )}
                         </Box>
                         <Box>
-                          <Typography variant="caption" sx={{ color: '#6B7280', display: 'block', fontWeight: 500 }}>
+                          <Typography variant="caption" sx={{ color: theme.palette.text.secondary, display: 'block', fontWeight: 500 }}>
                             Account Type
                           </Typography>
-                          <Typography variant="body2" sx={{ fontWeight: 600, color: '#111827', textTransform: 'capitalize' }}>
+                          <Typography variant="body2" sx={{ fontWeight: 600, color: theme.palette.text.primary, textTransform: 'capitalize' }}>
                             {user?.accountType || 'Personal'}
                           </Typography>
                         </Box>
@@ -297,13 +302,14 @@ const Profile: React.FC = () => {
                   elevation={0}
                   sx={{
                     borderRadius: 4,
-                    background: '#fff',
-                    border: '1px solid #E5E7EB',
+                    background: theme.palette.background.paper,
+                    border: `1px solid ${theme.palette.divider}`,
+                    transition: 'all 0.3s ease',
                   }}
                 >
                   <CardContent sx={{ p: 4 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-                      <Typography variant="h6" sx={{ fontWeight: 700, color: '#111827' }}>
+                      <Typography variant="h6" sx={{ fontWeight: 700, color: theme.palette.text.primary }}>
                         Profile Information
                       </Typography>
                       <Button
@@ -312,9 +318,9 @@ const Profile: React.FC = () => {
                         sx={{
                           textTransform: 'none',
                           fontWeight: 600,
-                          color: '#16a34a',
+                          color: theme.palette.primary.main,
                           '&:hover': {
-                            background: 'rgba(22, 163, 74, 0.05)',
+                            background: theme.palette.action.hover,
                           },
                         }}
                       >
@@ -348,7 +354,7 @@ const Profile: React.FC = () => {
                         <Typography
                           variant="caption"
                           sx={{
-                            color: '#6B7280',
+                            color: theme.palette.text.secondary,
                             fontWeight: 600,
                             textTransform: 'uppercase',
                             letterSpacing: 0.5,
@@ -370,21 +376,21 @@ const Profile: React.FC = () => {
                           disabled={!isEditing || loading}
                           InputProps={{
                             startAdornment: (
-                              <PersonIcon sx={{ color: '#9CA3AF', mr: 1.5 }} />
+                              <PersonIcon sx={{ color: theme.palette.text.disabled, mr: 1.5 }} />
                             ),
                           }}
                           sx={{
                             '& .MuiOutlinedInput-root': {
                               borderRadius: 2,
-                              backgroundColor: isEditing ? '#fff' : '#F9FAFB',
+                              backgroundColor: isEditing ? theme.palette.background.paper : '#F9FAFB',
                               '& fieldset': {
-                                borderColor: '#E5E7EB',
+                                borderColor: theme.palette.divider,
                               },
                               '&:hover fieldset': {
                                 borderColor: '#D1D5DB',
                               },
                               '&.Mui-focused fieldset': {
-                                borderColor: '#16a34a',
+                                borderColor: theme.palette.primary.main,
                               },
                             },
                           }}
@@ -396,7 +402,7 @@ const Profile: React.FC = () => {
                         <Typography
                           variant="caption"
                           sx={{
-                            color: '#6B7280',
+                            color: theme.palette.text.secondary,
                             fontWeight: 600,
                             textTransform: 'uppercase',
                             letterSpacing: 0.5,
@@ -417,7 +423,7 @@ const Profile: React.FC = () => {
                           disabled={true} // Email editing disabled for now as per requirements
                           InputProps={{
                             startAdornment: (
-                              <EmailIcon sx={{ color: '#9CA3AF', mr: 1.5 }} />
+                              <EmailIcon sx={{ color: theme.palette.text.disabled, mr: 1.5 }} />
                             ),
                             endAdornment: user?.emailVerified ? (
                               <Chip
@@ -449,12 +455,12 @@ const Profile: React.FC = () => {
                               borderRadius: 2,
                               backgroundColor: '#F9FAFB',
                               '& fieldset': {
-                                borderColor: '#E5E7EB',
+                                borderColor: theme.palette.divider,
                               },
                             },
                           }}
                         />
-                        <Typography variant="caption" sx={{ color: '#9CA3AF', mt: 0.5, display: 'block' }}>
+                        <Typography variant="caption" sx={{ color: theme.palette.text.disabled, mt: 0.5, display: 'block' }}>
                           Email cannot be changed directly. Contact support for assistance.
                         </Typography>
                       </Box>
@@ -475,7 +481,7 @@ const Profile: React.FC = () => {
                                 borderColor: '#D1D5DB',
                                 color: '#374151',
                                 '&:hover': {
-                                  borderColor: '#9CA3AF',
+                                  borderColor: theme.palette.text.disabled,
                                   background: '#F9FAFB',
                                 },
                               }}
@@ -488,19 +494,19 @@ const Profile: React.FC = () => {
                               disabled={loading || !formik.isValid}
                               sx={{
                                 flex: 1,
-                                background: '#16a34a',
+                                background: theme.palette.primary.main,
                                 textTransform: 'none',
                                 fontWeight: 600,
                                 py: 1.25,
                                 borderRadius: 2,
                                 boxShadow: '0 2px 4px rgba(22, 163, 74, 0.2)',
                                 '&:hover': {
-                                  background: '#15803d',
+                                  background: theme.palette.primary.dark,
                                   boxShadow: '0 4px 8px rgba(22, 163, 74, 0.3)',
                                 },
                               }}
                             >
-                              {loading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'Save Changes'}
+                              {loading ? <CircularProgress size={24} sx={{ color: theme.palette.background.paper }} /> : 'Save Changes'}
                             </Button>
                           </Box>
                         </Grow>
