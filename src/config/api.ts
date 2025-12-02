@@ -242,14 +242,21 @@ export const api = {
     },
 
     // Password management
-    forgotPassword: async (email: string): Promise<OtpResponse> => {
-      const response = await apiClient.post(endpoints.auth.forgotPassword, { email });
-      return response.data;
+    // Password management
+    forgotPassword: async (email: string): Promise<{ success: boolean; message: string }> => {
+      const response = await apiClient.post('/v1/api/forgot-password', { email });
+      return {
+        success: response.data.status === 'success',
+        message: response.data.message,
+      };
     },
 
     resetPassword: async (data: { email: string; otp: string; newPassword: string; confirmPassword: string }): Promise<{ success: boolean; message: string }> => {
-      const response = await apiClient.post(endpoints.auth.resetPassword, data);
-      return response.data;
+      const response = await apiClient.post('/v1/api/reset-password', data);
+      return {
+        success: response.data.status === 'success',
+        message: response.data.message,
+      };
     },
   },
 

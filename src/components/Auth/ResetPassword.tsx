@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams, Link as RouterLink } from 'react-router-dom';
 import {
-  Container,
   Box,
   TextField,
   Button,
@@ -9,24 +8,24 @@ import {
   Alert,
   Link,
   Fade,
+  Skeleton,
   InputAdornment,
   IconButton,
-  Paper,
   LinearProgress,
 } from '@mui/material';
 import {
-  Email as EmailIcon,
   Lock as LockIcon,
   Visibility,
   VisibilityOff,
   CheckCircle as CheckCircleIcon,
+  VpnKey as VpnKeyIcon,
 } from '@mui/icons-material';
 import { api } from '../../config/api';
 
 const ResetPassword: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [email, setEmail] = useState(searchParams.get('email') || '');
+  const [email] = useState(searchParams.get('email') || '');
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -47,9 +46,9 @@ const ResetPassword: React.FC = () => {
   };
 
   const getStrengthColor = (strength: number): string => {
-    if (strength < 40) return 'error';
-    if (strength < 70) return 'warning';
-    return 'success';
+    if (strength < 40) return '#ef4444'; // red
+    if (strength < 70) return '#f59e0b'; // orange
+    return '#16a34a'; // green
   };
 
   const getStrengthLabel = (strength: number): string => {
@@ -60,14 +59,16 @@ const ResetPassword: React.FC = () => {
 
   const strength = passwordStrength(newPassword);
 
-  const handleResetPassword = async () => {
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError('Please enter a valid email address');
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!email) {
+      setError('Email is missing. Please restart the process.');
       return;
     }
 
     if (!otp || otp.length !== 6) {
-      setError('Please enter a valid 6-digit OTP');
+      setError('Please enter a valid 6-digit OTP code');
       return;
     }
 
@@ -99,57 +100,89 @@ const ResetPassword: React.FC = () => {
         navigate('/login');
       }, 2000);
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to reset password');
+      setError(err.response?.data?.message || 'Failed to reset password. Please check your OTP.');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleResetPassword();
     }
   };
 
   return (
     <Box
       sx={{
-        minHeight: '100vh',
+        height: '100vh',
+        overflow: 'hidden',
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        p: 3,
+        background: '#ffffff',
+        fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif',
       }}
     >
-      <Fade in={true} timeout={600}>
-        <Container maxWidth="sm">
-          <Paper
-            elevation={4}
-            sx={{
-              p: { xs: 3, sm: 5 },
-              borderRadius: 3,
-            }}
-          >
+      {/* Left Side - Form */}
+      <Box
+        sx={{
+          flex: { xs: '1 1 100%', md: '0 0 500px', lg: '0 0 580px' },
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          p: { xs: 3, sm: 6, md: 8 },
+          background: '#ffffff',
+          overflowY: 'auto',
+          height: '100%',
+          position: 'relative',
+          zIndex: 10,
+        }}
+      >
+        <Fade in={true} timeout={600}>
+          <Box sx={{ width: '100%', maxWidth: 420, mx: 'auto' }}>
+            {/* Logo */}
+            <Box sx={{ mb: 5 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box
+                  sx={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 2,
+                    background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '1.3rem' }}>S</Typography>
+                </Box>
+                <Box>
+                  <Typography sx={{ fontWeight: 700, fontSize: '1.5rem', color: '#111827', lineHeight: 1 }}>
+                    Spentiva
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.65rem', color: '#6B7280', letterSpacing: '0.08em', fontWeight: 500 }}>
+                    BY EXYCONN
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+
             {/* Header */}
-            <Box sx={{ mb: 4, textAlign: 'center' }}>
-              <img
-                src="https://spentiva.com/logo.svg"
-                alt="Spentiva Logo"
-                style={{ height: 48, marginBottom: 24 }}
-              />
+            <Box sx={{ mb: 4 }}>
               <Typography
                 variant="h4"
                 sx={{
                   fontWeight: 700,
-                  color: 'text.primary',
+                  color: '#111827',
                   mb: 1,
+                  letterSpacing: '-0.02em',
+                  fontFamily: 'inherit',
                 }}
               >
-                Reset Password
+                Reset password
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Enter the OTP sent to your email and choose a new password
+              <Typography
+                variant="body1"
+                sx={{
+                  color: '#6B7280',
+                  fontSize: '1rem',
+                  fontFamily: 'inherit',
+                }}
+              >
+                Enter the code sent to {email} and create a new password.
               </Typography>
             </Box>
 
@@ -159,7 +192,12 @@ const ResetPassword: React.FC = () => {
                 <Alert
                   severity="error"
                   onClose={() => setError('')}
-                  sx={{ mb: 3, borderRadius: 2 }}
+                  sx={{
+                    mb: 3,
+                    borderRadius: 2,
+                    fontSize: '0.875rem',
+                    alignItems: 'center',
+                  }}
                 >
                   {error}
                 </Alert>
@@ -172,7 +210,12 @@ const ResetPassword: React.FC = () => {
                 <Alert
                   severity="success"
                   icon={<CheckCircleIcon />}
-                  sx={{ mb: 3, borderRadius: 2 }}
+                  sx={{
+                    mb: 3,
+                    borderRadius: 2,
+                    fontSize: '0.875rem',
+                    alignItems: 'center',
+                  }}
                 >
                   Password reset successfully! Redirecting to login...
                 </Alert>
@@ -180,206 +223,417 @@ const ResetPassword: React.FC = () => {
             )}
 
             {/* Form */}
-            <Box component="form" onSubmit={(e) => e.preventDefault()}>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <TextField
-                  fullWidth
-                  type="email"
-                  label="Email Address"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={loading || success}
-                  autoComplete="email"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <EmailIcon color="action" />
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: 2,
-                    },
-                  }}
-                />
+            <Box component="form" onSubmit={handleResetPassword} noValidate>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
 
-                <TextField
-                  fullWidth
-                  label="OTP Code"
-                  placeholder="6-digit OTP"
-                  value={otp}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, '');
-                    if (value.length <= 6) {
-                      setOtp(value);
-                    }
-                  }}
-                  disabled={loading || success}
-                  autoComplete="one-time-code"
-                  inputProps={{
-                    maxLength: 6,
-                    inputMode: 'numeric',
-                    pattern: '[0-9]*',
-                    style: {
-                      textAlign: 'center',
-                      fontSize: '1.25rem',
-                      letterSpacing: '0.5em',
-                      fontWeight: 600,
-                    },
-                  }}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: 2,
-                    },
-                  }}
-                />
-
-                <TextField
-                  fullWidth
-                  type={showPassword ? 'text' : 'password'}
-                  label="New Password"
-                  placeholder="Enter new password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  disabled={loading || success}
-                  autoComplete="new-password"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <LockIcon color="action" />
-                      </InputAdornment>
-                    ),
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={() => setShowPassword(!showPassword)}
-                          edge="end"
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: 2,
-                    },
-                  }}
-                />
-
-                {newPassword && (
+                {/* OTP Field */}
+                {loading ? (
+                  <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 2 }} />
+                ) : (
                   <Box>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                      <Typography variant="caption" color="text.secondary">
-                        Password Strength:
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          fontWeight: 600,
-                          color: `${getStrengthColor(strength)}.main`,
-                        }}
-                      >
-                        {getStrengthLabel(strength)}
-                      </Typography>
-                    </Box>
-                    <LinearProgress
-                      variant="determinate"
-                      value={strength}
-                      color={getStrengthColor(strength) as any}
-                      sx={{ height: 6, borderRadius: 3 }}
+                    <Typography
+                      component="label"
+                      htmlFor="otp"
+                      variant="caption"
+                      sx={{
+                        display: 'block',
+                        mb: 0.75,
+                        fontWeight: 600,
+                        color: '#111827',
+                        fontFamily: 'inherit',
+                        fontSize: '0.875rem',
+                      }}
+                    >
+                      Verification Code
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      id="otp"
+                      placeholder="Enter 6-digit code"
+                      value={otp}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '');
+                        if (value.length <= 6) setOtp(value);
+                      }}
+                      disabled={loading || success}
+                      autoFocus
+                      autoComplete="one-time-code"
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <VpnKeyIcon sx={{ color: '#9CA3AF', fontSize: 20 }} />
+                          </InputAdornment>
+                        ),
+                      }}
+                      inputProps={{
+                        maxLength: 6,
+                        inputMode: 'numeric',
+                        pattern: '[0-9]*',
+                        style: { letterSpacing: '0.2em', fontWeight: 600 }
+                      }}
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: 2,
+                          backgroundColor: '#ffffff',
+                          '& fieldset': {
+                            borderColor: '#D1D5DB',
+                            borderWidth: '1.5px',
+                          },
+                          '&:hover fieldset': {
+                            borderColor: '#9CA3AF',
+                          },
+                          '&.Mui-focused fieldset': {
+                            borderColor: '#16a34a',
+                            borderWidth: '2px',
+                          },
+                        },
+                        '& .MuiInputBase-input': {
+                          py: 1.75,
+                          fontSize: '0.95rem',
+                          fontFamily: 'inherit',
+                          color: '#111827',
+                        },
+                      }}
                     />
                   </Box>
                 )}
 
-                <TextField
-                  fullWidth
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  label="Confirm Password"
-                  placeholder="Re-enter new password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  disabled={loading || success}
-                  autoComplete="new-password"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <LockIcon color="action" />
-                      </InputAdornment>
-                    ),
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                          edge="end"
-                        >
-                          {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: 2,
-                    },
-                  }}
-                />
+                {/* New Password Field */}
+                {loading ? (
+                  <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 2 }} />
+                ) : (
+                  <Box>
+                    <Typography
+                      component="label"
+                      htmlFor="newPassword"
+                      variant="caption"
+                      sx={{
+                        display: 'block',
+                        mb: 0.75,
+                        fontWeight: 600,
+                        color: '#111827',
+                        fontFamily: 'inherit',
+                        fontSize: '0.875rem',
+                      }}
+                    >
+                      New Password
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      id="newPassword"
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="Enter new password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      disabled={loading || success}
+                      autoComplete="new-password"
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <LockIcon sx={{ color: '#9CA3AF', fontSize: 20 }} />
+                          </InputAdornment>
+                        ),
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              aria-label="toggle password visibility"
+                              onClick={() => setShowPassword(!showPassword)}
+                              onMouseDown={(e) => e.preventDefault()}
+                              edge="end"
+                              disabled={loading}
+                              size="small"
+                            >
+                              {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: 2,
+                          backgroundColor: '#ffffff',
+                          '& fieldset': {
+                            borderColor: '#D1D5DB',
+                            borderWidth: '1.5px',
+                          },
+                          '&:hover fieldset': {
+                            borderColor: '#9CA3AF',
+                          },
+                          '&.Mui-focused fieldset': {
+                            borderColor: '#16a34a',
+                            borderWidth: '2px',
+                          },
+                        },
+                        '& .MuiInputBase-input': {
+                          py: 1.75,
+                          fontSize: '0.95rem',
+                          fontFamily: 'inherit',
+                          color: '#111827',
+                        },
+                      }}
+                    />
 
-                <Button
-                  fullWidth
-                  variant="contained"
-                  size="large"
-                  onClick={handleResetPassword}
-                  disabled={
-                    loading ||
-                    !email ||
-                    !otp ||
-                    otp.length !== 6 ||
-                    !newPassword ||
-                    !confirmPassword ||
-                    newPassword !== confirmPassword ||
-                    success
-                  }
-                  sx={{
-                    py: 1.5,
-                    borderRadius: 2,
-                    textTransform: 'none',
-                    fontWeight: 600,
-                    fontSize: '1rem',
-                    boxShadow: 2,
-                    '&:hover': { boxShadow: 4 },
-                  }}
-                >
-                  {loading ? 'Resetting Password...' : 'Reset Password'}
-                </Button>
+                    {/* Password Strength Meter */}
+                    {newPassword && (
+                      <Box sx={{ mt: 1 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                          <Typography variant="caption" sx={{ color: '#6B7280', fontSize: '0.75rem' }}>
+                            Strength
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              fontWeight: 600,
+                              color: getStrengthColor(strength),
+                              fontSize: '0.75rem',
+                            }}
+                          >
+                            {getStrengthLabel(strength)}
+                          </Typography>
+                        </Box>
+                        <LinearProgress
+                          variant="determinate"
+                          value={strength}
+                          sx={{
+                            height: 4,
+                            borderRadius: 2,
+                            bgcolor: '#E5E7EB',
+                            '& .MuiLinearProgress-bar': {
+                              bgcolor: getStrengthColor(strength),
+                              borderRadius: 2,
+                            },
+                          }}
+                        />
+                      </Box>
+                    )}
+                  </Box>
+                )}
+
+                {/* Confirm Password Field */}
+                {loading ? (
+                  <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 2 }} />
+                ) : (
+                  <Box>
+                    <Typography
+                      component="label"
+                      htmlFor="confirmPassword"
+                      variant="caption"
+                      sx={{
+                        display: 'block',
+                        mb: 0.75,
+                        fontWeight: 600,
+                        color: '#111827',
+                        fontFamily: 'inherit',
+                        fontSize: '0.875rem',
+                      }}
+                    >
+                      Confirm Password
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      id="confirmPassword"
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      placeholder="Re-enter new password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      disabled={loading || success}
+                      autoComplete="new-password"
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <LockIcon sx={{ color: '#9CA3AF', fontSize: 20 }} />
+                          </InputAdornment>
+                        ),
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              aria-label="toggle password visibility"
+                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                              onMouseDown={(e) => e.preventDefault()}
+                              edge="end"
+                              disabled={loading}
+                              size="small"
+                            >
+                              {showConfirmPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: 2,
+                          backgroundColor: '#ffffff',
+                          '& fieldset': {
+                            borderColor: '#D1D5DB',
+                            borderWidth: '1.5px',
+                          },
+                          '&:hover fieldset': {
+                            borderColor: '#9CA3AF',
+                          },
+                          '&.Mui-focused fieldset': {
+                            borderColor: '#16a34a',
+                            borderWidth: '2px',
+                          },
+                        },
+                        '& .MuiInputBase-input': {
+                          py: 1.75,
+                          fontSize: '0.95rem',
+                          fontFamily: 'inherit',
+                          color: '#111827',
+                        },
+                      }}
+                    />
+                  </Box>
+                )}
+
+                {/* Submit Button */}
+                {loading ? (
+                  <Skeleton variant="rectangular" height={48} sx={{ borderRadius: 2 }} />
+                ) : (
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    size="large"
+                    type="submit"
+                    disabled={
+                      loading ||
+                      !otp ||
+                      otp.length !== 6 ||
+                      !newPassword ||
+                      !confirmPassword ||
+                      newPassword !== confirmPassword ||
+                      success
+                    }
+                    sx={{
+                      py: 1.75,
+                      mt: 1,
+                      borderRadius: 2,
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      fontSize: '1rem',
+                      fontFamily: 'inherit',
+                      bgcolor: '#16a34a',
+                      color: '#ffffff',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08)',
+                      '&:hover': {
+                        bgcolor: '#15803d',
+                        boxShadow: '0 4px 6px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.08)',
+                      },
+                      '&:active': {
+                        bgcolor: '#166534',
+                      },
+                      '&:disabled': {
+                        bgcolor: '#E5E7EB',
+                        color: '#9CA3AF',
+                      },
+                    }}
+                  >
+                    {loading ? 'Resetting password...' : 'Reset password'}
+                  </Button>
+                )}
               </Box>
             </Box>
 
             {/* Footer */}
-            <Box sx={{ mt: 4, textAlign: 'center' }}>
-              <Typography variant="caption" color="text.secondary">
+            <Box sx={{ mt: 5, textAlign: 'center' }}>
+              <Typography variant="body2" sx={{ color: '#6B7280', fontFamily: 'inherit' }}>
                 Remember your password?{' '}
                 <Link
                   component={RouterLink}
                   to="/login"
                   sx={{
-                    color: 'primary.main',
+                    color: '#16a34a',
                     fontWeight: 600,
                     textDecoration: 'none',
-                    '&:hover': { textDecoration: 'underline' },
+                    fontFamily: 'inherit',
+                    '&:hover': {
+                      color: '#15803d',
+                      textDecoration: 'underline',
+                    },
                   }}
                 >
                   Sign in
                 </Link>
               </Typography>
             </Box>
-          </Paper>
-        </Container>
-      </Fade>
+          </Box>
+        </Fade>
+      </Box>
+
+      {/* Right Side - Image */}
+      <Box
+        sx={{
+          flex: '1 1 auto',
+          display: { xs: 'none', md: 'block' },
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundImage: 'url(https://images.pexels.com/photos/6347546/pexels-photo-6347546.jpeg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 100%)',
+            },
+          }}
+        />
+
+        {/* Overlay Content */}
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            p: 8,
+            zIndex: 2,
+            color: 'white',
+          }}
+        >
+          <Fade in={true} timeout={1000}>
+            <Box>
+              <Typography
+                variant="h3"
+                sx={{
+                  fontWeight: 700,
+                  mb: 2,
+                  letterSpacing: '-0.02em',
+                  fontFamily: 'inherit',
+                  textShadow: '0 2px 12px rgba(0,0,0,0.5)',
+                  color: '#ffffff',
+                }}
+              >
+                Reset and recover.
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 400,
+                  color: 'rgba(255,255,255,0.95)',
+                  fontFamily: 'inherit',
+                  maxWidth: '600px',
+                  textShadow: '0 2px 10px rgba(0,0,0,0.5)',
+                }}
+              >
+                Get back to managing your finances with a secure new password.
+              </Typography>
+            </Box>
+          </Fade>
+        </Box>
+      </Box>
     </Box>
   );
 };

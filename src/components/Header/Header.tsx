@@ -19,6 +19,8 @@ import {
   Chip,
   Menu,
   MenuItem,
+  Alert,
+  Collapse,
 } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
@@ -29,6 +31,7 @@ import Brightness7Icon from "@mui/icons-material/Brightness7";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
 import CloseIcon from "@mui/icons-material/Close";
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import ShowChartIcon from "@mui/icons-material/ShowChart";
 import { useThemeMode } from "../../contexts/ThemeContext";
 import { useAuth } from "../../contexts/AuthContext";
@@ -44,6 +47,22 @@ const Header: React.FC = () => {
   const [profileMenuAnchor, setProfileMenuAnchor] = useState<null | HTMLElement>(null);
   const { isDarkMode, toggleTheme } = useThemeMode();
   const { logout, user } = useAuth();
+  const [showEmailVerification, setShowEmailVerification] = useState(false);
+
+  // Check if email verification message should be shown
+  React.useEffect(() => {
+    const shouldShow = localStorage.getItem('showEmailVerification') === 'true';
+    const isEmailVerified = user?.emailVerified;
+
+    if (shouldShow && !isEmailVerified) {
+      setShowEmailVerification(true);
+    }
+  }, [user]);
+
+  const handleDismissVerification = () => {
+    setShowEmailVerification(false);
+    localStorage.removeItem('showEmailVerification');
+  };
 
   // Check if user is in a tracker view
   const isInTrackerView = location.pathname.startsWith("/tracker/");
@@ -242,6 +261,44 @@ const Header: React.FC = () => {
           </Box>
         </Toolbar>
       </AppBar>
+
+      {/* Email Verification Banner */}
+      <Collapse in={showEmailVerification}>
+        <Alert
+          severity="warning"
+          icon={<MailOutlineIcon />}
+          onClose={handleDismissVerification}
+          sx={{
+            borderRadius: 0,
+            borderBottom: '1px solid rgba(237, 108, 2, 0.3)',
+            backgroundColor: '#fff3cd',
+            '& .MuiAlert-message': {
+              width: '100%',
+            },
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+              User not verified yet. Please verify - check your email.
+            </Typography>
+            <Button
+              size="small"
+              onClick={() => navigate('/profile')}
+              sx={{
+                ml: 2,
+                textTransform: 'none',
+                fontWeight: 600,
+                color: '#ed6c02',
+                '&:hover': {
+                  backgroundColor: 'rgba(237, 108, 2, 0.08)',
+                },
+              }}
+            >
+              Verify Now
+            </Button>
+          </Box>
+        </Alert>
+      </Collapse>
 
       <Drawer
         anchor="right"

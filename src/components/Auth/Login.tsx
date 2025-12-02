@@ -77,13 +77,13 @@ const Login: React.FC = () => {
         overflow: 'hidden',
         display: 'flex',
         background: '#ffffff',
-        fontFamily: '"Inter", "Segoe UI", "Roboto", "Helvetica Neue", sans-serif',
+        fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif',
       }}
     >
       {/* Left Side - Form */}
       <Box
         sx={{
-          flex: { xs: '1 1 100%', md: '0 0 480px', lg: '0 0 550px' },
+          flex: { xs: '1 1 100%', md: '0 0 500px', lg: '0 0 580px' },
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -93,18 +93,35 @@ const Login: React.FC = () => {
           height: '100%',
           position: 'relative',
           zIndex: 10,
-          boxShadow: { md: '4px 0 24px rgba(0,0,0,0.05)' },
         }}
       >
         <Fade in={true} timeout={600}>
-          <Box sx={{ width: '100%', maxWidth: 400, mx: 'auto' }}>
+          <Box sx={{ width: '100%', maxWidth: 420, mx: 'auto' }}>
             {/* Logo */}
             <Box sx={{ mb: 5 }}>
-              <img
-                src="https://spentiva.com/logo.svg"
-                alt="Spentiva Logo"
-                style={{ height: 40 }}
-              />
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box
+                  sx={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 2,
+                    background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '1.3rem' }}>S</Typography>
+                </Box>
+                <Box>
+                  <Typography sx={{ fontWeight: 700, fontSize: '1.5rem', color: '#111827', lineHeight: 1 }}>
+                    Spentiva
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.65rem', color: '#6B7280', letterSpacing: '0.08em', fontWeight: 500 }}>
+                    BY EXYCONN
+                  </Typography>
+                </Box>
+              </Box>
             </Box>
 
             {/* Header */}
@@ -160,13 +177,16 @@ const Login: React.FC = () => {
                 ) : (
                   <Box>
                     <Typography
+                      component="label"
+                      htmlFor="email"
                       variant="caption"
                       sx={{
                         display: 'block',
-                        mb: 0.5,
+                        mb: 0.75,
                         fontWeight: 600,
-                        color: '#374151',
+                        color: '#111827',
                         fontFamily: 'inherit',
+                        fontSize: '0.875rem',
                       }}
                     >
                       Email
@@ -175,6 +195,7 @@ const Login: React.FC = () => {
                       fullWidth
                       id="email"
                       name="email"
+                      type="email"
                       placeholder="Enter your email"
                       value={formik.values.email}
                       onChange={formik.handleChange}
@@ -193,27 +214,28 @@ const Login: React.FC = () => {
                       }}
                       sx={{
                         '& .MuiOutlinedInput-root': {
-                          borderRadius: 2,
-                          backgroundColor: '#F9FAFB',
+                          backgroundColor: '#ffffff',
                           '& fieldset': {
-                            borderColor: '#E5E7EB',
+                            borderColor: '#D1D5DB',
+                            borderWidth: '1.5px',
                           },
                           '&:hover fieldset': {
-                            borderColor: '#D1D5DB',
-                          },
-                          '&.Mui-focused': {
-                            backgroundColor: '#ffffff',
+                            borderColor: '#9CA3AF',
                           },
                           '&.Mui-focused fieldset': {
-                            borderColor: '#4CAF50',
-                            borderWidth: 1,
-                            boxShadow: '0 0 0 3px rgba(76, 175, 80, 0.1)',
+                            borderColor: '#16a34a',
+                            borderWidth: '2px',
                           },
                         },
                         '& .MuiInputBase-input': {
-                          py: 1.5,
+                          py: 1.75,
                           fontSize: '0.95rem',
                           fontFamily: 'inherit',
+                          color: '#111827',
+                        },
+                        '& .MuiFormHelperText-root': {
+                          mx: 0,
+                          mt: 0.75,
                         },
                       }}
                     />
@@ -226,13 +248,16 @@ const Login: React.FC = () => {
                 ) : (
                   <Box>
                     <Typography
+                      component="label"
+                      htmlFor="password"
                       variant="caption"
                       sx={{
                         display: 'block',
-                        mb: 0.5,
+                        mb: 0.75,
                         fontWeight: 600,
-                        color: '#374151',
+                        color: '#111827',
                         fontFamily: 'inherit',
+                        fontSize: '0.875rem',
                       }}
                     >
                       Password
@@ -242,7 +267,7 @@ const Login: React.FC = () => {
                       id="password"
                       name="password"
                       type={showPassword ? 'text' : 'password'}
-                      placeholder="••••••••"
+                      placeholder="Enter your password"
                       value={formik.values.password}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
@@ -273,47 +298,48 @@ const Login: React.FC = () => {
                       }}
                       sx={{
                         '& .MuiOutlinedInput-root': {
-                          borderRadius: 2,
-                          backgroundColor: '#F9FAFB',
+                          backgroundColor: '#ffffff',
                           '& fieldset': {
-                            borderColor: '#E5E7EB',
+                            borderColor: '#D1D5DB',
+                            borderWidth: '1.5px',
                           },
                           '&:hover fieldset': {
-                            borderColor: '#D1D5DB',
-                          },
-                          '&.Mui-focused': {
-                            backgroundColor: '#ffffff',
+                            borderColor: '#9CA3AF',
                           },
                           '&.Mui-focused fieldset': {
-                            borderColor: '#4CAF50',
-                            borderWidth: 1,
-                            boxShadow: '0 0 0 3px rgba(76, 175, 80, 0.1)',
+                            borderColor: '#16a34a',
+                            borderWidth: '2px',
                           },
                         },
                         '& .MuiInputBase-input': {
-                          py: 1.5,
+                          py: 1.75,
                           fontSize: '0.95rem',
                           fontFamily: 'inherit',
+                          color: '#111827',
+                        },
+                        '& .MuiFormHelperText-root': {
+                          mx: 0,
+                          mt: 0.75,
                         },
                       }}
                     />
                   </Box>
                 )}
 
-                {/* Forgot Password & Submit */}
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
-                  <Box /> {/* Spacer */}
+                {/* Forgot Password */}
+                <Box sx={{ textAlign: 'right', mt: -1 }}>
                   <Link
                     component={RouterLink}
                     to="/forgot-password"
                     sx={{
-                      color: '#4CAF50',
+                      color: '#16a34a',
                       fontSize: '0.875rem',
                       fontWeight: 600,
                       textDecoration: 'none',
                       fontFamily: 'inherit',
                       '&:hover': {
-                        color: '#388E3C',
+                        color: '#15803d',
+                        textDecoration: 'underline',
                       },
                     }}
                   >
@@ -332,25 +358,22 @@ const Login: React.FC = () => {
                     type="submit"
                     disabled={loading || !formik.isValid}
                     sx={{
-                      py: 1.5,
+                      py: 1.75,
                       borderRadius: 2,
                       textTransform: 'none',
                       fontWeight: 600,
                       fontSize: '1rem',
                       fontFamily: 'inherit',
-                      bgcolor: '#4CAF50',
-                      boxShadow: 'none',
+                      bgcolor: '#16a34a',
+                      color: '#ffffff',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08)',
                       '&:hover': {
-                        bgcolor: '#43A047',
-                        boxShadow: 'none',
+                        bgcolor: '#15803d',
+                        boxShadow: '0 4px 6px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.08)',
                       },
                       '&:active': {
-                        bgcolor: '#388E3C',
-                      },
-                      '&:disabled': {
-                        bgcolor: '#E5E7EB',
-                        color: '#9CA3AF',
-                      },
+                        bgcolor: '#166534',
+                      }
                     }}
                   >
                     {loading ? 'Signing in...' : 'Sign in'}
@@ -367,12 +390,13 @@ const Login: React.FC = () => {
                   component={RouterLink}
                   to="/signup"
                   sx={{
-                    color: '#4CAF50',
+                    color: '#16a34a',
                     fontWeight: 600,
                     textDecoration: 'none',
                     fontFamily: 'inherit',
                     '&:hover': {
-                      color: '#388E3C',
+                      color: '#15803d',
+                      textDecoration: 'underline',
                     },
                   }}
                 >
@@ -410,7 +434,7 @@ const Login: React.FC = () => {
               left: 0,
               right: 0,
               bottom: 0,
-              background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.4) 100%)',
+              background: 'linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 100%)',
             },
           }}
         />
@@ -436,7 +460,8 @@ const Login: React.FC = () => {
                   mb: 2,
                   letterSpacing: '-0.02em',
                   fontFamily: 'inherit',
-                  textShadow: '0 2px 10px rgba(0,0,0,0.3)',
+                  textShadow: '0 2px 12px rgba(0,0,0,0.5)',
+                  color: '#ffffff',
                 }}
               >
                 Manage your expenses with confidence.
@@ -445,10 +470,10 @@ const Login: React.FC = () => {
                 variant="h6"
                 sx={{
                   fontWeight: 400,
-                  opacity: 0.9,
+                  color: 'rgba(255,255,255,0.95)',
                   fontFamily: 'inherit',
                   maxWidth: '600px',
-                  textShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                  textShadow: '0 2px 10px rgba(0,0,0,0.5)',
                 }}
               >
                 Join thousands of businesses that trust Spentiva for their financial tracking needs.

@@ -37,12 +37,9 @@ const validationSchema = Yup.object({
     .required('Email is required'),
   password: Yup.string()
     .min(8, 'Password must be at least 8 characters')
-    .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
-    .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
-    .matches(/[0-9]/, 'Password must contain at least one number')
     .required('Password is required'),
   role: Yup.string()
-    .oneOf(['user', 'business', 'individual'], 'Invalid account type')
+    .oneOf(['trial', 'business', 'personal'], 'Invalid account type')
     .required('Account type is required'),
 });
 
@@ -58,7 +55,7 @@ const Signup: React.FC = () => {
       name: '',
       email: '',
       password: '',
-      role: 'user',
+      role: 'trial',
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
@@ -76,6 +73,11 @@ const Signup: React.FC = () => {
         // Save user information to localStorage
         localStorage.setItem('authToken', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
+
+        // Set flag for showing verification message
+        if (!response.user.emailVerified) {
+          localStorage.setItem('showEmailVerification', 'true');
+        }
 
         // Update auth context
         login(response.token, response.user);
@@ -97,13 +99,13 @@ const Signup: React.FC = () => {
         overflow: 'hidden',
         display: 'flex',
         background: '#ffffff',
-        fontFamily: '"Inter", "Segoe UI", "Roboto", "Helvetica Neue", sans-serif',
+        fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif',
       }}
     >
       {/* Left Side - Form */}
       <Box
         sx={{
-          flex: { xs: '1 1 100%', md: '0 0 480px', lg: '0 0 550px' },
+          flex: { xs: '1 1 100%', md: '0 0 500px', lg: '0 0 580px' },
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -113,18 +115,35 @@ const Signup: React.FC = () => {
           height: '100%',
           position: 'relative',
           zIndex: 10,
-          boxShadow: { md: '4px 0 24px rgba(0,0,0,0.05)' },
         }}
       >
         <Fade in={true} timeout={600}>
-          <Box sx={{ width: '100%', maxWidth: 400, mx: 'auto', py: 4 }}>
+          <Box sx={{ width: '100%', maxWidth: 420, mx: 'auto', py: 3 }}>
             {/* Logo */}
             <Box sx={{ mb: 4 }}>
-              <img
-                src="https://spentiva.com/logo.svg"
-                alt="Spentiva Logo"
-                style={{ height: 40 }}
-              />
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box
+                  sx={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 2,
+                    background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '1.3rem' }}>S</Typography>
+                </Box>
+                <Box>
+                  <Typography sx={{ fontWeight: 700, fontSize: '1.5rem', color: '#111827', lineHeight: 1 }}>
+                    Spentiva
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.65rem', color: '#6B7280', letterSpacing: '0.08em', fontWeight: 500 }}>
+                    BY EXYCONN
+                  </Typography>
+                </Box>
+              </Box>
             </Box>
 
             {/* Header */}
@@ -180,13 +199,16 @@ const Signup: React.FC = () => {
                 ) : (
                   <Box>
                     <Typography
+                      component="label"
+                      htmlFor="name"
                       variant="caption"
                       sx={{
                         display: 'block',
-                        mb: 0.5,
+                        mb: 0.75,
                         fontWeight: 600,
-                        color: '#374151',
+                        color: '#111827',
                         fontFamily: 'inherit',
+                        fontSize: '0.875rem',
                       }}
                     >
                       Full Name
@@ -214,26 +236,28 @@ const Signup: React.FC = () => {
                       sx={{
                         '& .MuiOutlinedInput-root': {
                           borderRadius: 2,
-                          backgroundColor: '#F9FAFB',
+                          backgroundColor: '#ffffff',
                           '& fieldset': {
-                            borderColor: '#E5E7EB',
+                            borderColor: '#D1D5DB',
+                            borderWidth: '1.5px',
                           },
                           '&:hover fieldset': {
-                            borderColor: '#D1D5DB',
-                          },
-                          '&.Mui-focused': {
-                            backgroundColor: '#ffffff',
+                            borderColor: '#9CA3AF',
                           },
                           '&.Mui-focused fieldset': {
-                            borderColor: '#4CAF50',
-                            borderWidth: 1,
-                            boxShadow: '0 0 0 3px rgba(76, 175, 80, 0.1)',
+                            borderColor: '#16a34a',
+                            borderWidth: '2px',
                           },
                         },
                         '& .MuiInputBase-input': {
-                          py: 1.5,
+                          py: 1.75,
                           fontSize: '0.95rem',
                           fontFamily: 'inherit',
+                          color: '#111827',
+                        },
+                        '& .MuiFormHelperText-root': {
+                          mx: 0,
+                          mt: 0.75,
                         },
                       }}
                     />
@@ -246,13 +270,16 @@ const Signup: React.FC = () => {
                 ) : (
                   <Box>
                     <Typography
+                      component="label"
+                      htmlFor="email"
                       variant="caption"
                       sx={{
                         display: 'block',
-                        mb: 0.5,
+                        mb: 0.75,
                         fontWeight: 600,
-                        color: '#374151',
+                        color: '#111827',
                         fontFamily: 'inherit',
+                        fontSize: '0.875rem',
                       }}
                     >
                       Email
@@ -261,6 +288,7 @@ const Signup: React.FC = () => {
                       fullWidth
                       id="email"
                       name="email"
+                      type="email"
                       placeholder="Enter your email"
                       value={formik.values.email}
                       onChange={formik.handleChange}
@@ -279,26 +307,28 @@ const Signup: React.FC = () => {
                       sx={{
                         '& .MuiOutlinedInput-root': {
                           borderRadius: 2,
-                          backgroundColor: '#F9FAFB',
+                          backgroundColor: '#ffffff',
                           '& fieldset': {
-                            borderColor: '#E5E7EB',
+                            borderColor: '#D1D5DB',
+                            borderWidth: '1.5px',
                           },
                           '&:hover fieldset': {
-                            borderColor: '#D1D5DB',
-                          },
-                          '&.Mui-focused': {
-                            backgroundColor: '#ffffff',
+                            borderColor: '#9CA3AF',
                           },
                           '&.Mui-focused fieldset': {
-                            borderColor: '#4CAF50',
-                            borderWidth: 1,
-                            boxShadow: '0 0 0 3px rgba(76, 175, 80, 0.1)',
+                            borderColor: '#16a34a',
+                            borderWidth: '2px',
                           },
                         },
                         '& .MuiInputBase-input': {
-                          py: 1.5,
+                          py: 1.75,
                           fontSize: '0.95rem',
                           fontFamily: 'inherit',
+                          color: '#111827',
+                        },
+                        '& .MuiFormHelperText-root': {
+                          mx: 0,
+                          mt: 0.75,
                         },
                       }}
                     />
@@ -311,13 +341,16 @@ const Signup: React.FC = () => {
                 ) : (
                   <Box>
                     <Typography
+                      component="label"
+                      htmlFor="role"
                       variant="caption"
                       sx={{
                         display: 'block',
-                        mb: 0.5,
+                        mb: 0.75,
                         fontWeight: 600,
-                        color: '#374151',
+                        color: '#111827',
                         fontFamily: 'inherit',
+                        fontSize: '0.875rem',
                       }}
                     >
                       Account Type
@@ -343,32 +376,34 @@ const Signup: React.FC = () => {
                       sx={{
                         '& .MuiOutlinedInput-root': {
                           borderRadius: 2,
-                          backgroundColor: '#F9FAFB',
+                          backgroundColor: '#ffffff',
                           '& fieldset': {
-                            borderColor: '#E5E7EB',
+                            borderColor: '#D1D5DB',
+                            borderWidth: '1.5px',
                           },
                           '&:hover fieldset': {
-                            borderColor: '#D1D5DB',
-                          },
-                          '&.Mui-focused': {
-                            backgroundColor: '#ffffff',
+                            borderColor: '#9CA3AF',
                           },
                           '&.Mui-focused fieldset': {
-                            borderColor: '#4CAF50',
-                            borderWidth: 1,
-                            boxShadow: '0 0 0 3px rgba(76, 175, 80, 0.1)',
+                            borderColor: '#16a34a',
+                            borderWidth: '2px',
                           },
                         },
                         '& .MuiInputBase-input': {
-                          py: 1.5,
+                          py: 1.75,
                           fontSize: '0.95rem',
                           fontFamily: 'inherit',
+                          color: '#111827',
+                        },
+                        '& .MuiFormHelperText-root': {
+                          mx: 0,
+                          mt: 0.75,
                         },
                       }}
                     >
-                      <MenuItem value="user">Personal</MenuItem>
+                      <MenuItem value="trial">Trial (Free)</MenuItem>
+                      <MenuItem value="personal">Personal</MenuItem>
                       <MenuItem value="business">Business</MenuItem>
-                      <MenuItem value="individual">Individual</MenuItem>
                     </TextField>
                   </Box>
                 )}
@@ -379,13 +414,16 @@ const Signup: React.FC = () => {
                 ) : (
                   <Box>
                     <Typography
+                      component="label"
+                      htmlFor="password"
                       variant="caption"
                       sx={{
                         display: 'block',
-                        mb: 0.5,
+                        mb: 0.75,
                         fontWeight: 600,
-                        color: '#374151',
+                        color: '#111827',
                         fontFamily: 'inherit',
+                        fontSize: '0.875rem',
                       }}
                     >
                       Password
@@ -427,26 +465,28 @@ const Signup: React.FC = () => {
                       sx={{
                         '& .MuiOutlinedInput-root': {
                           borderRadius: 2,
-                          backgroundColor: '#F9FAFB',
+                          backgroundColor: '#ffffff',
                           '& fieldset': {
-                            borderColor: '#E5E7EB',
+                            borderColor: '#D1D5DB',
+                            borderWidth: '1.5px',
                           },
                           '&:hover fieldset': {
-                            borderColor: '#D1D5DB',
-                          },
-                          '&.Mui-focused': {
-                            backgroundColor: '#ffffff',
+                            borderColor: '#9CA3AF',
                           },
                           '&.Mui-focused fieldset': {
-                            borderColor: '#4CAF50',
-                            borderWidth: 1,
-                            boxShadow: '0 0 0 3px rgba(76, 175, 80, 0.1)',
+                            borderColor: '#16a34a',
+                            borderWidth: '2px',
                           },
                         },
                         '& .MuiInputBase-input': {
-                          py: 1.5,
+                          py: 1.75,
                           fontSize: '0.95rem',
                           fontFamily: 'inherit',
+                          color: '#111827',
+                        },
+                        '& .MuiFormHelperText-root': {
+                          mx: 0,
+                          mt: 0.75,
                         },
                       }}
                     />
@@ -465,21 +505,22 @@ const Signup: React.FC = () => {
                     disabled={loading || !formik.isValid}
                     endIcon={<ArrowForwardIcon />}
                     sx={{
-                      py: 1.5,
+                      py: 1.75,
                       mt: 1,
                       borderRadius: 2,
                       textTransform: 'none',
                       fontWeight: 600,
                       fontSize: '1rem',
                       fontFamily: 'inherit',
-                      bgcolor: '#4CAF50',
-                      boxShadow: 'none',
+                      bgcolor: '#16a34a',
+                      color: '#ffffff',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08)',
                       '&:hover': {
-                        bgcolor: '#43A047',
-                        boxShadow: 'none',
+                        bgcolor: '#15803d',
+                        boxShadow: '0 4px 6px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.08)',
                       },
                       '&:active': {
-                        bgcolor: '#388E3C',
+                        bgcolor: '#166534',
                       },
                       '&:disabled': {
                         bgcolor: '#E5E7EB',
@@ -501,12 +542,13 @@ const Signup: React.FC = () => {
                   component={RouterLink}
                   to="/login"
                   sx={{
-                    color: '#4CAF50',
+                    color: '#16a34a',
                     fontWeight: 600,
                     textDecoration: 'none',
                     fontFamily: 'inherit',
                     '&:hover': {
-                      color: '#388E3C',
+                      color: '#15803d',
+                      textDecoration: 'underline',
                     },
                   }}
                 >
@@ -544,7 +586,7 @@ const Signup: React.FC = () => {
               left: 0,
               right: 0,
               bottom: 0,
-              background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.4) 100%)',
+              background: 'linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 100%)',
             },
           }}
         />
@@ -570,7 +612,8 @@ const Signup: React.FC = () => {
                   mb: 2,
                   letterSpacing: '-0.02em',
                   fontFamily: 'inherit',
-                  textShadow: '0 2px 10px rgba(0,0,0,0.3)',
+                  textShadow: '0 2px 12px rgba(0,0,0,0.5)',
+                  color: '#ffffff',
                 }}
               >
                 Start your journey with us.
@@ -579,10 +622,10 @@ const Signup: React.FC = () => {
                 variant="h6"
                 sx={{
                   fontWeight: 400,
-                  opacity: 0.9,
+                  color: 'rgba(255,255,255,0.95)',
                   fontFamily: 'inherit',
                   maxWidth: '600px',
-                  textShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                  textShadow: '0 2px 10px rgba(0,0,0,0.5)',
                 }}
               >
                 Create an account to access powerful tools and insights for your financial growth.
