@@ -38,7 +38,7 @@ import {
   ShowChart as ShowChartIcon,
   ListAlt as ListAltIcon,
 } from '@mui/icons-material';
-import { api } from '../../services/api';
+import { api } from '../../config/api';
 
 interface UsageData {
   overall: {
@@ -124,9 +124,9 @@ const Usage = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await api.getOverallUsage();
+      const data = await api.usage.getOverall();
       console.log('Usage data received:', data);
-      
+
       // Ensure data has the proper structure
       if (!data || !data.overall) {
         console.warn('Invalid data structure received:', data);
@@ -154,7 +154,7 @@ const Usage = () => {
 
   const loadTrackers = async () => {
     try {
-      const trackersData = await api.getTrackers();
+      const trackersData = await api.trackers.getAll();
       setTrackers(trackersData);
     } catch (err: any) {
       console.error('Error loading trackers:', err);
@@ -166,7 +166,7 @@ const Usage = () => {
     setError(null);
     try {
       console.log('Loading tracker usage for:', trackerId);
-      const data = await api.getTrackerUsage(trackerId);
+      const data = await api.usage.getTracker(trackerId);
       console.log('Tracker usage data received:', data);
       setTrackerUsageData(data);
     } catch (err: any) {
@@ -235,7 +235,7 @@ const Usage = () => {
             </IconButton>
           </Tooltip>
         </Box>
-        
+
         <Alert severity="info" sx={{ mb: 3 }}>
           No usage data available yet. Start using AI chat in your trackers to see statistics here.
         </Alert>
@@ -247,8 +247,8 @@ const Usage = () => {
           </Typography>
           <Grid container spacing={3}>
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-              <Card sx={{ 
-                borderRadius: 3, 
+              <Card sx={{
+                borderRadius: 3,
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 boxShadow: '0 4px 20px rgba(102, 126, 234, 0.3)',
               }}>
@@ -267,8 +267,8 @@ const Usage = () => {
             </Grid>
 
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-              <Card sx={{ 
-                borderRadius: 3, 
+              <Card sx={{
+                borderRadius: 3,
                 background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                 boxShadow: '0 4px 20px rgba(16, 185, 129, 0.3)',
               }}>
@@ -287,8 +287,8 @@ const Usage = () => {
             </Grid>
 
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-              <Card sx={{ 
-                borderRadius: 3, 
+              <Card sx={{
+                borderRadius: 3,
                 background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
                 boxShadow: '0 4px 20px rgba(59, 130, 246, 0.3)',
               }}>
@@ -307,8 +307,8 @@ const Usage = () => {
             </Grid>
 
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-              <Card sx={{ 
-                borderRadius: 3, 
+              <Card sx={{
+                borderRadius: 3,
                 background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
                 boxShadow: '0 4px 20px rgba(245, 158, 11, 0.3)',
               }}>
@@ -352,8 +352,8 @@ const Usage = () => {
         </Typography>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <Card sx={{ 
-              borderRadius: 3, 
+            <Card sx={{
+              borderRadius: 3,
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
               boxShadow: '0 4px 20px rgba(102, 126, 234, 0.3)',
             }}>
@@ -372,8 +372,8 @@ const Usage = () => {
           </Grid>
 
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <Card sx={{ 
-              borderRadius: 3, 
+            <Card sx={{
+              borderRadius: 3,
               background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
               boxShadow: '0 4px 20px rgba(16, 185, 129, 0.3)',
             }}>
@@ -392,8 +392,8 @@ const Usage = () => {
           </Grid>
 
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <Card sx={{ 
-              borderRadius: 3, 
+            <Card sx={{
+              borderRadius: 3,
               background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
               boxShadow: '0 4px 20px rgba(59, 130, 246, 0.3)',
             }}>
@@ -412,8 +412,8 @@ const Usage = () => {
           </Grid>
 
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <Card sx={{ 
-              borderRadius: 3, 
+            <Card sx={{
+              borderRadius: 3,
               background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
               boxShadow: '0 4px 20px rgba(245, 158, 11, 0.3)',
             }}>
@@ -449,8 +449,8 @@ const Usage = () => {
               <MenuItem key={tracker._id} value={tracker._id}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Typography>{tracker.name}</Typography>
-                  <Chip 
-                    label={tracker.type} 
+                  <Chip
+                    label={tracker.type}
                     size="small"
                     sx={{
                       height: 20,
@@ -470,8 +470,8 @@ const Usage = () => {
       {/* Tabs */}
       <Card sx={{ borderRadius: 3, boxShadow: '0 2px 12px rgba(0,0,0,0.08)' }}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs 
-            value={currentTab} 
+          <Tabs
+            value={currentTab}
             onChange={handleTabChange}
             sx={{
               '& .MuiTab-root': {
@@ -482,20 +482,20 @@ const Usage = () => {
               },
             }}
           >
-            <Tab 
-              icon={<TrendingUpIcon />} 
-              iconPosition="start" 
-              label="Usage" 
+            <Tab
+              icon={<TrendingUpIcon />}
+              iconPosition="start"
+              label="Usage"
             />
-            <Tab 
-              icon={<ShowChartIcon />} 
-              iconPosition="start" 
-              label="Graphs" 
+            <Tab
+              icon={<ShowChartIcon />}
+              iconPosition="start"
+              label="Graphs"
             />
-            <Tab 
-              icon={<ListAltIcon />} 
-              iconPosition="start" 
-              label="Logs" 
+            <Tab
+              icon={<ListAltIcon />}
+              iconPosition="start"
+              label="Logs"
             />
           </Tabs>
         </Box>
@@ -602,8 +602,8 @@ const Usage = () => {
                                 </Box>
                                 {tracker.isDeleted && (
                                   <Box sx={{ mt: 1 }}>
-                                    <Chip 
-                                      label="Deleted" 
+                                    <Chip
+                                      label="Deleted"
                                       size="small"
                                       color="error"
                                       sx={{ fontSize: '0.7em' }}
@@ -633,108 +633,108 @@ const Usage = () => {
                       {trackerUsageData.tracker.trackerName} - Detailed Usage
                     </Typography>
                     {trackerUsageData.tracker.isDeleted && (
-                      <Chip 
-                        label="Deleted Tracker" 
+                      <Chip
+                        label="Deleted Tracker"
                         color="error"
                         size="small"
                       />
                     )}
                   </Box>
-                      
-                      <Grid container spacing={3} sx={{ mb: 4 }}>
-                        <Grid size={{ xs: 6, md: 3 }}>
-                          <Paper sx={{ p: 2.5, borderRadius: 2, bgcolor: '#f8f9fa' }}>
-                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1, fontSize: '0.85em' }}>
-                              Total Messages
-                            </Typography>
-                            <Typography variant="h4" sx={{ fontWeight: 700, color: '#667eea' }}>
-                              {trackerUsageData.usage.totalMessages}
-                            </Typography>
-                          </Paper>
-                        </Grid>
-                        <Grid size={{ xs: 6, md: 3 }}>
-                          <Paper sx={{ p: 2.5, borderRadius: 2, bgcolor: '#f8f9fa' }}>
-                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1, fontSize: '0.85em' }}>
-                              Total Tokens
-                            </Typography>
-                            <Typography variant="h4" sx={{ fontWeight: 700, color: '#10b981' }}>
-                              {trackerUsageData.usage.totalTokens.toLocaleString()}
-                            </Typography>
-                          </Paper>
-                        </Grid>
-                        <Grid size={{ xs: 6, md: 3 }}>
-                          <Paper sx={{ p: 2.5, borderRadius: 2, bgcolor: '#f8f9fa' }}>
-                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1, fontSize: '0.85em' }}>
-                              User Messages
-                            </Typography>
-                            <Typography variant="h4" sx={{ fontWeight: 700, color: '#3b82f6' }}>
-                              {trackerUsageData.usage.userMessages}
-                            </Typography>
-                          </Paper>
-                        </Grid>
-                        <Grid size={{ xs: 6, md: 3 }}>
-                          <Paper sx={{ p: 2.5, borderRadius: 2, bgcolor: '#f8f9fa' }}>
-                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1, fontSize: '0.85em' }}>
-                              AI Messages
-                            </Typography>
-                            <Typography variant="h4" sx={{ fontWeight: 700, color: '#f59e0b' }}>
-                              {trackerUsageData.usage.aiMessages}
-                            </Typography>
-                          </Paper>
-                        </Grid>
-                      </Grid>
 
-                      {/* Daily Usage */}
-                      {trackerUsageData.dailyUsage && trackerUsageData.dailyUsage.length > 0 && (
-                        <Box>
-                          <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>
-                            Daily Activity (Last 30 Days)
-                          </Typography>
-                          <Stack spacing={1}>
-                            {trackerUsageData.dailyUsage.slice(0, 10).map((day, index) => (
-                              <Box
-                                key={index}
-                                sx={{
-                                  display: 'flex',
-                                  justifyContent: 'space-between',
-                                  alignItems: 'center',
-                                  p: 2,
-                                  borderRadius: 2,
-                                  bgcolor: index % 2 === 0 ? '#f8f9fa' : 'transparent',
-                                }}
-                              >
-                                <Typography variant="body2" sx={{ fontWeight: 500, minWidth: 100, fontSize: '0.95em' }}>
-                                  {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  <Grid container spacing={3} sx={{ mb: 4 }}>
+                    <Grid size={{ xs: 6, md: 3 }}>
+                      <Paper sx={{ p: 2.5, borderRadius: 2, bgcolor: '#f8f9fa' }}>
+                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1, fontSize: '0.85em' }}>
+                          Total Messages
+                        </Typography>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#667eea' }}>
+                          {trackerUsageData.usage.totalMessages}
+                        </Typography>
+                      </Paper>
+                    </Grid>
+                    <Grid size={{ xs: 6, md: 3 }}>
+                      <Paper sx={{ p: 2.5, borderRadius: 2, bgcolor: '#f8f9fa' }}>
+                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1, fontSize: '0.85em' }}>
+                          Total Tokens
+                        </Typography>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#10b981' }}>
+                          {trackerUsageData.usage.totalTokens.toLocaleString()}
+                        </Typography>
+                      </Paper>
+                    </Grid>
+                    <Grid size={{ xs: 6, md: 3 }}>
+                      <Paper sx={{ p: 2.5, borderRadius: 2, bgcolor: '#f8f9fa' }}>
+                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1, fontSize: '0.85em' }}>
+                          User Messages
+                        </Typography>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#3b82f6' }}>
+                          {trackerUsageData.usage.userMessages}
+                        </Typography>
+                      </Paper>
+                    </Grid>
+                    <Grid size={{ xs: 6, md: 3 }}>
+                      <Paper sx={{ p: 2.5, borderRadius: 2, bgcolor: '#f8f9fa' }}>
+                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1, fontSize: '0.85em' }}>
+                          AI Messages
+                        </Typography>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#f59e0b' }}>
+                          {trackerUsageData.usage.aiMessages}
+                        </Typography>
+                      </Paper>
+                    </Grid>
+                  </Grid>
+
+                  {/* Daily Usage */}
+                  {trackerUsageData.dailyUsage && trackerUsageData.dailyUsage.length > 0 && (
+                    <Box>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>
+                        Daily Activity (Last 30 Days)
+                      </Typography>
+                      <Stack spacing={1}>
+                        {trackerUsageData.dailyUsage.slice(0, 10).map((day, index) => (
+                          <Box
+                            key={index}
+                            sx={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              p: 2,
+                              borderRadius: 2,
+                              bgcolor: index % 2 === 0 ? '#f8f9fa' : 'transparent',
+                            }}
+                          >
+                            <Typography variant="body2" sx={{ fontWeight: 500, minWidth: 100, fontSize: '0.95em' }}>
+                              {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                            </Typography>
+                            <Box sx={{ display: 'flex', gap: 4 }}>
+                              <Box sx={{ textAlign: 'right' }}>
+                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: '0.8em' }}>
+                                  Messages
                                 </Typography>
-                                <Box sx={{ display: 'flex', gap: 4 }}>
-                                  <Box sx={{ textAlign: 'right' }}>
-                                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: '0.8em' }}>
-                                      Messages
-                                    </Typography>
-                                    <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                                      {day.messageCount}
-                                    </Typography>
-                                  </Box>
-                                  <Box sx={{ textAlign: 'right' }}>
-                                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: '0.8em' }}>
-                                      Tokens
-                                    </Typography>
-                                    <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                                      {day.tokenCount.toLocaleString()}
-                                    </Typography>
-                                  </Box>
-                                </Box>
+                                <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                                  {day.messageCount}
+                                </Typography>
                               </Box>
-                            ))}
-                          </Stack>
-                        </Box>
-                      )}
+                              <Box sx={{ textAlign: 'right' }}>
+                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: '0.8em' }}>
+                                  Tokens
+                                </Typography>
+                                <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                                  {day.tokenCount.toLocaleString()}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          </Box>
+                        ))}
+                      </Stack>
                     </Box>
-                  ) : (
-                    <Alert severity="info">
-                      No usage data available for this tracker yet
-                    </Alert>
-                  )
+                  )}
+                </Box>
+              ) : (
+                <Alert severity="info">
+                  No usage data available for this tracker yet
+                </Alert>
+              )
               }
             </Box>
           )}
@@ -797,9 +797,9 @@ const Usage = () => {
                       </TableHead>
                       <TableBody>
                         {trackerUsageData.messages.slice(0, 50).map((message) => (
-                          <TableRow 
+                          <TableRow
                             key={message._id}
-                            sx={{ 
+                            sx={{
                               '&:hover': { bgcolor: '#f8f9fa' },
                               '& td': { fontSize: '0.9em' }
                             }}
@@ -826,9 +826,9 @@ const Usage = () => {
                               />
                             </TableCell>
                             <TableCell sx={{ maxWidth: 400 }}>
-                              <Typography 
-                                variant="body2" 
-                                sx={{ 
+                              <Typography
+                                variant="body2"
+                                sx={{
                                   overflow: 'hidden',
                                   textOverflow: 'ellipsis',
                                   display: '-webkit-box',

@@ -28,7 +28,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Expense } from "../../types";
-import { api } from "../../services/api";
+import { api } from "../../config/api";
 import EditExpenseDialog from "../EditExpenseDialog/EditExpenseDialog";
 import "./Transactions.scss";
 
@@ -80,7 +80,7 @@ const Transactions: React.FC<TransactionsProps> = ({ trackerId }) => {
   const loadExpenses = async () => {
     setLoading(true);
     try {
-      const data = await api.getExpenses(trackerId);
+      const data = await api.expenses.getAll(trackerId);
       setExpenses(data);
     } catch (error) {
       console.error("Error loading expenses:", error);
@@ -93,7 +93,7 @@ const Transactions: React.FC<TransactionsProps> = ({ trackerId }) => {
   const loadCategories = async () => {
     if (!trackerId) return;
     try {
-      const data = await api.getTrackerCategories(trackerId);
+      const data = await api.trackers.getCategories(trackerId);
       setCategories(data);
     } catch (error) {
       console.error("Error loading categories:", error);
@@ -112,10 +112,10 @@ const Transactions: React.FC<TransactionsProps> = ({ trackerId }) => {
 
   const handleSaveEdit = async (id: string, updatedExpense: Partial<Expense>) => {
     try {
-      await api.updateExpense(id, updatedExpense);
+      await api.expenses.update(id, updatedExpense);
       await loadExpenses();
       setSnackbar({ open: true, message: "Expense updated successfully", severity: "success" });
-      
+
       // Trigger update in parent (App.tsx) to refresh total
       window.dispatchEvent(new Event("expenseUpdated"));
     } catch (error) {
@@ -128,11 +128,11 @@ const Transactions: React.FC<TransactionsProps> = ({ trackerId }) => {
     if (!selectedExpense) return;
 
     try {
-      await api.deleteExpense(selectedExpense.id);
+      await api.expenses.delete(selectedExpense.id);
       await loadExpenses();
       setDeleteDialogOpen(false);
       setSnackbar({ open: true, message: "Expense deleted successfully", severity: "success" });
-      
+
       // Trigger update in parent (App.tsx) to refresh total
       window.dispatchEvent(new Event("expenseUpdated"));
     } catch (error) {

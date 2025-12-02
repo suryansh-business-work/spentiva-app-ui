@@ -27,8 +27,8 @@ import {
   Legend,
 } from "chart.js";
 import { Bar, Pie, Line } from "react-chartjs-2";
-import { analyticsApi } from "../../services/analyticsApi";
-import type { AnalyticsSummary, CategoryAnalytics, MonthlyAnalytics } from "../../services/analyticsApi";
+import { api } from "../../config/api";
+import type { AnalyticsSummary, CategoryAnalytics, MonthlyAnalytics } from "../../config/api";
 import DownloadIcon from "@mui/icons-material/Download";
 import EmailIcon from "@mui/icons-material/Email";
 
@@ -77,9 +77,9 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
     setLoading(true);
     try {
       const [summaryRes, categoryRes, monthlyRes] = await Promise.all([
-        analyticsApi.getSummary(filter, customStartDate, customEndDate, undefined, trackerId),
-        analyticsApi.getByCategory(filter, customStartDate, customEndDate, trackerId),
-        analyticsApi.getByMonth(selectedYear, trackerId),
+        api.analytics.getSummary(filter, customStartDate, customEndDate, undefined, trackerId),
+        api.analytics.getByCategory(filter, customStartDate, customEndDate, trackerId),
+        api.analytics.getByMonth(selectedYear, trackerId),
       ]);
 
       setSummary(summaryRes.stats);

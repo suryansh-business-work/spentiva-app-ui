@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
-import { api } from "../../services/api";
+import { api } from "../../config/api";
 
 interface AddCategoryDrawerProps {
   open: boolean;
@@ -39,7 +39,7 @@ const AddCategoryDrawer: React.FC<AddCategoryDrawerProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!categoryName.trim()) {
       setError("Category name is required");
       return;
@@ -49,18 +49,18 @@ const AddCategoryDrawer: React.FC<AddCategoryDrawerProps> = ({
     setError("");
 
     try {
-      const subcategories = subcategoryName.trim() 
-        ? [{ id: Date.now().toString(), name: subcategoryName.trim() }] 
+      const subcategories = subcategoryName.trim()
+        ? [{ id: Date.now().toString(), name: subcategoryName.trim() }]
         : [];
 
-      await api.createTrackerCategory(trackerId, {
+      await api.trackers.createCategory(trackerId, {
         name: categoryName.trim(),
         subcategories,
       });
 
       // Notify other components
       window.dispatchEvent(new Event("categoriesUpdated"));
-      
+
       // Reset and close
       setCategoryName("");
       setSubcategoryName("");

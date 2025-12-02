@@ -14,7 +14,7 @@ import SendIcon from "@mui/icons-material/Send";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
 import PersonIcon from "@mui/icons-material/Person";
 import { Message } from "../../types";
-import { api } from "../../services/api";
+import { api } from "../../config/api";
 import { notifyExpenseAdded } from "../../services/notificationService";
 import { useAuth } from "../../contexts/AuthContext";
 import "./ChatInterface.scss";
@@ -68,7 +68,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
   const loadCategories = async () => {
     if (!trackerId) return;
     try {
-      const data = await api.getTrackerCategories(trackerId);
+      const data = await api.trackers.getCategories(trackerId);
       setCategories(data);
     } catch (error) {
       console.error("Error loading categories:", error);
@@ -170,7 +170,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
       trackMessageUsage(trackerId);
 
       // Parse the expense using ChatGPT (now includes message logging)
-      const parsed = await api.parseExpense(input, trackerId);
+      const parsed = await api.expenses.parse(input, trackerId);
 
       if ("error" in parsed) {
         const errorMessage: Message = {
@@ -183,7 +183,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
       } else {
         // Create the expense
         const expenseData = { ...parsed, trackerId };
-        const expense = await api.createExpense(expenseData);
+        const expense = await api.expenses.create(expenseData);
 
         const successMessage: Message = {
           id: (Date.now() + 1).toString(),

@@ -20,7 +20,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import ChatInterface from "../ChatInterface/ChatInterface";
 import Dashboard from "../Dashboard/Dashboard";
 import Transactions from "../Transactions/Transactions";
-import { api } from "../../services/api";
+import { api } from "../../config/api";
 import { palette } from "../../theme/palette";
 
 interface TabPanelProps {
@@ -52,11 +52,11 @@ const TrackerView: React.FC = () => {
   const location = useLocation();
   const [tracker, setTracker] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  
+
   // Get current tab from URL search params, default to 'chat'
   const searchParams = new URLSearchParams(location.search);
   const currentTab = searchParams.get('tab') || 'chat';
-  
+
   const getTabValue = (tab: string) => {
     switch (tab) {
       case 'dashboard': return 1;
@@ -64,7 +64,7 @@ const TrackerView: React.FC = () => {
       default: return 0;
     }
   };
-  
+
   const tabValue = getTabValue(currentTab);
 
   useEffect(() => {
@@ -76,7 +76,7 @@ const TrackerView: React.FC = () => {
   const loadTracker = async () => {
     setLoading(true);
     try {
-      const data = await api.getTracker(trackerId!);
+      const data = await api.trackers.getOne(trackerId!);
       setTracker(data);
     } catch (error) {
       console.error("Error loading tracker:", error);
@@ -148,7 +148,7 @@ const TrackerView: React.FC = () => {
               sx={{
                 mr: 1,
                 color: palette.text.secondary,
-                '&:hover': { 
+                '&:hover': {
                   background: palette.background.subtle,
                   color: palette.text.primary,
                 },
@@ -156,14 +156,14 @@ const TrackerView: React.FC = () => {
             >
               <ArrowBackIcon sx={{ fontSize: { xs: 16, sm: 18 } }} />
             </IconButton>
-            
+
             <Box sx={{ display: "flex", alignItems: "center", gap: 1, flex: 1 }}>
               <Box
                 sx={{
                   width: { xs: 32, sm: 36 },
                   height: { xs: 32, sm: 36 },
                   borderRadius: 1.5,
-                  background: tracker.type === 'business' 
+                  background: tracker.type === 'business'
                     ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
                     : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                   display: 'flex',
@@ -179,12 +179,12 @@ const TrackerView: React.FC = () => {
                   <PersonIcon sx={{ fontSize: { xs: 16, sm: 18 } }} />
                 )}
               </Box>
-              
+
               <Box sx={{ minWidth: 0 }}>
-                <Typography 
-                  variant="h6" 
-                  sx={{ 
-                    fontWeight: 600, 
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 600,
                     fontSize: { xs: "0.95em", sm: "1.05em" },
                     color: palette.text.primary,
                     lineHeight: 1.2,
@@ -194,9 +194,9 @@ const TrackerView: React.FC = () => {
                   {tracker.name}
                 </Typography>
                 {tracker.description && (
-                  <Typography 
-                    variant="body2" 
-                    sx={{ 
+                  <Typography
+                    variant="body2"
+                    sx={{
                       color: palette.text.secondary,
                       fontSize: { xs: "0.75em", sm: "0.8em" },
                       lineHeight: 1.4,
@@ -212,10 +212,10 @@ const TrackerView: React.FC = () => {
             </Box>
 
             <Box sx={{ display: "flex", gap: 0.75, ml: 2 }}>
-              <Chip 
-                label={tracker.type} 
+              <Chip
+                label={tracker.type}
                 size="small"
-                sx={{ 
+                sx={{
                   backgroundColor: tracker.type === 'business' ? 'rgba(102, 126, 234, 0.1)' : 'rgba(16, 185, 129, 0.1)',
                   color: tracker.type === 'business' ? '#667eea' : '#10b981',
                   fontWeight: 600,
@@ -224,12 +224,12 @@ const TrackerView: React.FC = () => {
                   textTransform: 'capitalize',
                   border: `1px solid ${tracker.type === 'business' ? 'rgba(102, 126, 234, 0.2)' : 'rgba(16, 185, 129, 0.2)'}`,
                   "& .MuiChip-label": { px: 0.75 }
-                }} 
+                }}
               />
-              <Chip 
-                label={getCurrencySymbol(tracker.currency)} 
+              <Chip
+                label={getCurrencySymbol(tracker.currency)}
                 size="small"
-                sx={{ 
+                sx={{
                   backgroundColor: palette.background.subtle,
                   color: palette.text.primary,
                   fontWeight: 600,
@@ -237,7 +237,7 @@ const TrackerView: React.FC = () => {
                   fontSize: { xs: "0.65em", sm: "0.7em" },
                   border: `1px solid ${palette.border.default}`,
                   "& .MuiChip-label": { px: 0.75 }
-                }} 
+                }}
               />
             </Box>
           </Box>
@@ -245,11 +245,11 @@ const TrackerView: React.FC = () => {
 
         {/* Tabs Row */}
         <Box sx={{ px: { xs: 1, sm: 2 } }}>
-          <Tabs 
-            value={tabValue} 
-            onChange={handleTabChange} 
-            variant="fullWidth" 
-            sx={{ 
+          <Tabs
+            value={tabValue}
+            onChange={handleTabChange}
+            variant="fullWidth"
+            sx={{
               minHeight: { xs: 40, sm: 44 },
               '& .MuiTab-root': {
                 minHeight: { xs: 40, sm: 44 },

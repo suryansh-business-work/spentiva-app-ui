@@ -38,7 +38,7 @@ import BusinessIcon from "@mui/icons-material/Business";
 import PersonIcon from "@mui/icons-material/Person";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import AddToHomeScreenIcon from "@mui/icons-material/AddToHomeScreen";
-import { api } from "../../services/api";
+import { api } from "../../config/api";
 import palette from "../../theme/palette";
 
 interface Tracker {
@@ -77,7 +77,7 @@ const Trackers: React.FC = () => {
   const loadTrackers = async () => {
     setLoading(true);
     try {
-      const data = await api.getTrackers();
+      const data = await api.trackers.getAll();
       setTrackers(data);
     } catch (error) {
       console.error("Error loading trackers:", error);
@@ -119,10 +119,10 @@ const Trackers: React.FC = () => {
   const handleSave = async () => {
     try {
       if (editMode && selectedTracker) {
-        await api.updateTracker(selectedTracker.id, formData);
+        await api.trackers.update(selectedTracker.id, formData);
         setSnackbar({ open: true, message: "Tracker updated successfully", severity: "success" });
       } else {
-        await api.createTracker(formData);
+        await api.trackers.create(formData);
         setSnackbar({ open: true, message: "Tracker created successfully", severity: "success" });
       }
       handleCloseDialog();
@@ -142,7 +142,7 @@ const Trackers: React.FC = () => {
     if (!selectedTracker) return;
 
     try {
-      await api.deleteTracker(selectedTracker.id);
+      await api.trackers.delete(selectedTracker.id);
       setDeleteDialogOpen(false);
       setSnackbar({ open: true, message: "Tracker deleted successfully", severity: "success" });
       loadTrackers();
@@ -293,11 +293,11 @@ const Trackers: React.FC = () => {
         if (newWindow) {
           newWindow.document.write(htmlContent);
           newWindow.document.close();
-          
-          setSnackbar({ 
-            open: true, 
-            message: `Opening ${tracker.name} for installation. Follow your browser's prompts to add to home screen!`, 
-            severity: "success" 
+
+          setSnackbar({
+            open: true,
+            message: `Opening ${tracker.name} for installation. Follow your browser's prompts to add to home screen!`,
+            severity: "success"
           });
         } else {
           throw new Error('Popup blocked');
@@ -308,18 +308,18 @@ const Trackers: React.FC = () => {
       } else {
         // Fallback: Just navigate and show instructions
         window.open(`/tracker/${tracker.id}`, '_blank');
-        setSnackbar({ 
-          open: true, 
-          message: `Opening ${tracker.name}. Use your browser's "Add to Home Screen" option to create an icon!`, 
-          severity: "success" 
+        setSnackbar({
+          open: true,
+          message: `Opening ${tracker.name}. Use your browser's "Add to Home Screen" option to create an icon!`,
+          severity: "success"
         });
       }
     } catch (error) {
       console.error('Error creating PWA shortcut:', error);
-      setSnackbar({ 
-        open: true, 
-        message: 'Opening tracker in new window. Use browser menu to add to home screen.', 
-        severity: "success" 
+      setSnackbar({
+        open: true,
+        message: 'Opening tracker in new window. Use browser menu to add to home screen.',
+        severity: "success"
       });
       window.open(`/tracker/${tracker.id}`, '_blank');
     }
@@ -328,10 +328,10 @@ const Trackers: React.FC = () => {
   return (
     <Container maxWidth="xl" sx={{ py: { xs: 2, sm: 3 }, px: { xs: 2, sm: 3 } }}>
       <Fade in={true} timeout={500}>
-        <Paper 
-          elevation={0} 
-          sx={{ 
-            p: { xs: 2.5, sm: 3 }, 
+        <Paper
+          elevation={0}
+          sx={{
+            p: { xs: 2.5, sm: 3 },
             mb: { xs: 2, sm: 3 },
             borderRadius: 3,
             background: palette.background.paper,
@@ -375,10 +375,10 @@ const Trackers: React.FC = () => {
           {[1, 2, 3, 4].map((i) => (
             <Fade in={true} timeout={300 * i} key={i}>
               <Box>
-                <Skeleton 
-                  variant="rectangular" 
-                  height={220} 
-                  sx={{ 
+                <Skeleton
+                  variant="rectangular"
+                  height={220}
+                  sx={{
                     borderRadius: 4,
                     transform: "scale(1)",
                     animation: "pulse 1.5s ease-in-out infinite",
@@ -387,17 +387,17 @@ const Trackers: React.FC = () => {
                       "0%, 100%": { opacity: 1 },
                       "50%": { opacity: 0.5 },
                     },
-                  }} 
+                  }}
                 />
               </Box>
             </Fade>
           ))}
         </Box>
       ) : trackers.length === 0 ? (
-        <Paper 
-          elevation={0} 
-          sx={{ 
-            p: 6, 
+        <Paper
+          elevation={0}
+          sx={{
+            p: 6,
             textAlign: "center",
             borderRadius: 4,
             border: `1px solid ${palette.border.light}`,
@@ -500,13 +500,13 @@ const Trackers: React.FC = () => {
                       </Box>
                     </Box>
                     <Box sx={{ display: "flex", gap: 0.5, alignItems: "center" }}>
-                        <Chip
-                          label={getCurrencySymbol(tracker.currency)}
-                          size="small"
-                          sx={{
-                            fontWeight: "bold",
-                            fontSize: "0.85em",
-                            background: palette.background.subtle,
+                      <Chip
+                        label={getCurrencySymbol(tracker.currency)}
+                        size="small"
+                        sx={{
+                          fontWeight: "bold",
+                          fontSize: "0.85em",
+                          background: palette.background.subtle,
                           color: palette.text.primary,
                           border: `1px solid ${palette.border.light}`,
                         }}
@@ -527,11 +527,11 @@ const Trackers: React.FC = () => {
                     </Box>
                   </Box>
 
-                  <Typography 
-                    variant="h6" 
-                    fontWeight="700" 
-                    gutterBottom 
-                    sx={{ 
+                  <Typography
+                    variant="h6"
+                    fontWeight="700"
+                    gutterBottom
+                    sx={{
                       mb: 1,
                       fontSize: { xs: '1em', sm: '1.05em' },
                       color: palette.text.primary,
@@ -541,9 +541,9 @@ const Trackers: React.FC = () => {
                   </Typography>
 
                   {tracker.description && (
-                    <Typography 
-                      variant="body2" 
-                      sx={{ 
+                    <Typography
+                      variant="body2"
+                      sx={{
                         mb: 1.5,
                         display: "-webkit-box",
                         WebkitLineClamp: 2,
@@ -558,9 +558,9 @@ const Trackers: React.FC = () => {
                     </Typography>
                   )}
 
-                  <Typography 
-                    variant="caption" 
-                    sx={{ 
+                  <Typography
+                    variant="caption"
+                    sx={{
                       color: "text.secondary",
                       fontSize: "0.75em",
                       display: "flex",
@@ -627,9 +627,9 @@ const Trackers: React.FC = () => {
           },
         }}
       >
-        <MenuItem 
+        <MenuItem
           onClick={() => menuTracker && handleMenuAction("addToHome", menuTracker)}
-          sx={{ 
+          sx={{
             py: 1.5,
             borderRadius: 2,
             mx: 1,
@@ -644,9 +644,9 @@ const Trackers: React.FC = () => {
           </ListItemIcon>
           <ListItemText sx={{ color: palette.text.primary }}>Add to Desktop</ListItemText>
         </MenuItem>
-        <MenuItem 
+        <MenuItem
           onClick={() => menuTracker && handleMenuAction("settings", menuTracker)}
-          sx={{ 
+          sx={{
             py: 1.5,
             borderRadius: 2,
             mx: 1,
@@ -661,9 +661,9 @@ const Trackers: React.FC = () => {
           </ListItemIcon>
           <ListItemText sx={{ color: palette.text.primary }}>Category Settings</ListItemText>
         </MenuItem>
-        <MenuItem 
+        <MenuItem
           onClick={() => menuTracker && handleMenuAction("edit", menuTracker)}
-          sx={{ 
+          sx={{
             py: 1.5,
             borderRadius: 2,
             mx: 1,
@@ -678,9 +678,9 @@ const Trackers: React.FC = () => {
           </ListItemIcon>
           <ListItemText sx={{ color: palette.text.primary }}>Edit Tracker</ListItemText>
         </MenuItem>
-        <MenuItem 
+        <MenuItem
           onClick={() => menuTracker && handleMenuAction("delete", menuTracker)}
-          sx={{ 
+          sx={{
             py: 1.5,
             borderRadius: 2,
             mx: 1,

@@ -1,436 +1,462 @@
 import React, { useState } from 'react';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 import {
-  Container,
-  Paper,
   Box,
-  Typography,
   TextField,
   Button,
-  Stepper,
-  Step,
-  StepLabel,
+  Typography,
   Alert,
-  CircularProgress,
-  InputAdornment,
-  useTheme,
-  useMediaQuery,
+  Link,
   Fade,
-  Slide,
+  Skeleton,
+  InputAdornment,
+  IconButton,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import PhoneIcon from '@mui/icons-material/Phone';
-import LockIcon from '@mui/icons-material/Lock';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import {
+  Email as EmailIcon,
+  Lock as LockIcon,
+  Visibility,
+  VisibilityOff,
+} from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
-import Logo from '../Logo/Logo';
-import axios from 'axios';
+import { api } from '../../config/api';
+
+// Validation schema using Yup
+const validationSchema = Yup.object({
+  email: Yup.string()
+    .email('Please enter a valid email address')
+    .required('Email is required'),
+  password: Yup.string()
+    .min(6, 'Password must be at least 6 characters')
+    .required('Password is required'),
+});
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [activeStep, setActiveStep] = useState(0);
-  const [phone, setPhone] = useState('');
-  const [otp, setOtp] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [devOtp, setDevOtp] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const steps = ['Phone', 'Verify'];
+  const formik = useFormik({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validationSchema: validationSchema,
+    onSubmit: async (values) => {
+      setLoading(true);
+      setError('');
 
-  const handleSendOTP = async () => {
-    if (!phone || phone.length < 10) {
-      setError('Please enter a valid 10-digit phone number');
-      return;
-    }
+      try {
+        const response = await api.auth.login(values.email, values.password);
 
-    setLoading(true);
-    setError('');
+        // Save user information to localStorage
+        localStorage.setItem('authToken', response.token);
+        localStorage.setItem('user', JSON.stringify(response.user));
 
-    try {
-      const response = await axios.post('https://api.spentiva.com/api/auth/send-otp', {
-        phone,
-        type: 'phone',
-      });
+        // Update auth context
+        login(response.token, response.user);
 
-      setDevOtp(response.data.devOtp);
-      setActiveStep(1);
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to send OTP');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyOTP = async () => {
-    if (!otp || otp.length !== 6) {
-      setError('Please enter a valid 6-digit OTP');
-      return;
-    }
-
-    setLoading(true);
-    setError('');
-
-    try {
-      const response = await axios.post('https://api.spentiva.com/api/auth/verify-otp', {
-        phone,
-        otp,
-      });
-
-      login(response.data.token, response.data.user);
-      navigate('/trackers');
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Invalid OTP. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleBack = () => {
-    setActiveStep(0);
-    setOtp('');
-    setError('');
-    setDevOtp('');
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent, action: () => void) => {
-    if (e.key === 'Enter') {
-      action();
-    }
-  };
+        // Redirect to trackers page
+        navigate('/trackers');
+      } catch (err: any) {
+        setError(err.response?.data?.message || 'Invalid email or password. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    },
+  });
 
   return (
     <Box
       sx={{
-        minHeight: '100vh',
+        height: '100vh',
+        overflow: 'hidden',
         display: 'flex',
-        alignItems: 'center',
-        background: '#e3f2fd',
-        py: { xs: 2, sm: 4 },
-        px: { xs: 2, sm: 3 }
+        background: '#ffffff',
+        fontFamily: '"Inter", "Segoe UI", "Roboto", "Helvetica Neue", sans-serif',
       }}
     >
-      <Container maxWidth="sm">
-        <Fade in timeout={800}>
-          <Paper
-            elevation={isMobile ? 2 : 8}
-            sx={{
-              p: { xs: 3, sm: 5 },
-              borderRadius: { xs: 1, sm: 1 },
-              background: 'rgba(255, 255, 255, 0.98)',
-              backdropFilter: 'blur(10px)',
-            }}
-          >
-            {/* Logo Section */}
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                mb: { xs: 2, sm: 3 }
-              }}
-            >
-              <Logo width={isMobile ? 160 : 200} height={isMobile ? 45 : 56} />
+      {/* Left Side - Form */}
+      <Box
+        sx={{
+          flex: { xs: '1 1 100%', md: '0 0 480px', lg: '0 0 550px' },
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          p: { xs: 3, sm: 6, md: 8 },
+          background: '#ffffff',
+          overflowY: 'auto',
+          height: '100%',
+          position: 'relative',
+          zIndex: 10,
+          boxShadow: { md: '4px 0 24px rgba(0,0,0,0.05)' },
+        }}
+      >
+        <Fade in={true} timeout={600}>
+          <Box sx={{ width: '100%', maxWidth: 400, mx: 'auto' }}>
+            {/* Logo */}
+            <Box sx={{ mb: 5 }}>
+              <img
+                src="https://spentiva.com/logo.svg"
+                alt="Spentiva Logo"
+                style={{ height: 40 }}
+              />
             </Box>
 
             {/* Header */}
-            <Box sx={{ textAlign: 'center', mb: { xs: 3, sm: 4 } }}>
+            <Box sx={{ mb: 4 }}>
               <Typography
-                variant={isMobile ? 'h5' : 'h4'}
-                component="h1"
-                gutterBottom
+                variant="h4"
                 sx={{
                   fontWeight: 700,
-                  color: '#667eea',
-                  mb: 1
+                  color: '#111827',
+                  mb: 1,
+                  letterSpacing: '-0.02em',
+                  fontFamily: 'inherit',
                 }}
               >
-                Welcome Back
+                Welcome back
               </Typography>
               <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}
+                variant="body1"
+                sx={{
+                  color: '#6B7280',
+                  fontSize: '1rem',
+                  fontFamily: 'inherit',
+                }}
               >
-                {activeStep === 0 ? 'Enter your phone number to continue' : 'Enter the OTP sent to your phone'}
+                Please enter your details to sign in.
               </Typography>
             </Box>
 
-            {/* Progress Stepper */}
-            <Stepper
-              activeStep={activeStep}
-              sx={{
-                mb: { xs: 3, sm: 4 },
-                '& .MuiStepLabel-label': {
-                  fontSize: { xs: '0.75rem', sm: '0.875rem' }
-                }
-              }}
-              alternativeLabel={isMobile}
-            >
-              {steps.map((label) => (
-                <Step key={label}>
-                  <StepLabel>{label}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-
             {/* Error Alert */}
             {error && (
-              <Fade in>
+              <Fade in={true}>
                 <Alert
                   severity="error"
-                  sx={{ mb: 3 }}
                   onClose={() => setError('')}
+                  sx={{
+                    mb: 3,
+                    borderRadius: 2,
+                    fontSize: '0.875rem',
+                    alignItems: 'center',
+                  }}
                 >
                   {error}
                 </Alert>
               </Fade>
             )}
 
-            {/* Dev OTP Alert */}
-            {devOtp && (
-              <Fade in>
-                <Alert
-                  severity="info"
-                  sx={{ mb: 3 }}
-                  onClose={() => setDevOtp('')}
-                >
-                  Development OTP: <strong>{devOtp}</strong>
-                </Alert>
-              </Fade>
-            )}
-
-            {/* Form Content */}
-            {activeStep === 0 ? (
-              <Slide direction="left" in={activeStep === 0} mountOnEnter unmountOnExit>
-                <Box component="form" onSubmit={(e) => { e.preventDefault(); handleSendOTP(); }}>
-                  <TextField
-                    fullWidth
-                    label="Phone Number"
-                    placeholder="Enter 10-digit mobile number"
-                    value={phone}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '');
-                      if (value.length <= 10) {
-                        setPhone(value);
-                      }
-                    }}
-                    onKeyPress={(e) => handleKeyPress(e, handleSendOTP)}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <PhoneIcon sx={{ color: 'text.secondary' }} />
-                        </InputAdornment>
-                      ),
-                    }}
-                    sx={{ mb: 3 }}
-                    disabled={loading}
-                    autoFocus
-                    autoComplete="tel"
-                    inputProps={{
-                      'aria-label': 'Phone Number',
-                      inputMode: 'numeric',
-                      pattern: '[0-9]*',
-                      maxLength: 10
-                    }}
-                    helperText={phone.length > 0 && phone.length < 10 ? `${10 - phone.length} digits remaining` : ''}
-                  />
-
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    size="large"
-                    onClick={handleSendOTP}
-                    disabled={loading || phone.length !== 10}
-                    endIcon={loading ? null : <ArrowForwardIcon />}
-                    sx={{
-                      py: { xs: 1.5, sm: 1.75 },
-                      fontSize: { xs: '0.95rem', sm: '1rem' },
-                      fontWeight: 600,
-                      textTransform: 'none',
-                      borderRadius: 2,
-                      boxShadow: '0 4px 14px 0 rgba(102, 126, 234, 0.39)',
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      '&:hover': {
-                        boxShadow: '0 6px 20px 0 rgba(102, 126, 234, 0.5)',
-                      },
-                      '&:disabled': {
-                        background: '#e0e0e0',
-                      }
-                    }}
-                  >
-                    {loading ? <CircularProgress size={24} color="inherit" /> : 'Send OTP'}
-                  </Button>
-
-                  <Box sx={{ mt: 3, textAlign: 'center' }}>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                      Don't have an account?
-                    </Typography>
-                    <Button
-                      fullWidth
-                      variant="outlined"
-                      onClick={() => navigate('/signup')}
-                      disabled={loading}
+            {/* Form */}
+            <Box component="form" onSubmit={formik.handleSubmit} noValidate>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                {/* Email Field */}
+                {loading ? (
+                  <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 2 }} />
+                ) : (
+                  <Box>
+                    <Typography
+                      variant="caption"
                       sx={{
-                        py: { xs: 1.25, sm: 1.5 },
-                        fontSize: { xs: '0.9rem', sm: '0.95rem' },
-                        textTransform: 'none',
-                        borderRadius: 2,
-                        borderColor: '#667eea',
-                        color: '#667eea',
-                        '&:hover': {
-                          borderColor: '#764ba2',
-                          bgcolor: 'rgba(102, 126, 234, 0.04)',
-                        }
+                        display: 'block',
+                        mb: 0.5,
+                        fontWeight: 600,
+                        color: '#374151',
+                        fontFamily: 'inherit',
                       }}
                     >
-                      Sign Up
-                    </Button>
+                      Email
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      id="email"
+                      name="email"
+                      placeholder="Enter your email"
+                      value={formik.values.email}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      error={formik.touched.email && Boolean(formik.errors.email)}
+                      helperText={formik.touched.email && formik.errors.email}
+                      disabled={loading}
+                      autoFocus
+                      autoComplete="email"
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <EmailIcon sx={{ color: '#9CA3AF', fontSize: 20 }} />
+                          </InputAdornment>
+                        ),
+                      }}
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: 2,
+                          backgroundColor: '#F9FAFB',
+                          '& fieldset': {
+                            borderColor: '#E5E7EB',
+                          },
+                          '&:hover fieldset': {
+                            borderColor: '#D1D5DB',
+                          },
+                          '&.Mui-focused': {
+                            backgroundColor: '#ffffff',
+                          },
+                          '&.Mui-focused fieldset': {
+                            borderColor: '#4CAF50',
+                            borderWidth: 1,
+                            boxShadow: '0 0 0 3px rgba(76, 175, 80, 0.1)',
+                          },
+                        },
+                        '& .MuiInputBase-input': {
+                          py: 1.5,
+                          fontSize: '0.95rem',
+                          fontFamily: 'inherit',
+                        },
+                      }}
+                    />
                   </Box>
-                </Box>
-              </Slide>
-            ) : (
-              <Slide direction="left" in={activeStep === 1} mountOnEnter unmountOnExit>
-                <Box component="form" onSubmit={(e) => { e.preventDefault(); handleVerifyOTP(); }}>
-                  <TextField
-                    fullWidth
-                    label="Enter OTP"
-                    placeholder="6-digit OTP"
-                    value={otp}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '');
-                      if (value.length <= 6) {
-                        setOtp(value);
-                      }
-                    }}
-                    onKeyPress={(e) => handleKeyPress(e, handleVerifyOTP)}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <LockIcon sx={{ color: 'text.secondary' }} />
-                        </InputAdornment>
-                      ),
-                    }}
-                    sx={{ mb: 3 }}
-                    disabled={loading}
-                    autoFocus
-                    autoComplete="one-time-code"
-                    inputProps={{
-                      'aria-label': 'One Time Password',
-                      inputMode: 'numeric',
-                      pattern: '[0-9]*',
-                      maxLength: 6
-                    }}
-                    helperText={otp.length > 0 && otp.length < 6 ? `${6 - otp.length} digits remaining` : ''}
-                  />
+                )}
 
+                {/* Password Field */}
+                {loading ? (
+                  <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 2 }} />
+                ) : (
+                  <Box>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        display: 'block',
+                        mb: 0.5,
+                        fontWeight: 600,
+                        color: '#374151',
+                        fontFamily: 'inherit',
+                      }}
+                    >
+                      Password
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      id="password"
+                      name="password"
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      value={formik.values.password}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      error={formik.touched.password && Boolean(formik.errors.password)}
+                      helperText={formik.touched.password && formik.errors.password}
+                      disabled={loading}
+                      autoComplete="current-password"
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <LockIcon sx={{ color: '#9CA3AF', fontSize: 20 }} />
+                          </InputAdornment>
+                        ),
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              aria-label="toggle password visibility"
+                              onClick={() => setShowPassword(!showPassword)}
+                              onMouseDown={(e) => e.preventDefault()}
+                              edge="end"
+                              disabled={loading}
+                              size="small"
+                            >
+                              {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: 2,
+                          backgroundColor: '#F9FAFB',
+                          '& fieldset': {
+                            borderColor: '#E5E7EB',
+                          },
+                          '&:hover fieldset': {
+                            borderColor: '#D1D5DB',
+                          },
+                          '&.Mui-focused': {
+                            backgroundColor: '#ffffff',
+                          },
+                          '&.Mui-focused fieldset': {
+                            borderColor: '#4CAF50',
+                            borderWidth: 1,
+                            boxShadow: '0 0 0 3px rgba(76, 175, 80, 0.1)',
+                          },
+                        },
+                        '& .MuiInputBase-input': {
+                          py: 1.5,
+                          fontSize: '0.95rem',
+                          fontFamily: 'inherit',
+                        },
+                      }}
+                    />
+                  </Box>
+                )}
+
+                {/* Forgot Password & Submit */}
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+                  <Box /> {/* Spacer */}
+                  <Link
+                    component={RouterLink}
+                    to="/forgot-password"
+                    sx={{
+                      color: '#4CAF50',
+                      fontSize: '0.875rem',
+                      fontWeight: 600,
+                      textDecoration: 'none',
+                      fontFamily: 'inherit',
+                      '&:hover': {
+                        color: '#388E3C',
+                      },
+                    }}
+                  >
+                    Forgot password?
+                  </Link>
+                </Box>
+
+                {/* Submit Button */}
+                {loading ? (
+                  <Skeleton variant="rectangular" height={48} sx={{ borderRadius: 2 }} />
+                ) : (
                   <Button
                     fullWidth
                     variant="contained"
                     size="large"
-                    onClick={handleVerifyOTP}
-                    disabled={loading || otp.length !== 6}
-                    endIcon={loading ? null : <ArrowForwardIcon />}
+                    type="submit"
+                    disabled={loading || !formik.isValid}
                     sx={{
-                      py: { xs: 1.5, sm: 1.75 },
-                      fontSize: { xs: '0.95rem', sm: '1rem' },
-                      fontWeight: 600,
-                      textTransform: 'none',
+                      py: 1.5,
                       borderRadius: 2,
-                      boxShadow: '0 4px 14px 0 rgba(102, 126, 234, 0.39)',
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      mb: 2,
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      fontSize: '1rem',
+                      fontFamily: 'inherit',
+                      bgcolor: '#4CAF50',
+                      boxShadow: 'none',
                       '&:hover': {
-                        boxShadow: '0 6px 20px 0 rgba(102, 126, 234, 0.5)',
+                        bgcolor: '#43A047',
+                        boxShadow: 'none',
+                      },
+                      '&:active': {
+                        bgcolor: '#388E3C',
                       },
                       '&:disabled': {
-                        background: '#e0e0e0',
-                      }
+                        bgcolor: '#E5E7EB',
+                        color: '#9CA3AF',
+                      },
                     }}
                   >
-                    {loading ? <CircularProgress size={24} color="inherit" /> : 'Verify & Login'}
+                    {loading ? 'Signing in...' : 'Sign in'}
                   </Button>
-
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    onClick={handleBack}
-                    disabled={loading}
-                    startIcon={<ArrowBackIcon />}
-                    sx={{
-                      py: { xs: 1.25, sm: 1.5 },
-                      fontSize: { xs: '0.9rem', sm: '0.95rem' },
-                      textTransform: 'none',
-                      borderRadius: 2,
-                      borderColor: '#667eea',
-                      color: '#667eea',
-                      '&:hover': {
-                        borderColor: '#764ba2',
-                        bgcolor: 'rgba(102, 126, 234, 0.04)',
-                      }
-                    }}
-                  >
-                    Back
-                  </Button>
-                </Box>
-              </Slide>
-            )}
+                )}
+              </Box>
+            </Box>
 
             {/* Footer */}
-            <Box
-              sx={{
-                textAlign: 'center',
-                mt: { xs: 3, sm: 4 },
-                pt: { xs: 2, sm: 3 },
-                borderTop: '1px solid rgba(0, 0, 0, 0.08)'
-              }}
-            >
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{
-                  fontSize: { xs: '0.7rem', sm: '0.75rem' },
-                  display: 'block',
-                  mb: 1
-                }}
-              >
-                <Box component="span" sx={{ fontWeight: 500 }}>Spentiva</Box>
-                {' '}
-                <Box component="span" sx={{ opacity: 0.7 }}>By Exyconn</Box>
-                {' • '}
-                <Box
-                  component="span"
-                  onClick={() => navigate('/privacy-policy')}
+            <Box sx={{ mt: 5, textAlign: 'center' }}>
+              <Typography variant="body2" sx={{ color: '#6B7280', fontFamily: 'inherit' }}>
+                Don't have an account?{' '}
+                <Link
+                  component={RouterLink}
+                  to="/signup"
                   sx={{
-                    cursor: 'pointer',
+                    color: '#4CAF50',
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                    fontFamily: 'inherit',
                     '&:hover': {
-                      color: '#667eea',
-                      textDecoration: 'underline'
-                    }
+                      color: '#388E3C',
+                    },
                   }}
                 >
-                  Privacy Policy
-                </Box>
-                {' • '}
-                <Box
-                  component="span"
-                  onClick={() => navigate('/terms-and-conditions')}
-                  sx={{
-                    cursor: 'pointer',
-                    '&:hover': {
-                      color: '#667eea',
-                      textDecoration: 'underline'
-                    }
-                  }}
-                >
-                  Terms & Conditions
-                </Box>
+                  Sign up for free
+                </Link>
               </Typography>
             </Box>
-          </Paper>
+          </Box>
         </Fade>
-      </Container>
+      </Box>
+
+      {/* Right Side - Image */}
+      <Box
+        sx={{
+          flex: '1 1 auto',
+          display: { xs: 'none', md: 'block' },
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundImage: 'url(https://images.pexels.com/photos/6608880/pexels-photo-6608880.jpeg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.4) 100%)',
+            },
+          }}
+        />
+
+        {/* Overlay Content */}
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            p: 8,
+            zIndex: 2,
+            color: 'white',
+          }}
+        >
+          <Fade in={true} timeout={1000}>
+            <Box>
+              <Typography
+                variant="h3"
+                sx={{
+                  fontWeight: 700,
+                  mb: 2,
+                  letterSpacing: '-0.02em',
+                  fontFamily: 'inherit',
+                  textShadow: '0 2px 10px rgba(0,0,0,0.3)',
+                }}
+              >
+                Manage your expenses with confidence.
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 400,
+                  opacity: 0.9,
+                  fontFamily: 'inherit',
+                  maxWidth: '600px',
+                  textShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                }}
+              >
+                Join thousands of businesses that trust Spentiva for their financial tracking needs.
+              </Typography>
+            </Box>
+          </Fade>
+        </Box>
+      </Box>
     </Box>
   );
 };

@@ -1,16 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import axios from 'axios';
+import { api, User } from '../config/api';
 
-interface User {
-  id: string;
-  name: string;
-  phone: string;
-  email?: string;
-  emailVerified: boolean;
-  phoneVerified: boolean;
-  profilePhoto?: string;
-  accountType: 'personal' | 'business';
-}
 
 interface AuthContextType {
   user: User | null;
@@ -46,7 +36,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const savedToken = localStorage.getItem('authToken');
     if (savedToken) {
       setToken(savedToken);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
       fetchCurrentUser(savedToken);
     } else {
       setLoading(false);
@@ -55,10 +44,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const fetchCurrentUser = async (authToken: string) => {
     try {
-      const response = await axios.get('https://api.spentiva.com/api/auth/me', {
-        headers: { Authorization: `Bearer ${authToken}` }
-      });
-      setUser(response.data.user);
+      const response = await api.auth.getCurrentUser(authToken);
+      setUser(response.user);
     } catch (error) {
       console.error('Error fetching user:', error);
       logout();
@@ -71,14 +58,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setToken(newToken);
     setUser(newUser);
     localStorage.setItem('authToken', newToken);
-    axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+    // Token will be automatically added by apiClient interceptor
   };
 
   const logout = () => {
     setToken(null);
     setUser(null);
     localStorage.removeItem('authToken');
-    delete axios.defaults.headers.common['Authorization'];
+    // Token will be automatically removed by apiClient interceptor
   };
 
   const updateUser = (updatedUser: User) => {

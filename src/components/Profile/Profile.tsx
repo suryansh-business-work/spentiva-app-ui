@@ -29,7 +29,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import BusinessIcon from '@mui/icons-material/Business';
 import { useAuth } from '../../contexts/AuthContext';
-import axios from 'axios';
+import { api, API_BASE } from '../../config/api';
 
 const Profile: React.FC = () => {
   const { user, updateUser, token } = useAuth();
@@ -68,20 +68,12 @@ const Profile: React.FC = () => {
     setMessage('');
 
     try {
-      const formData = new FormData();
-      formData.append('photo', photoFile);
-
-      const response = await axios.post('https://api.spentiva.com/api/auth/profile-photo', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.auth.uploadProfilePhoto(photoFile, token!);
 
       if (user) {
         updateUser({
           ...user,
-          profilePhoto: response.data.photoUrl,
+          profilePhoto: response.photoUrl,
         });
       }
 
@@ -101,17 +93,12 @@ const Profile: React.FC = () => {
     setMessage('');
 
     try {
-      const response = await axios.put(
-        'https://api.spentiva.com/api/auth/profile',
+      const response = await api.auth.updateProfile(
         { name, email: email || undefined },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        token!
       );
 
-      updateUser(response.data.user);
+      updateUser(response.user);
       setMessage('Profile updated successfully');
     } catch (err: any) {
       setError(err.response?.data?.error || 'Failed to update profile');
@@ -130,17 +117,9 @@ const Profile: React.FC = () => {
     setError('');
 
     try {
-      const response = await axios.post(
-        'https://api.spentiva.com/api/auth/send-email-otp',
-        { email },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response: any = await api.auth.sendEmailOtp(email, token!);
 
-      setDevOtp(response.data.devOtp);
+      setDevOtp(response.devOtp);
       setEmailToVerify(email);
       setEmailDialogOpen(true);
       setMessage('OTP sent to your email');
@@ -161,17 +140,9 @@ const Profile: React.FC = () => {
     setError('');
 
     try {
-      const response = await axios.post(
-        'https://api.spentiva.com/api/auth/verify-email-otp',
-        { email: emailToVerify, otp: emailOtp },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await api.auth.verifyEmailOtp(emailToVerify, emailOtp, token!);
 
-      updateUser(response.data.user);
+      updateUser(response.user);
       setEmailDialogOpen(false);
       setEmailOtp('');
       setDevOtp('');
@@ -186,7 +157,7 @@ const Profile: React.FC = () => {
   const getPhotoUrl = () => {
     if (photoPreview) return photoPreview;
     if (user?.profilePhoto) {
-      return `https://api.spentiva.com${user.profilePhoto}`;
+      return `${API_BASE}${user.profilePhoto}`;
     }
     return undefined;
   };
