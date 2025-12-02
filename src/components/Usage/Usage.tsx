@@ -203,7 +203,14 @@ const Usage = () => {
   if (loading) {
     return (
       <Container maxWidth="xl" sx={{ mt: 3, mb: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '400px',
+          }}
+        >
           <CircularProgress />
         </Box>
       </Container>
@@ -251,15 +258,20 @@ const Usage = () => {
           </Typography>
           <Grid container spacing={3}>
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-              <Card sx={{
-                borderRadius: 3,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                boxShadow: '0 4px 20px rgba(102, 126, 234, 0.3)',
-              }}>
+              <Card
+                sx={{
+                  borderRadius: 3,
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  boxShadow: '0 4px 20px rgba(102, 126, 234, 0.3)',
+                }}
+              >
                 <CardContent sx={{ p: 3 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, color: 'white' }}>
                     <MessageIcon sx={{ mr: 1, fontSize: '1.5em' }} />
-                    <Typography variant="body1" sx={{ opacity: 0.95, fontSize: '0.95em', fontWeight: 500 }}>
+                    <Typography
+                      variant="body1"
+                      sx={{ opacity: 0.95, fontSize: '0.95em', fontWeight: 500 }}
+                    >
                       Total Messages
                     </Typography>
                   </Box>
@@ -271,15 +283,20 @@ const Usage = () => {
             </Grid>
 
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-              <Card sx={{
-                borderRadius: 3,
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                boxShadow: '0 4px 20px rgba(16, 185, 129, 0.3)',
-              }}>
+              <Card
+                sx={{
+                  borderRadius: 3,
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  boxShadow: '0 4px 20px rgba(16, 185, 129, 0.3)',
+                }}
+              >
                 <CardContent sx={{ p: 3 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, color: 'white' }}>
                     <TokenIcon sx={{ mr: 1, fontSize: '1.5em' }} />
-                    <Typography variant="body1" sx={{ opacity: 0.95, fontSize: '0.95em', fontWeight: 500 }}>
+                    <Typography
+                      variant="body1"
+                      sx={{ opacity: 0.95, fontSize: '0.95em', fontWeight: 500 }}
+                    >
                       Total Tokens
                     </Typography>
                   </Box>
@@ -291,15 +308,20 @@ const Usage = () => {
             </Grid>
 
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-              <Card sx={{
-                borderRadius: 3,
-                background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-                boxShadow: '0 4px 20px rgba(59, 130, 246, 0.3)',
-              }}>
+              <Card
+                sx={{
+                  borderRadius: 3,
+                  background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                  boxShadow: '0 4px 20px rgba(59, 130, 246, 0.3)',
+                }}
+              >
                 <CardContent sx={{ p: 3 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, color: 'white' }}>
                     <PersonIcon sx={{ mr: 1, fontSize: '1.5em' }} />
-                    <Typography variant="body1" sx={{ opacity: 0.95, fontSize: '0.95em', fontWeight: 500 }}>
+                    <Typography
+                      variant="body1"
+                      sx={{ opacity: 0.95, fontSize: '0.95em', fontWeight: 500 }}
+                    >
                       User Messages
                     </Typography>
                   </Box>
@@ -311,15 +333,20 @@ const Usage = () => {
             </Grid>
 
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-              <Card sx={{
-                borderRadius: 3,
-                background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                boxShadow: '0 4px 20px rgba(245, 158, 11, 0.3)',
-              }}>
+              <Card
+                sx={{
+                  borderRadius: 3,
+                  background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                  boxShadow: '0 4px 20px rgba(245, 158, 11, 0.3)',
+                }}
+              >
                 <CardContent sx={{ p: 3 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, color: 'white' }}>
                     <AIIcon sx={{ mr: 1, fontSize: '1.5em' }} />
-                    <Typography variant="body1" sx={{ opacity: 0.95, fontSize: '0.95em', fontWeight: 500 }}>
+                    <Typography
+                      variant="body1"
+                      sx={{ opacity: 0.95, fontSize: '0.95em', fontWeight: 500 }}
+                    >
                       AI Messages
                     </Typography>
                   </Box>
@@ -356,15 +383,20 @@ const Usage = () => {
         </Typography>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <Card sx={{
-              borderRadius: 3,
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              boxShadow: '0 4px 20px rgba(102, 126, 234, 0.3)',
-            }}>
+            <Card
+              sx={{
+                borderRadius: 3,
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                boxShadow: '0 4px 20px rgba(102, 126, 234, 0.3)',
+              }}
+            >
               <CardContent sx={{ p: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, color: 'white' }}>
                   <MessageIcon sx={{ mr: 1, fontSize: '1.5em' }} />
-                  <Typography variant="body1" sx={{ opacity: 0.95, fontSize: '0.95em', fontWeight: 500 }}>
+                  <Typography
+                    variant="body1"
+                    sx={{ opacity: 0.95, fontSize: '0.95em', fontWeight: 500 }}
+                  >
                     Total Messages
                   </Typography>
                 </Box>
@@ -376,15 +408,20 @@ const Usage = () => {
           </Grid>
 
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <Card sx={{
-              borderRadius: 3,
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-              boxShadow: '0 4px 20px rgba(16, 185, 129, 0.3)',
-            }}>
+            <Card
+              sx={{
+                borderRadius: 3,
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                boxShadow: '0 4px 20px rgba(16, 185, 129, 0.3)',
+              }}
+            >
               <CardContent sx={{ p: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, color: 'white' }}>
                   <TokenIcon sx={{ mr: 1, fontSize: '1.5em' }} />
-                  <Typography variant="body1" sx={{ opacity: 0.95, fontSize: '0.95em', fontWeight: 500 }}>
+                  <Typography
+                    variant="body1"
+                    sx={{ opacity: 0.95, fontSize: '0.95em', fontWeight: 500 }}
+                  >
                     Total Tokens
                   </Typography>
                 </Box>
@@ -396,15 +433,20 @@ const Usage = () => {
           </Grid>
 
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <Card sx={{
-              borderRadius: 3,
-              background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-              boxShadow: '0 4px 20px rgba(59, 130, 246, 0.3)',
-            }}>
+            <Card
+              sx={{
+                borderRadius: 3,
+                background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                boxShadow: '0 4px 20px rgba(59, 130, 246, 0.3)',
+              }}
+            >
               <CardContent sx={{ p: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, color: 'white' }}>
                   <PersonIcon sx={{ mr: 1, fontSize: '1.5em' }} />
-                  <Typography variant="body1" sx={{ opacity: 0.95, fontSize: '0.95em', fontWeight: 500 }}>
+                  <Typography
+                    variant="body1"
+                    sx={{ opacity: 0.95, fontSize: '0.95em', fontWeight: 500 }}
+                  >
                     User Messages
                   </Typography>
                 </Box>
@@ -416,15 +458,20 @@ const Usage = () => {
           </Grid>
 
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <Card sx={{
-              borderRadius: 3,
-              background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-              boxShadow: '0 4px 20px rgba(245, 158, 11, 0.3)',
-            }}>
+            <Card
+              sx={{
+                borderRadius: 3,
+                background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                boxShadow: '0 4px 20px rgba(245, 158, 11, 0.3)',
+              }}
+            >
               <CardContent sx={{ p: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, color: 'white' }}>
                   <AIIcon sx={{ mr: 1, fontSize: '1.5em' }} />
-                  <Typography variant="body1" sx={{ opacity: 0.95, fontSize: '0.95em', fontWeight: 500 }}>
+                  <Typography
+                    variant="body1"
+                    sx={{ opacity: 0.95, fontSize: '0.95em', fontWeight: 500 }}
+                  >
                     AI Messages
                   </Typography>
                 </Box>
@@ -449,7 +496,7 @@ const Usage = () => {
             onChange={handleTrackerChange}
           >
             <MenuItem value="all">All Trackers</MenuItem>
-            {trackers.map((tracker) => (
+            {trackers.map(tracker => (
               <MenuItem key={tracker._id} value={tracker._id}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Typography>{tracker.name}</Typography>
@@ -460,7 +507,10 @@ const Usage = () => {
                       height: 20,
                       fontSize: '0.7em',
                       textTransform: 'capitalize',
-                      bgcolor: tracker.type === 'business' ? 'rgba(102, 126, 234, 0.1)' : 'rgba(16, 185, 129, 0.1)',
+                      bgcolor:
+                        tracker.type === 'business'
+                          ? 'rgba(102, 126, 234, 0.1)'
+                          : 'rgba(16, 185, 129, 0.1)',
                       color: tracker.type === 'business' ? '#667eea' : '#10b981',
                     }}
                   />
@@ -486,21 +536,9 @@ const Usage = () => {
               },
             }}
           >
-            <Tab
-              icon={<TrendingUpIcon />}
-              iconPosition="start"
-              label="Usage"
-            />
-            <Tab
-              icon={<ShowChartIcon />}
-              iconPosition="start"
-              label="Graphs"
-            />
-            <Tab
-              icon={<ListAltIcon />}
-              iconPosition="start"
-              label="Logs"
-            />
+            <Tab icon={<TrendingUpIcon />} iconPosition="start" label="Usage" />
+            <Tab icon={<ShowChartIcon />} iconPosition="start" label="Graphs" />
+            <Tab icon={<ListAltIcon />} iconPosition="start" label="Logs" />
           </Tabs>
         </Box>
 
@@ -516,13 +554,15 @@ const Usage = () => {
                   </Typography>
                   {usageData.byTracker.length === 0 ? (
                     <Alert severity="info">
-                      No usage data available. Start using AI chat in your trackers to see statistics here.
+                      No usage data available. Start using AI chat in your trackers to see
+                      statistics here.
                     </Alert>
                   ) : (
                     <Grid container spacing={3}>
-                      {usageData.byTracker.map((tracker) => {
+                      {usageData.byTracker.map(tracker => {
                         const totalMessages = usageData.overall.totalMessages;
-                        const percentage = totalMessages > 0 ? (tracker.messageCount / totalMessages) * 100 : 0;
+                        const percentage =
+                          totalMessages > 0 ? (tracker.messageCount / totalMessages) * 100 : 0;
                         return (
                           <Grid size={{ xs: 12, sm: 6, md: 4 }} key={tracker.trackerId}>
                             <Paper
@@ -533,14 +573,25 @@ const Usage = () => {
                                 borderColor: '#e8eaec',
                                 transition: 'all 0.3s',
                                 '&:hover': {
-                                  borderColor: tracker.trackerType === 'business' ? '#667eea' : '#10b981',
+                                  borderColor:
+                                    tracker.trackerType === 'business' ? '#667eea' : '#10b981',
                                   boxShadow: `0 4px 16px ${tracker.trackerType === 'business' ? 'rgba(102, 126, 234, 0.2)' : 'rgba(16, 185, 129, 0.2)'}`,
                                   transform: 'translateY(-2px)',
                                 },
                               }}
                             >
-                              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                                <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1a202c', fontSize: '1.05em' }}>
+                              <Box
+                                sx={{
+                                  display: 'flex',
+                                  justifyContent: 'space-between',
+                                  alignItems: 'center',
+                                  mb: 2,
+                                }}
+                              >
+                                <Typography
+                                  variant="subtitle1"
+                                  sx={{ fontWeight: 600, color: '#1a202c', fontSize: '1.05em' }}
+                                >
                                   {tracker.trackerName}
                                 </Typography>
                                 <Chip
@@ -550,8 +601,12 @@ const Usage = () => {
                                     fontSize: '0.7em',
                                     height: 24,
                                     textTransform: 'capitalize',
-                                    bgcolor: tracker.trackerType === 'business' ? 'rgba(102, 126, 234, 0.1)' : 'rgba(16, 185, 129, 0.1)',
-                                    color: tracker.trackerType === 'business' ? '#667eea' : '#10b981',
+                                    bgcolor:
+                                      tracker.trackerType === 'business'
+                                        ? 'rgba(102, 126, 234, 0.1)'
+                                        : 'rgba(16, 185, 129, 0.1)',
+                                    color:
+                                      tracker.trackerType === 'business' ? '#667eea' : '#10b981',
                                     fontWeight: 600,
                                   }}
                                 />
@@ -559,11 +614,20 @@ const Usage = () => {
 
                               <Stack spacing={2}>
                                 <Box>
-                                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.9em' }}>
+                                  <Box
+                                    sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}
+                                  >
+                                    <Typography
+                                      variant="body2"
+                                      color="text.secondary"
+                                      sx={{ fontSize: '0.9em' }}
+                                    >
                                       Messages
                                     </Typography>
-                                    <Typography variant="body1" sx={{ fontWeight: 600, fontSize: '1em' }}>
+                                    <Typography
+                                      variant="body1"
+                                      sx={{ fontWeight: 600, fontSize: '1em' }}
+                                    >
                                       {tracker.messageCount}
                                     </Typography>
                                   </Box>
@@ -575,32 +639,65 @@ const Usage = () => {
                                       borderRadius: 4,
                                       bgcolor: '#e8eaec',
                                       '& .MuiLinearProgress-bar': {
-                                        bgcolor: tracker.trackerType === 'business' ? '#667eea' : '#10b981',
+                                        bgcolor:
+                                          tracker.trackerType === 'business'
+                                            ? '#667eea'
+                                            : '#10b981',
                                         borderRadius: 4,
                                       },
                                     }}
                                   />
-                                  <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                                  <Typography
+                                    variant="caption"
+                                    color="text.secondary"
+                                    sx={{ mt: 0.5, display: 'block' }}
+                                  >
                                     {percentage.toFixed(1)}% of total
                                   </Typography>
                                 </Box>
 
                                 <Divider />
 
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.9em' }}>
+                                <Box
+                                  sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                  }}
+                                >
+                                  <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                    sx={{ fontSize: '0.9em' }}
+                                  >
                                     Tokens
                                   </Typography>
-                                  <Typography variant="body1" sx={{ fontWeight: 600, fontSize: '1em' }}>
+                                  <Typography
+                                    variant="body1"
+                                    sx={{ fontWeight: 600, fontSize: '1em' }}
+                                  >
                                     {tracker.tokenCount.toLocaleString()}
                                   </Typography>
                                 </Box>
 
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.9em' }}>
+                                <Box
+                                  sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                  }}
+                                >
+                                  <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                    sx={{ fontSize: '0.9em' }}
+                                  >
                                     Token Count
                                   </Typography>
-                                  <Typography variant="body1" sx={{ fontWeight: 600, fontSize: '1em' }}>
+                                  <Typography
+                                    variant="body1"
+                                    sx={{ fontWeight: 600, fontSize: '1em' }}
+                                  >
                                     {tracker.tokenCount.toLocaleString()}
                                   </Typography>
                                 </Box>
@@ -637,18 +734,18 @@ const Usage = () => {
                       {trackerUsageData.tracker.trackerName} - Detailed Usage
                     </Typography>
                     {trackerUsageData.tracker.isDeleted && (
-                      <Chip
-                        label="Deleted Tracker"
-                        color="error"
-                        size="small"
-                      />
+                      <Chip label="Deleted Tracker" color="error" size="small" />
                     )}
                   </Box>
 
                   <Grid container spacing={3} sx={{ mb: 4 }}>
                     <Grid size={{ xs: 6, md: 3 }}>
                       <Paper sx={{ p: 2.5, borderRadius: 2, bgcolor: '#f8f9fa' }}>
-                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1, fontSize: '0.85em' }}>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ display: 'block', mb: 1, fontSize: '0.85em' }}
+                        >
                           Total Messages
                         </Typography>
                         <Typography variant="h4" sx={{ fontWeight: 700, color: '#667eea' }}>
@@ -658,7 +755,11 @@ const Usage = () => {
                     </Grid>
                     <Grid size={{ xs: 6, md: 3 }}>
                       <Paper sx={{ p: 2.5, borderRadius: 2, bgcolor: '#f8f9fa' }}>
-                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1, fontSize: '0.85em' }}>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ display: 'block', mb: 1, fontSize: '0.85em' }}
+                        >
                           Total Tokens
                         </Typography>
                         <Typography variant="h4" sx={{ fontWeight: 700, color: '#10b981' }}>
@@ -668,7 +769,11 @@ const Usage = () => {
                     </Grid>
                     <Grid size={{ xs: 6, md: 3 }}>
                       <Paper sx={{ p: 2.5, borderRadius: 2, bgcolor: '#f8f9fa' }}>
-                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1, fontSize: '0.85em' }}>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ display: 'block', mb: 1, fontSize: '0.85em' }}
+                        >
                           User Messages
                         </Typography>
                         <Typography variant="h4" sx={{ fontWeight: 700, color: '#3b82f6' }}>
@@ -678,7 +783,11 @@ const Usage = () => {
                     </Grid>
                     <Grid size={{ xs: 6, md: 3 }}>
                       <Paper sx={{ p: 2.5, borderRadius: 2, bgcolor: '#f8f9fa' }}>
-                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1, fontSize: '0.85em' }}>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ display: 'block', mb: 1, fontSize: '0.85em' }}
+                        >
                           AI Messages
                         </Typography>
                         <Typography variant="h4" sx={{ fontWeight: 700, color: '#f59e0b' }}>
@@ -707,12 +816,23 @@ const Usage = () => {
                               bgcolor: index % 2 === 0 ? '#f8f9fa' : 'transparent',
                             }}
                           >
-                            <Typography variant="body2" sx={{ fontWeight: 500, minWidth: 100, fontSize: '0.95em' }}>
-                              {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                            <Typography
+                              variant="body2"
+                              sx={{ fontWeight: 500, minWidth: 100, fontSize: '0.95em' }}
+                            >
+                              {new Date(day.date).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                              })}
                             </Typography>
                             <Box sx={{ display: 'flex', gap: 4 }}>
                               <Box sx={{ textAlign: 'right' }}>
-                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: '0.8em' }}>
+                                <Typography
+                                  variant="caption"
+                                  color="text.secondary"
+                                  sx={{ display: 'block', fontSize: '0.8em' }}
+                                >
                                   Messages
                                 </Typography>
                                 <Typography variant="body1" sx={{ fontWeight: 600 }}>
@@ -720,7 +840,11 @@ const Usage = () => {
                                 </Typography>
                               </Box>
                               <Box sx={{ textAlign: 'right' }}>
-                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: '0.8em' }}>
+                                <Typography
+                                  variant="caption"
+                                  color="text.secondary"
+                                  sx={{ display: 'block', fontSize: '0.8em' }}
+                                >
                                   Tokens
                                 </Typography>
                                 <Typography variant="body1" sx={{ fontWeight: 600 }}>
@@ -735,11 +859,8 @@ const Usage = () => {
                   )}
                 </Box>
               ) : (
-                <Alert severity="info">
-                  No usage data available for this tracker yet
-                </Alert>
-              )
-              }
+                <Alert severity="info">No usage data available for this tracker yet</Alert>
+              )}
             </Box>
           )}
 
@@ -747,7 +868,8 @@ const Usage = () => {
           {currentTab === 1 && (
             <Box>
               <Alert severity="info" sx={{ mb: 3 }}>
-                Graph visualizations coming soon! This will show usage trends, comparisons, and analytics.
+                Graph visualizations coming soon! This will show usage trends, comparisons, and
+                analytics.
               </Alert>
               {selectedTracker === 'all' ? (
                 <Box>
@@ -761,18 +883,20 @@ const Usage = () => {
                     </Typography>
                   </Paper>
                 </Box>
-              ) : trackerUsageData && (
-                <Box>
-                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-                    {trackerUsageData.tracker.trackerName} - Message Logs
-                  </Typography>
-                  <Paper sx={{ p: 4, textAlign: 'center', bgcolor: '#f8f9fa', borderRadius: 2 }}>
-                    <ShowChartIcon sx={{ fontSize: 64, color: '#8892a9', mb: 2 }} />
-                    <Typography variant="body1" color="text.secondary">
-                      Tracker-specific charts and analytics will be displayed here
+              ) : (
+                trackerUsageData && (
+                  <Box>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+                      {trackerUsageData.tracker.trackerName} - Message Logs
                     </Typography>
-                  </Paper>
-                </Box>
+                    <Paper sx={{ p: 4, textAlign: 'center', bgcolor: '#f8f9fa', borderRadius: 2 }}>
+                      <ShowChartIcon sx={{ fontSize: 64, color: '#8892a9', mb: 2 }} />
+                      <Typography variant="body1" color="text.secondary">
+                        Tracker-specific charts and analytics will be displayed here
+                      </Typography>
+                    </Paper>
+                  </Box>
+                )
               )}
             </Box>
           )}
@@ -784,28 +908,37 @@ const Usage = () => {
                 <Alert severity="warning">
                   Please select a specific tracker to view message logs
                 </Alert>
-              ) : trackerUsageData && trackerUsageData.messages && trackerUsageData.messages.length > 0 ? (
+              ) : trackerUsageData &&
+                trackerUsageData.messages &&
+                trackerUsageData.messages.length > 0 ? (
                 <Box>
                   <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
                     {trackerUsageData.tracker.trackerName} - Message Logs
                   </Typography>
-                  <TableContainer component={Paper} sx={{ boxShadow: 'none', border: '1px solid #e8eaec' }}>
+                  <TableContainer
+                    component={Paper}
+                    sx={{ boxShadow: 'none', border: '1px solid #e8eaec' }}
+                  >
                     <Table>
                       <TableHead>
                         <TableRow sx={{ bgcolor: '#f8f9fa' }}>
-                          <TableCell sx={{ fontWeight: 600, fontSize: '0.9em' }}>Timestamp</TableCell>
+                          <TableCell sx={{ fontWeight: 600, fontSize: '0.9em' }}>
+                            Timestamp
+                          </TableCell>
                           <TableCell sx={{ fontWeight: 600, fontSize: '0.9em' }}>Role</TableCell>
                           <TableCell sx={{ fontWeight: 600, fontSize: '0.9em' }}>Message</TableCell>
-                          <TableCell sx={{ fontWeight: 600, fontSize: '0.9em' }} align="right">Tokens</TableCell>
+                          <TableCell sx={{ fontWeight: 600, fontSize: '0.9em' }} align="right">
+                            Tokens
+                          </TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {trackerUsageData.messages.slice(0, 50).map((message) => (
+                        {trackerUsageData.messages.slice(0, 50).map(message => (
                           <TableRow
                             key={message._id}
                             sx={{
                               '&:hover': { bgcolor: '#f8f9fa' },
-                              '& td': { fontSize: '0.9em' }
+                              '& td': { fontSize: '0.9em' },
                             }}
                           >
                             <TableCell sx={{ minWidth: 150 }}>
@@ -821,7 +954,10 @@ const Usage = () => {
                                 label={message.role}
                                 size="small"
                                 sx={{
-                                  bgcolor: message.role === 'user' ? 'rgba(59, 130, 246, 0.1)' : 'rgba(245, 158, 11, 0.1)',
+                                  bgcolor:
+                                    message.role === 'user'
+                                      ? 'rgba(59, 130, 246, 0.1)'
+                                      : 'rgba(245, 158, 11, 0.1)',
                                   color: message.role === 'user' ? '#3b82f6' : '#f59e0b',
                                   fontWeight: 600,
                                   fontSize: '0.75em',
@@ -852,15 +988,17 @@ const Usage = () => {
                     </Table>
                   </TableContainer>
                   {trackerUsageData.messages.length > 50 && (
-                    <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block', textAlign: 'center' }}>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      sx={{ mt: 2, display: 'block', textAlign: 'center' }}
+                    >
                       Showing first 50 messages of {trackerUsageData.messages.length} total
                     </Typography>
                   )}
                 </Box>
               ) : (
-                <Alert severity="info">
-                  No message logs available for this tracker
-                </Alert>
+                <Alert severity="info">No message logs available for this tracker</Alert>
               )}
             </Box>
           )}

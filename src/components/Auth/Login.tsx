@@ -27,9 +27,7 @@ import Logo from '../Logo/Logo';
 
 // Validation schema using Yup
 const validationSchema = Yup.object({
-  email: Yup.string()
-    .email('Please enter a valid email address')
-    .required('Email is required'),
+  email: Yup.string().email('Please enter a valid email address').required('Email is required'),
   password: Yup.string()
     .min(6, 'Password must be at least 6 characters')
     .required('Password is required'),
@@ -48,12 +46,15 @@ const Login: React.FC = () => {
       password: '',
     },
     validationSchema: validationSchema,
-    onSubmit: async (values) => {
+    onSubmit: async values => {
       setLoading(true);
       setError('');
 
       try {
-        const response = await postRequest(endpoints.auth.login, { email: values.email, password: values.password });
+        const response = await postRequest(endpoints.auth.login, {
+          email: values.email,
+          password: values.password,
+        });
 
         const data = response.data;
         if (data.status === 'success') {
@@ -271,12 +272,16 @@ const Login: React.FC = () => {
                             <IconButton
                               aria-label="toggle password visibility"
                               onClick={() => setShowPassword(!showPassword)}
-                              onMouseDown={(e) => e.preventDefault()}
+                              onMouseDown={e => e.preventDefault()}
                               edge="end"
                               disabled={loading}
                               size="small"
                             >
-                              {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                              {showPassword ? (
+                                <VisibilityOff fontSize="small" />
+                              ) : (
+                                <Visibility fontSize="small" />
+                              )}
                             </IconButton>
                           </InputAdornment>
                         ),
@@ -358,7 +363,7 @@ const Login: React.FC = () => {
                       },
                       '&:active': {
                         bgcolor: '#166534',
-                      }
+                      },
                     }}
                   >
                     {loading ? 'Signing in...' : 'Sign in'}
@@ -409,7 +414,8 @@ const Login: React.FC = () => {
             left: 0,
             width: '100%',
             height: '100%',
-            backgroundImage: 'url(https://images.pexels.com/photos/6608880/pexels-photo-6608880.jpeg)',
+            backgroundImage:
+              'url(https://images.pexels.com/photos/6608880/pexels-photo-6608880.jpeg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             '&::after': {

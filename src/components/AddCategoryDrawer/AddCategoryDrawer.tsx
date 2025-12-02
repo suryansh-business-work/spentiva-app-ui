@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Drawer,
   Box,
@@ -8,11 +8,11 @@ import {
   IconButton,
   Alert,
   CircularProgress,
-} from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import AddIcon from "@mui/icons-material/Add";
-import { endpoints } from "../../config/api";
-import { postRequest } from "../../utils/http";
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import AddIcon from '@mui/icons-material/Add';
+import { endpoints } from '../../config/api';
+import { postRequest } from '../../utils/http';
 
 interface AddCategoryDrawerProps {
   open: boolean;
@@ -27,10 +27,10 @@ const AddCategoryDrawer: React.FC<AddCategoryDrawerProps> = ({
   trackerId,
   suggestedCategory,
 }) => {
-  const [categoryName, setCategoryName] = useState("");
-  const [subcategoryName, setSubcategoryName] = useState("");
+  const [categoryName, setCategoryName] = useState('');
+  const [subcategoryName, setSubcategoryName] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   React.useEffect(() => {
     if (suggestedCategory) {
@@ -42,12 +42,12 @@ const AddCategoryDrawer: React.FC<AddCategoryDrawerProps> = ({
     e.preventDefault();
 
     if (!categoryName.trim()) {
-      setError("Category name is required");
+      setError('Category name is required');
       return;
     }
 
     setLoading(true);
-    setError("");
+    setError('');
 
     try {
       const subcategories = subcategoryName.trim()
@@ -60,23 +60,23 @@ const AddCategoryDrawer: React.FC<AddCategoryDrawerProps> = ({
       });
 
       // Notify other components
-      window.dispatchEvent(new Event("categoriesUpdated"));
+      window.dispatchEvent(new Event('categoriesUpdated'));
 
       // Reset and close
-      setCategoryName("");
-      setSubcategoryName("");
+      setCategoryName('');
+      setSubcategoryName('');
       onClose();
     } catch (err: any) {
-      setError(err.response?.data?.error || "Failed to add category");
+      setError(err.response?.data?.error || 'Failed to add category');
     } finally {
       setLoading(false);
     }
   };
 
   const handleClose = () => {
-    setCategoryName("");
-    setSubcategoryName("");
-    setError("");
+    setCategoryName('');
+    setSubcategoryName('');
+    setError('');
     onClose();
   };
 
@@ -86,15 +86,15 @@ const AddCategoryDrawer: React.FC<AddCategoryDrawerProps> = ({
       open={open}
       onClose={handleClose}
       sx={{
-        "& .MuiDrawer-paper": {
-          width: { xs: "100%", sm: 400 },
+        '& .MuiDrawer-paper': {
+          width: { xs: '100%', sm: 400 },
           p: 3,
         },
       }}
     >
       <Box>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
-          <Typography variant="h5" sx={{ fontWeight: 600, color: "#10b981" }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, color: '#10b981' }}>
             Add New Category
           </Typography>
           <IconButton onClick={handleClose}>
@@ -103,18 +103,18 @@ const AddCategoryDrawer: React.FC<AddCategoryDrawerProps> = ({
         </Box>
 
         {error && (
-          <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError("")}>
+          <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
             {error}
           </Alert>
         )}
 
         <form onSubmit={handleSubmit}>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             <TextField
               fullWidth
               label="Category Name"
               value={categoryName}
-              onChange={(e) => setCategoryName(e.target.value)}
+              onChange={e => setCategoryName(e.target.value)}
               placeholder="e.g., Health, Education"
               required
               autoFocus
@@ -124,7 +124,7 @@ const AddCategoryDrawer: React.FC<AddCategoryDrawerProps> = ({
               fullWidth
               label="Subcategory (Optional)"
               value={subcategoryName}
-              onChange={(e) => setSubcategoryName(e.target.value)}
+              onChange={e => setSubcategoryName(e.target.value)}
               placeholder="e.g., Medicine, Doctor Visit"
               helperText="You can add more subcategories later from settings"
             />
@@ -135,18 +135,14 @@ const AddCategoryDrawer: React.FC<AddCategoryDrawerProps> = ({
               startIcon={loading ? <CircularProgress size={20} /> : <AddIcon />}
               disabled={loading || !categoryName.trim()}
               sx={{
-                background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                 py: 1.5,
               }}
             >
-              {loading ? "Adding..." : "Add Category"}
+              {loading ? 'Adding...' : 'Add Category'}
             </Button>
 
-            <Button
-              variant="outlined"
-              onClick={handleClose}
-              disabled={loading}
-            >
+            <Button variant="outlined" onClick={handleClose} disabled={loading}>
               Cancel
             </Button>
           </Box>

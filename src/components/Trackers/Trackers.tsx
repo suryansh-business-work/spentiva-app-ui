@@ -1,76 +1,50 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Paper,
   Typography,
   Box,
-  Card,
-  CardContent,
-  CardActions,
   Button,
-  Chip,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-  Skeleton,
+  Fab,
   Snackbar,
   Alert,
-  Menu,
-  ListItemIcon,
-  ListItemText,
   Fade,
-  Grow,
-  Fab,
   useTheme,
-} from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import SettingsIcon from "@mui/icons-material/Settings";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import BusinessIcon from "@mui/icons-material/Business";
-import PersonIcon from "@mui/icons-material/Person";
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import AddToHomeScreenIcon from "@mui/icons-material/AddToHomeScreen";
-import { endpoints } from "../../config/api";
-import { getRequest, postRequest, putRequest, deleteRequest } from "../../utils/http";
-
-interface Tracker {
-  id: string;
-  name: string;
-  type: "personal" | "business";
-  description?: string;
-  currency: "INR" | "USD" | "EUR" | "GBP";
-  createdAt: Date;
-  updatedAt: Date;
-}
+} from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import AddIcon from '@mui/icons-material/Add';
+import { endpoints } from '../../config/api';
+import { getRequest, postRequest, putRequest, deleteRequest } from '../../utils/http';
+import { Tracker, TrackerFormData, SnackbarState } from './types/tracker.types';
+import LoadingState from './components/LoadingState';
+import EmptyState from './components/EmptyState';
+import TrackerCard from './components/TrackerCard';
+import TrackerActionsDrawer from './components/TrackerActionsDrawer';
+import CreateEditDialog from './components/CreateEditDialog';
+import DeleteDialog from './components/DeleteDialog';
 
 const Trackers: React.FC = () => {
   const navigate = useNavigate();
-  const theme = useTheme(); // Use MUI theme for theme-aware colors
+  const theme = useTheme();
   const [trackers, setTrackers] = useState<Tracker[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [selectedTracker, setSelectedTracker] = useState<Tracker | null>(null);
-  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" as "success" | "error" });
+  const [snackbar, setSnackbar] = useState<SnackbarState>({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [menuTracker, setMenuTracker] = useState<Tracker | null>(null);
 
-  const [formData, setFormData] = useState({
-    name: "",
-    type: "personal" as "personal" | "business",
-    description: "",
-    currency: "INR" as "INR" | "USD" | "EUR" | "GBP",
+  const [formData, setFormData] = useState<TrackerFormData>({
+    name: '',
+    type: 'personal',
+    description: '',
+    currency: 'INR',
   });
 
   useEffect(() => {
@@ -81,13 +55,11 @@ const Trackers: React.FC = () => {
     setLoading(true);
     try {
       const response = await getRequest(endpoints.trackers.getAll);
-      // The API returns nested data structure: { message, data: { trackers } }
-      // We need to handle this correctly based on the actual response
       const trackersData = response.data?.trackers || response.data?.data?.trackers || [];
       setTrackers(trackersData);
     } catch (error) {
-      console.error("Error loading trackers:", error);
-      setSnackbar({ open: true, message: "Failed to load trackers", severity: "error" });
+      console.error('Error loading trackers:', error);
+      setSnackbar({ open: true, message: 'Failed to load trackers', severity: 'error' });
     } finally {
       setLoading(false);
     }
@@ -100,17 +72,17 @@ const Trackers: React.FC = () => {
       setFormData({
         name: tracker.name,
         type: tracker.type,
-        description: tracker.description || "",
+        description: tracker.description || '',
         currency: tracker.currency,
       });
     } else {
       setEditMode(false);
       setSelectedTracker(null);
       setFormData({
-        name: "",
-        type: "personal",
-        description: "",
-        currency: "INR",
+        name: '',
+        type: 'personal',
+        description: '',
+        currency: 'INR',
       });
     }
     setDialogOpen(true);
@@ -126,16 +98,16 @@ const Trackers: React.FC = () => {
     try {
       if (editMode && selectedTracker) {
         await putRequest(endpoints.trackers.update(selectedTracker.id), formData);
-        setSnackbar({ open: true, message: "Tracker updated successfully", severity: "success" });
+        setSnackbar({ open: true, message: 'Tracker updated successfully', severity: 'success' });
       } else {
         await postRequest(endpoints.trackers.create, formData);
-        setSnackbar({ open: true, message: "Tracker created successfully", severity: "success" });
+        setSnackbar({ open: true, message: 'Tracker created successfully', severity: 'success' });
       }
       handleCloseDialog();
       loadTrackers();
     } catch (error) {
-      console.error("Error saving tracker:", error);
-      setSnackbar({ open: true, message: "Failed to save tracker", severity: "error" });
+      console.error('Error saving tracker:', error);
+      setSnackbar({ open: true, message: 'Failed to save tracker', severity: 'error' });
     }
   };
 
@@ -150,24 +122,24 @@ const Trackers: React.FC = () => {
     try {
       await deleteRequest(endpoints.trackers.delete(selectedTracker.id));
       setDeleteDialogOpen(false);
-      setSnackbar({ open: true, message: "Tracker deleted successfully", severity: "success" });
+      setSnackbar({ open: true, message: 'Tracker deleted successfully', severity: 'success' });
       loadTrackers();
     } catch (error) {
-      console.error("Error deleting tracker:", error);
-      setSnackbar({ open: true, message: "Failed to delete tracker", severity: "error" });
+      console.error('Error deleting tracker:', error);
+      setSnackbar({ open: true, message: 'Failed to delete tracker', severity: 'error' });
     }
   };
 
   const getCurrencySymbol = (currency: string) => {
     switch (currency) {
-      case "INR":
-        return "₹";
-      case "USD":
-        return "$";
-      case "EUR":
-        return "€";
-      case "GBP":
-        return "£";
+      case 'INR':
+        return '₹';
+      case 'USD':
+        return '$';
+      case 'EUR':
+        return '€';
+      case 'GBP':
+        return '£';
       default:
         return currency;
     }
@@ -184,148 +156,20 @@ const Trackers: React.FC = () => {
     setMenuTracker(null);
   };
 
-  const handleMenuAction = (action: "edit" | "settings" | "delete" | "addToHome", tracker: Tracker) => {
-    handleMenuClose();
-    switch (action) {
-      case "edit":
-        handleOpenDialog(tracker);
-        break;
-      case "settings":
-        navigate(`/tracker/${tracker.id}/settings`);
-        break;
-      case "delete":
-        handleDelete(tracker);
-        break;
-      case "addToHome":
-        handleAddToHomeScreen(tracker);
-        break;
-    }
-  };
-
   const handleAddToHomeScreen = async (tracker: Tracker) => {
     try {
-      // Check if the browser supports PWA installation
-      if ('BeforeInstallPromptEvent' in window || 'standalone' in navigator) {
-        // Create a dynamic manifest for this specific tracker
-        const manifestData = {
-          name: tracker.name,
-          short_name: tracker.name,
-          description: tracker.description || `${tracker.name} expense tracker`,
-          start_url: `/tracker/${tracker.id}?standalone=true`,
-          display: 'standalone',
-          background_color: '#ffffff',
-          theme_color: tracker.type === 'business' ? '#667eea' : '#10b981',
-          icons: [
-            {
-              src: '/icon.svg',
-              sizes: 'any',
-              type: 'image/svg+xml',
-              purpose: 'any maskable'
-            }
-          ]
-        };
-
-        // Convert manifest to blob URL
-        const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
-        const manifestURL = URL.createObjectURL(manifestBlob);
-
-        // Create a temporary HTML page with the manifest
-        const htmlContent = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${tracker.name}</title>
-  <link rel="manifest" href="${manifestURL}">
-  <meta name="theme-color" content="${tracker.type === 'business' ? '#667eea' : '#10b981'}">
-  <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-      background: linear-gradient(135deg, ${tracker.type === 'business' ? '#667eea 0%, #764ba2' : '#10b981 0%, #059669'} 100%);
-      color: white;
-      text-align: center;
-      padding: 20px;
-    }
-    .container {
-      max-width: 400px;
-    }
-    h1 { margin: 0 0 10px; font-size: 2em; }
-    p { margin: 10px 0; opacity: 0.9; }
-    .button {
-      margin-top: 20px;
-      padding: 12px 24px;
-      background: white;
-      color: ${tracker.type === 'business' ? '#667eea' : '#10b981'};
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>${tracker.name}</h1>
-    <p>${tracker.description || 'Expense Tracker'}</p>
-    <a href="${window.location.origin}/tracker/${tracker.id}" class="button">
-      Open Tracker
-    </a>
-    <p style="font-size: 14px; margin-top: 30px;">
-      To add to your home screen:<br><br>
-      <strong>Mobile:</strong> Tap the share button and select "Add to Home Screen"<br><br>
-      <strong>Desktop:</strong> Click the install icon in the address bar or use browser menu
-    </p>
-  </div>
-  <script>
-    // Redirect after showing instructions for a moment
-    setTimeout(() => {
-      window.location.href = '${window.location.origin}/tracker/${tracker.id}';
-    }, 8002);
-  </script>
-</body>
-</html>`;
-
-        // Open in new window for installation
-        const newWindow = window.open('', '_blank');
-        if (newWindow) {
-          newWindow.document.write(htmlContent);
-          newWindow.document.close();
-
-          setSnackbar({
-            open: true,
-            message: `Opening ${tracker.name} for installation. Follow your browser's prompts to add to home screen!`,
-            severity: "success"
-          });
-        } else {
-          throw new Error('Popup blocked');
-        }
-
-        // Clean up the blob URL after a delay
-        setTimeout(() => URL.revokeObjectURL(manifestURL), 10000);
-      } else {
-        // Fallback: Just navigate and show instructions
-        window.open(`/tracker/${tracker.id}`, '_blank');
-        setSnackbar({
-          open: true,
-          message: `Opening ${tracker.name}. Use your browser's "Add to Home Screen" option to create an icon!`,
-          severity: "success"
-        });
-      }
+      window.open(`/tracker/${tracker.id}`, '_blank');
+      setSnackbar({
+        open: true,
+        message: `Opening ${tracker.name}. Use your browser's "Add to Home Screen" option to create an icon!`,
+        severity: 'success',
+      });
     } catch (error) {
       console.error('Error creating PWA shortcut:', error);
       setSnackbar({
         open: true,
         message: 'Opening tracker in new window. Use browser menu to add to home screen.',
-        severity: "success"
+        severity: 'success',
       });
       window.open(`/tracker/${tracker.id}`, '_blank');
     }
@@ -339,18 +183,40 @@ const Trackers: React.FC = () => {
           sx={{
             p: { xs: 2.5, sm: 3 },
             mb: { xs: 2, sm: 3 },
-            borderRadius: 3,
+            borderRadius: 1,
             background: theme.palette.background.paper,
             border: `1px solid ${theme.palette.divider}`,
-            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
           }}
         >
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: 2,
+            }}
+          >
             <Box>
-              <Typography variant="h5" gutterBottom sx={{ fontWeight: 700, mb: 0.5, color: theme.palette.text.primary, fontSize: { xs: '1.25em', sm: '1.5em' } }}>
+              <Typography
+                variant="h5"
+                gutterBottom
+                sx={{
+                  fontWeight: 700,
+                  mb: 0.5,
+                  color: theme.palette.text.primary,
+                  fontSize: { xs: '1.25em', sm: '1.5em' },
+                }}
+              >
                 Expense Trackers
               </Typography>
-              <Typography variant="body2" sx={{ color: theme.palette.text.secondary, fontSize: { xs: '0.875em', sm: '0.9375em' } }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: theme.palette.text.secondary,
+                  fontSize: { xs: '0.875em', sm: '0.9375em' },
+                }}
+              >
                 Create separate trackers for different purposes
               </Typography>
             </Box>
@@ -368,7 +234,7 @@ const Trackers: React.FC = () => {
                 px: { xs: 2, sm: 2.5 },
                 py: { xs: 1, sm: 1.25 },
                 borderRadius: 2,
-                textTransform: "none",
+                textTransform: 'none',
                 fontSize: { xs: '0.875em', sm: '0.9375em' },
               }}
             >
@@ -379,429 +245,81 @@ const Trackers: React.FC = () => {
       </Fade>
 
       {loading ? (
-        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)", md: "repeat(3, 1fr)", lg: "repeat(4, 1fr)" }, gap: 3 }}>
-          {[1, 2, 3, 4].map((i) => (
-            <Fade in={true} timeout={300 * i} key={i}>
-              <Box>
-                <Skeleton
-                  variant="rectangular"
-                  height={220}
-                  sx={{
-                    borderRadius: 4,
-                    transform: "scale(1)",
-                    animation: "pulse 1.5s ease-in-out infinite",
-                    backgroundColor: theme.palette.action.hover,
-                    "@keyframes pulse": {
-                      "0%, 100%": { opacity: 1 },
-                      "50%": { opacity: 0.5 },
-                    },
-                  }}
-                />
-              </Box>
-            </Fade>
-          ))}
-        </Box>
+        <LoadingState />
       ) : trackers.length === 0 ? (
-        <Paper
-          elevation={0}
+        <EmptyState onCreateClick={() => handleOpenDialog()} />
+      ) : (
+        <Box
           sx={{
-            p: 6,
-            textAlign: "center",
-            borderRadius: 4,
-            border: `1px solid ${theme.palette.divider}`,
-            background: theme.palette.background.paper,
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: '1fr',
+              sm: 'repeat(2, 1fr)',
+              md: 'repeat(3, 1fr)',
+              lg: 'repeat(4, 1fr)',
+            },
+            gap: 3,
           }}
         >
-          <AccountBalanceWalletIcon sx={{ fontSize: 80, color: theme.palette.text.disabled, mb: 2 }} />
-          <Typography variant="h6" sx={{ color: theme.palette.text.secondary, mb: 1 }} gutterBottom>
-            No trackers yet
-          </Typography>
-          <Typography variant="body2" sx={{ color: theme.palette.text.disabled, mb: 3 }}>
-            Create your first tracker to start managing expenses
-          </Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => handleOpenDialog()}
-            sx={{
-              background: theme.palette.primary.main,
-              boxShadow: `0 4px 12px ${theme.shadows[3]}`,
-            }}
-          >
-            Create Tracker
-          </Button>
-        </Paper>
-      ) : (
-        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)", md: "repeat(3, 1fr)", lg: "repeat(4, 1fr)" }, gap: 3 }}>
           {trackers.map((tracker, index) => (
-            <Grow
-              in={true}
-              timeout={300 + index * 100}
+            <TrackerCard
               key={tracker.id}
-            >
-              <Card
-                elevation={0}
-                sx={{
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  transition: "all 0.2s ease",
-                  cursor: "pointer",
-                  border: "1px solid",
-                  borderColor: theme.palette.divider,
-                  borderRadius: 3,
-                  background: theme.palette.background.paper,
-                  position: "relative",
-                  overflow: "hidden",
-                  "&::before": {
-                    content: '""',
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: "3px",
-                    background: theme.palette.primary.main,
-                  },
-                  "&:hover": {
-                    transform: "translateY(-4px)",
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-                    borderColor: theme.palette.primary.main,
-                  },
-                }}
-                onClick={() => navigate(`/tracker/${tracker.id}`)}
-              >
-                <CardContent sx={{ flexGrow: 1, p: { xs: 2, sm: 2.5 } }}>
-                  <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 1.5 }}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
-                      <Box
-                        sx={{
-                          width: 40,
-                          height: 40,
-                          borderRadius: 2,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          background: theme.palette.primary.main,
-                          boxShadow: `0 2px 8px ${theme.shadows[3]}`,
-                        }}
-                      >
-                        {tracker.type === "business" ? (
-                          <BusinessIcon sx={{ color: "#fff", fontSize: 22 }} />
-                        ) : (
-                          <PersonIcon sx={{ color: "#fff", fontSize: 22 }} />
-                        )}
-                      </Box>
-                      <Box>
-                        <Chip
-                          label={tracker.type}
-                          size="small"
-                          sx={{
-                            textTransform: "capitalize",
-                            fontWeight: 600,
-                            fontSize: "0.7em",
-                            height: 20,
-                            background: theme.palette.success.light,
-                            color: theme.palette.primary.main,
-                            border: `1px solid ${theme.palette.divider}`,
-                          }}
-                        />
-                      </Box>
-                    </Box>
-                    <Box sx={{ display: "flex", gap: 0.5, alignItems: "center" }}>
-                      <Chip
-                        label={getCurrencySymbol(tracker.currency)}
-                        size="small"
-                        sx={{
-                          fontWeight: "bold",
-                          fontSize: "0.85em",
-                          background: theme.palette.action.hover,
-                          color: theme.palette.text.primary,
-                          border: `1px solid ${theme.palette.divider}`,
-                        }}
-                      />
-                      <IconButton
-                        size="small"
-                        onClick={(e) => handleMenuOpen(e, tracker)}
-                        aria-label={`More actions for ${tracker.name}`}
-                        aria-haspopup="menu"
-                        sx={{
-                          color: theme.palette.text.secondary,
-                          "&:hover": {
-                            background: theme.palette.action.hover,
-                            color: theme.palette.text.primary,
-                          },
-                        }}
-                      >
-                        <MoreVertIcon fontSize="small" />
-                      </IconButton>
-                    </Box>
-                  </Box>
-
-                  <Typography
-                    variant="h6"
-                    fontWeight="700"
-                    gutterBottom
-                    sx={{
-                      mb: 1,
-                      fontSize: { xs: '1em', sm: '1.05em' },
-                      color: theme.palette.text.primary,
-                    }}
-                  >
-                    {tracker.name}
-                  </Typography>
-
-                  {tracker.description && (
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        mb: 1.5,
-                        display: "-webkit-box",
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: "vertical",
-                        overflow: "hidden",
-                        lineHeight: 1.4,
-                        color: theme.palette.text.secondary,
-                        fontSize: { xs: '0.8125em', sm: '0.875em' },
-                      }}
-                    >
-                      {tracker.description}
-                    </Typography>
-                  )}
-
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      color: "text.secondary",
-                      fontSize: "0.75em",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 0.5,
-                    }}
-                  >
-                    📅 {new Date(tracker.createdAt).toLocaleDateString("en-IN", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </Typography>
-                </CardContent>
-
-                <CardActions sx={{ px: 2, pb: 2, pt: 0 }}>
-                  <Button
-                    size="small"
-                    variant="contained"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/tracker/${tracker.id}`);
-                    }}
-                    aria-label={`Open ${tracker.name} tracker`}
-                    sx={{
-                      flexGrow: 1,
-                      background: theme.palette.primary.main,
-                      color: theme.palette.primary.contrastText,
-                      textTransform: "none",
-                      fontWeight: 600,
-                      borderRadius: 2,
-                      py: 1,
-                      boxShadow: "none",
-                      "&:hover": {
-                        boxShadow: theme.shadows[4],
-                        transform: 'translateY(-1px)',
-                      },
-                      transition: 'all 0.2s ease',
-                    }}
-                  >
-                    Open Tracker
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grow>
+              tracker={tracker}
+              index={index}
+              onOpen={t => navigate(`/tracker/${t.id}`)}
+              onMoreActions={handleMenuOpen}
+              getCurrencySymbol={getCurrencySymbol}
+            />
           ))}
         </Box>
       )}
 
-      {/* Action Menu */}
-      <Menu
+      {/* Actions Drawer/Menu */}
+      <TrackerActionsDrawer
         anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
+        tracker={menuTracker}
         onClose={handleMenuClose}
-        TransitionComponent={Fade}
-        PaperProps={{
-          elevation: 0,
-          sx: {
-            minWidth: 200,
-            borderRadius: 3,
-            mt: 1,
-            border: `1px solid ${theme.palette.divider}`,
-            boxShadow: `0 8px 24px ${theme.shadows[3]}`,
-          },
-        }}
-      >
-        <MenuItem
-          onClick={() => menuTracker && handleMenuAction("addToHome", menuTracker)}
-          sx={{
-            py: 1.5,
-            borderRadius: 2,
-            mx: 1,
-            my: 0.5,
-            "&:hover": {
-              background: theme.palette.action.hover,
-            },
-          }}
-        >
-          <ListItemIcon>
-            <AddToHomeScreenIcon fontSize="small" sx={{ color: theme.palette.primary.main }} />
-          </ListItemIcon>
-          <ListItemText sx={{ color: theme.palette.text.primary }}>Add to Desktop</ListItemText>
-        </MenuItem>
-        <MenuItem
-          onClick={() => menuTracker && handleMenuAction("settings", menuTracker)}
-          sx={{
-            py: 1.5,
-            borderRadius: 2,
-            mx: 1,
-            my: 0.5,
-            "&:hover": {
-              background: theme.palette.action.hover,
-            },
-          }}
-        >
-          <ListItemIcon>
-            <SettingsIcon fontSize="small" sx={{ color: theme.palette.primary.main }} />
-          </ListItemIcon>
-          <ListItemText sx={{ color: theme.palette.text.primary }}>Category Settings</ListItemText>
-        </MenuItem>
-        <MenuItem
-          onClick={() => menuTracker && handleMenuAction("edit", menuTracker)}
-          sx={{
-            py: 1.5,
-            borderRadius: 2,
-            mx: 1,
-            my: 0.5,
-            "&:hover": {
-              background: theme.palette.action.hover,
-            },
-          }}
-        >
-          <ListItemIcon>
-            <EditIcon fontSize="small" sx={{ color: theme.palette.primary.main }} />
-          </ListItemIcon>
-          <ListItemText sx={{ color: theme.palette.text.primary }}>Edit Tracker</ListItemText>
-        </MenuItem>
-        <MenuItem
-          onClick={() => menuTracker && handleMenuAction("delete", menuTracker)}
-          sx={{
-            py: 1.5,
-            borderRadius: 2,
-            mx: 1,
-            my: 0.5,
-            "&:hover": {
-              background: theme.palette.error.light,
-            },
-          }}
-        >
-          <ListItemIcon>
-            <DeleteIcon fontSize="small" sx={{ color: theme.palette.error.main }} />
-          </ListItemIcon>
-          <ListItemText sx={{ color: theme.palette.error.main }}>Delete Tracker</ListItemText>
-        </MenuItem>
-      </Menu>
+        onEdit={() => menuTracker && handleOpenDialog(menuTracker)}
+        onDelete={() => menuTracker && handleDelete(menuTracker)}
+        onSettings={() => menuTracker && navigate(`/tracker/${menuTracker.id}/settings`)}
+        onAddToHome={() => menuTracker && handleAddToHomeScreen(menuTracker)}
+        getCurrencySymbol={getCurrencySymbol}
+      />
 
       {/* Create/Edit Dialog */}
-      <Dialog open={dialogOpen} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>{editMode ? "Edit Tracker" : "Create New Tracker"}</DialogTitle>
-        <DialogContent>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
-            <TextField
-              fullWidth
-              label="Tracker Name"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder="e.g., Home Expenses, Business Travel"
-              required
-            />
-
-            <FormControl fullWidth>
-              <InputLabel>Tracker Type</InputLabel>
-              <Select
-                value={formData.type}
-                onChange={(e) => setFormData({ ...formData, type: e.target.value as "personal" | "business" })}
-                label="Tracker Type"
-              >
-                <MenuItem value="personal">Personal Use</MenuItem>
-                <MenuItem value="business">Business Use</MenuItem>
-              </Select>
-            </FormControl>
-
-            <TextField
-              fullWidth
-              label="Description (Optional)"
-              multiline
-              rows={3}
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Brief description of this tracker"
-            />
-
-            <FormControl fullWidth>
-              <InputLabel>Currency</InputLabel>
-              <Select
-                value={formData.currency}
-                onChange={(e) => setFormData({ ...formData, currency: e.target.value as any })}
-                label="Currency"
-              >
-                <MenuItem value="INR">INR (₹)</MenuItem>
-                <MenuItem value="USD">USD ($)</MenuItem>
-                <MenuItem value="EUR">EUR (€)</MenuItem>
-                <MenuItem value="GBP">GBP (£)</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button
-            onClick={handleSave}
-            variant="contained"
-            disabled={!formData.name || !formData.type || !formData.currency}
-          >
-            {editMode ? "Update" : "Create"}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <CreateEditDialog
+        open={dialogOpen}
+        editMode={editMode}
+        formData={formData}
+        onClose={handleCloseDialog}
+        onSave={handleSave}
+        onChange={(field, value) => setFormData({ ...formData, [field]: value })}
+      />
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
-        <DialogTitle>Delete Tracker</DialogTitle>
-        <DialogContent>
-          <Typography>
-            Are you sure you want to delete "<strong>{selectedTracker?.name}</strong>"?
-          </Typography>
-          <Typography color="error" sx={{ mt: 1 }}>
-            This will also delete all expenses associated with this tracker. This action cannot be undone.
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleConfirmDelete} color="error" variant="contained">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <DeleteDialog
+        open={deleteDialogOpen}
+        tracker={selectedTracker}
+        onClose={() => setDeleteDialogOpen(false)}
+        onConfirm={handleConfirmDelete}
+      />
 
       {/* Snackbar */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={3000}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Alert severity={snackbar.severity} onClose={() => setSnackbar({ ...snackbar, open: false })}>
+        <Alert
+          severity={snackbar.severity}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+        >
           {snackbar.message}
         </Alert>
       </Snackbar>
 
-      {/* Mobile FAB - Only visible on small screens */}
+      {/* Mobile FAB */}
       <Fab
         color="primary"
         aria-label="Create new tracker"
@@ -818,7 +336,7 @@ const Trackers: React.FC = () => {
         <AddIcon />
       </Fab>
 
-      {/* Screen reader live region for status updates */}
+      {/* Screen reader live region */}
       <Box
         role="status"
         aria-live="polite"
@@ -831,7 +349,9 @@ const Trackers: React.FC = () => {
           overflow: 'hidden',
         }}
       >
-        {loading ? 'Loading trackers...' : `${trackers.length} tracker${trackers.length !== 1 ? 's' : ''} available`}
+        {loading
+          ? 'Loading trackers...'
+          : `${trackers.length} tracker${trackers.length !== 1 ? 's' : ''} available`}
       </Box>
     </Container>
   );

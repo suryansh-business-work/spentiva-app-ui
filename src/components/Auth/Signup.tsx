@@ -31,12 +31,8 @@ import { postRequest } from '../../utils/http';
 
 // Validation schema using Yup
 const validationSchema = Yup.object({
-  name: Yup.string()
-    .min(2, 'Name must be at least 2 characters')
-    .required('Name is required'),
-  email: Yup.string()
-    .email('Please enter a valid email address')
-    .required('Email is required'),
+  name: Yup.string().min(2, 'Name must be at least 2 characters').required('Name is required'),
+  email: Yup.string().email('Please enter a valid email address').required('Email is required'),
   password: Yup.string()
     .min(8, 'Password must be at least 8 characters')
     .required('Password is required'),
@@ -60,7 +56,7 @@ const Signup: React.FC = () => {
       role: 'trial',
     },
     validationSchema: validationSchema,
-    onSubmit: async (values) => {
+    onSubmit: async values => {
       setLoading(true);
       setError('');
 
@@ -439,12 +435,16 @@ const Signup: React.FC = () => {
                             <IconButton
                               aria-label="toggle password visibility"
                               onClick={() => setShowPassword(!showPassword)}
-                              onMouseDown={(e) => e.preventDefault()}
+                              onMouseDown={e => e.preventDefault()}
                               edge="end"
                               disabled={loading}
                               size="small"
                             >
-                              {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                              {showPassword ? (
+                                <VisibilityOff fontSize="small" />
+                              ) : (
+                                <Visibility fontSize="small" />
+                              )}
                             </IconButton>
                           </InputAdornment>
                         ),
@@ -563,7 +563,8 @@ const Signup: React.FC = () => {
             left: 0,
             width: '100%',
             height: '100%',
-            backgroundImage: 'url(https://images.pexels.com/photos/6347546/pexels-photo-6347546.jpeg)',
+            backgroundImage:
+              'url(https://images.pexels.com/photos/6347546/pexels-photo-6347546.jpeg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             '&::after': {

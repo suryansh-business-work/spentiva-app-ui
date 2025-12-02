@@ -207,7 +207,6 @@ const ResetPassword: React.FC = () => {
             {/* Form */}
             <Box component="form" onSubmit={handleResetPassword} noValidate>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-
                 {/* OTP Field */}
                 {loading ? (
                   <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 2 }} />
@@ -233,7 +232,7 @@ const ResetPassword: React.FC = () => {
                       id="otp"
                       placeholder="Enter 6-digit code"
                       value={otp}
-                      onChange={(e) => {
+                      onChange={e => {
                         const value = e.target.value.replace(/\D/g, '');
                         if (value.length <= 6) setOtp(value);
                       }}
@@ -251,7 +250,7 @@ const ResetPassword: React.FC = () => {
                         maxLength: 6,
                         inputMode: 'numeric',
                         pattern: '[0-9]*',
-                        style: { letterSpacing: '0.2em', fontWeight: 600 }
+                        style: { letterSpacing: '0.2em', fontWeight: 600 },
                       }}
                       sx={{
                         '& .MuiOutlinedInput-root': {
@@ -306,7 +305,7 @@ const ResetPassword: React.FC = () => {
                       type={showPassword ? 'text' : 'password'}
                       placeholder="Enter new password"
                       value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
+                      onChange={e => setNewPassword(e.target.value)}
                       disabled={loading || success}
                       autoComplete="new-password"
                       InputProps={{
@@ -320,12 +319,16 @@ const ResetPassword: React.FC = () => {
                             <IconButton
                               aria-label="toggle password visibility"
                               onClick={() => setShowPassword(!showPassword)}
-                              onMouseDown={(e) => e.preventDefault()}
+                              onMouseDown={e => e.preventDefault()}
                               edge="end"
                               disabled={loading}
                               size="small"
                             >
-                              {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                              {showPassword ? (
+                                <VisibilityOff fontSize="small" />
+                              ) : (
+                                <Visibility fontSize="small" />
+                              )}
                             </IconButton>
                           </InputAdornment>
                         ),
@@ -359,7 +362,10 @@ const ResetPassword: React.FC = () => {
                     {newPassword && (
                       <Box sx={{ mt: 1 }}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                          <Typography variant="caption" sx={{ color: '#6B7280', fontSize: '0.75rem' }}>
+                          <Typography
+                            variant="caption"
+                            sx={{ color: '#6B7280', fontSize: '0.75rem' }}
+                          >
                             Strength
                           </Typography>
                           <Typography
@@ -417,7 +423,7 @@ const ResetPassword: React.FC = () => {
                       type={showConfirmPassword ? 'text' : 'password'}
                       placeholder="Re-enter new password"
                       value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      onChange={e => setConfirmPassword(e.target.value)}
                       disabled={loading || success}
                       autoComplete="new-password"
                       InputProps={{
@@ -431,12 +437,16 @@ const ResetPassword: React.FC = () => {
                             <IconButton
                               aria-label="toggle password visibility"
                               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                              onMouseDown={(e) => e.preventDefault()}
+                              onMouseDown={e => e.preventDefault()}
                               edge="end"
                               disabled={loading}
                               size="small"
                             >
-                              {showConfirmPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                              {showConfirmPassword ? (
+                                <VisibilityOff fontSize="small" />
+                              ) : (
+                                <Visibility fontSize="small" />
+                              )}
                             </IconButton>
                           </InputAdornment>
                         ),
@@ -558,7 +568,8 @@ const ResetPassword: React.FC = () => {
             left: 0,
             width: '100%',
             height: '100%',
-            backgroundImage: 'url(https://images.pexels.com/photos/6347546/pexels-photo-6347546.jpeg)',
+            backgroundImage:
+              'url(https://images.pexels.com/photos/6347546/pexels-photo-6347546.jpeg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             '&::after': {

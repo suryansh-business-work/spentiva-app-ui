@@ -12,7 +12,7 @@ const Logo: React.FC<LogoProps> = ({
   width,
   height,
   variant = 'horizontal',
-  showSubtitle = true
+  showSubtitle = true,
 }) => {
   const theme = useTheme();
 
@@ -62,9 +62,7 @@ const Logo: React.FC<LogoProps> = ({
             flexShrink: 0,
           }}
         >
-          <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '1.3rem' }}>
-            S
-          </Typography>
+          <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '1.3rem' }}>S</Typography>
         </Box>
         <Box>
           <Typography
@@ -88,7 +86,7 @@ const Logo: React.FC<LogoProps> = ({
                 transition: 'color 0.3s ease',
                 textAlign: 'left',
                 marginTop: '1px',
-                marginLeft: '2px'
+                marginLeft: '2px',
               }}
             >
               By Exyconn
@@ -114,9 +112,7 @@ const Logo: React.FC<LogoProps> = ({
             justifyContent: 'center',
           }}
         >
-          <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '1.3rem' }}>
-            S
-          </Typography>
+          <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '1.3rem' }}>S</Typography>
         </Box>
         <Box>
           <Typography

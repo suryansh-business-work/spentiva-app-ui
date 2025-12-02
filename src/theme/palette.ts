@@ -6,43 +6,43 @@
 export const palette = {
   // Primary Colors - Light and Professional
   primary: {
-    main: '#8892a9',        // Sephiroth Grey - Main brand color
-    light: '#b7bac3',       // Silver Springs - Light variant
-    lighter: '#d2d6db',     // Angel Hair Silver - Very light
-    lightest: '#e8eaec',    // Mourn Mountain Snow - Subtle backgrounds
-    white: '#fdfdfd',       // Brilliance - Pure white
-    dark: '#845c58',        // Book Binder - Accent/dark elements
+    main: '#8892a9', // Sephiroth Grey - Main brand color
+    light: '#b7bac3', // Silver Springs - Light variant
+    lighter: '#d2d6db', // Angel Hair Silver - Very light
+    lightest: '#e8eaec', // Mourn Mountain Snow - Subtle backgrounds
+    white: '#fdfdfd', // Brilliance - Pure white
+    dark: '#845c58', // Book Binder - Accent/dark elements
   },
 
   // Background Colors
   background: {
-    default: '#fdfdfd',     // Brilliance - Main background
-    paper: '#ffffff',       // Pure white for cards
-    subtle: '#e8eaec',      // Mourn Mountain Snow - Subtle sections
-    hover: '#f5f6f7',       // Light hover state
+    default: '#fdfdfd', // Brilliance - Main background
+    paper: '#ffffff', // Pure white for cards
+    subtle: '#e8eaec', // Mourn Mountain Snow - Subtle sections
+    hover: '#f5f6f7', // Light hover state
   },
 
   // Text Colors - Enhanced for better contrast
   text: {
-    primary: '#1a202c',     // Darker for better contrast (WCAG AA)
-    secondary: '#6b7280',   // Medium gray with good contrast
-    muted: '#9ca3af',       // Light gray for less important text
-    light: '#d1d5db',       // Very light for disabled states
-    accent: '#845c58',      // Book Binder - Accent text
+    primary: '#1a202c', // Darker for better contrast (WCAG AA)
+    secondary: '#6b7280', // Medium gray with good contrast
+    muted: '#9ca3af', // Light gray for less important text
+    light: '#d1d5db', // Very light for disabled states
+    accent: '#845c58', // Book Binder - Accent text
   },
 
   // Header specific colors
   header: {
-    background: '#ffffff',  // Solid white background
-    text: '#1a202c',        // Dark text for contrast
-    border: '#e5e7eb',      // Light border
+    background: '#ffffff', // Solid white background
+    text: '#1a202c', // Dark text for contrast
+    border: '#e5e7eb', // Light border
   },
 
   // Border Colors
   border: {
-    light: '#e8eaec',       // Mourn Mountain Snow
-    default: '#d2d6db',     // Angel Hair Silver
-    medium: '#b7bac3',      // Silver Springs
+    light: '#e8eaec', // Mourn Mountain Snow
+    default: '#d2d6db', // Angel Hair Silver
+    medium: '#b7bac3', // Silver Springs
   },
 
   // Status Colors - Adapted to palette
@@ -93,43 +93,43 @@ export const palette = {
 export const darkPalette = {
   // Primary Colors - Dark Mode
   primary: {
-    main: '#a8b2c9',        // Lighter variant for dark mode
-    light: '#c7cfd9',       // Even lighter for dark mode
-    lighter: '#e2e6eb',     // Very light
-    lightest: '#1e1e1e',    // Dark backgrounds
-    white: '#0a0a0a',       // Dark pure background
-    dark: '#a87873',        // Accent for dark mode
+    main: '#a8b2c9', // Lighter variant for dark mode
+    light: '#c7cfd9', // Even lighter for dark mode
+    lighter: '#e2e6eb', // Very light
+    lightest: '#1e1e1e', // Dark backgrounds
+    white: '#0a0a0a', // Dark pure background
+    dark: '#a87873', // Accent for dark mode
   },
 
   // Background Colors - Dark Mode
   background: {
-    default: '#0a0a0a',     // Main dark background
-    paper: '#1a1a1a',       // Card backgrounds
-    subtle: '#242424',      // Subtle sections
-    hover: '#2a2a2a',       // Hover state
+    default: '#0a0a0a', // Main dark background
+    paper: '#1a1a1a', // Card backgrounds
+    subtle: '#242424', // Subtle sections
+    hover: '#2a2a2a', // Hover state
   },
 
   // Text Colors - Dark Mode with good contrast
   text: {
-    primary: '#e8eaec',     // Light text for dark bg
-    secondary: '#b0b0b0',   // Medium gray
-    muted: '#707070',       // Muted text
-    light: '#404040',       // Very muted
-    accent: '#a87873',      // Accent text
+    primary: '#e8eaec', // Light text for dark bg
+    secondary: '#b0b0b0', // Medium gray
+    muted: '#707070', // Muted text
+    light: '#404040', // Very muted
+    accent: '#a87873', // Accent text
   },
 
   // Header specific colors - Dark Mode
   header: {
-    background: '#1a1a1a',  // Dark header
-    text: '#e8eaec',        // Light text
-    border: '#2a2a2a',      // Dark border
+    background: '#1a1a1a', // Dark header
+    text: '#e8eaec', // Light text
+    border: '#2a2a2a', // Dark border
   },
 
   // Border Colors - Dark Mode
   border: {
-    light: '#2a2a2a',       // Light dark border
-    default: '#3a3a3a',     // Default dark border
-    medium: '#4a4a4a',      // Medium dark border
+    light: '#2a2a2a', // Light dark border
+    default: '#3a3a3a', // Default dark border
+    medium: '#4a4a4a', // Medium dark border
   },
 
   // Status Colors - Dark Mode
@@ -403,4 +403,3 @@ export const getDarkModeConfig = () => ({
 });
 
 export default palette;
-

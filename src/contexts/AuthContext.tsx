@@ -46,7 +46,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const fetchCurrentUser = async (authToken: string) => {
     try {
       const response = await getRequest(endpoints.auth.me, {}, authToken);
-      // The API returns { data: { user: ... } } or similar. 
+      // The API returns { data: { user: ... } } or similar.
       // Based on previous api.ts: return response.data.data; which was { user: User }
       // So response.data.data.user is the user object.
       // Let's check the response structure from previous steps.

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import {
   Container,
   Paper,
@@ -10,19 +10,19 @@ import {
   Skeleton,
   Chip,
   IconButton,
-} from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import ChatIcon from "@mui/icons-material/Chat";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
-import BusinessIcon from "@mui/icons-material/Business";
-import PersonIcon from "@mui/icons-material/Person";
-import ChatInterface from "../ChatInterface/ChatInterface";
-import Dashboard from "../Dashboard/Dashboard";
-import Transactions from "../Transactions/Transactions";
-import { endpoints } from "../../config/api";
-import { getRequest } from "../../utils/http";
-import { palette } from "../../theme/palette";
+} from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ChatIcon from '@mui/icons-material/Chat';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
+import BusinessIcon from '@mui/icons-material/Business';
+import PersonIcon from '@mui/icons-material/Person';
+import ChatInterface from '../ChatInterface/ChatInterface';
+import Dashboard from '../Dashboard/Dashboard';
+import Transactions from '../Transactions/Transactions';
+import { endpoints } from '../../config/api';
+import { getRequest } from '../../utils/http';
+import { palette } from '../../theme/palette';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -39,7 +39,11 @@ function TabPanel(props: TabPanelProps) {
       hidden={value !== index}
       id={`tracker-tabpanel-${index}`}
       aria-labelledby={`tracker-tab-${index}`}
-      style={{ height: '100%', display: value === index ? 'flex' : 'none', flexDirection: 'column' }}
+      style={{
+        height: '100%',
+        display: value === index ? 'flex' : 'none',
+        flexDirection: 'column',
+      }}
       {...other}
     >
       {value === index && children}
@@ -60,9 +64,12 @@ const TrackerView: React.FC = () => {
 
   const getTabValue = (tab: string) => {
     switch (tab) {
-      case 'dashboard': return 1;
-      case 'transactions': return 2;
-      default: return 0;
+      case 'dashboard':
+        return 1;
+      case 'transactions':
+        return 2;
+      default:
+        return 0;
     }
   };
 
@@ -82,7 +89,7 @@ const TrackerView: React.FC = () => {
       const trackerData = response.data?.tracker || response.data?.data?.tracker || null;
       setTracker(trackerData);
     } catch (error) {
-      console.error("Error loading tracker:", error);
+      console.error('Error loading tracker:', error);
     } finally {
       setLoading(false);
     }
@@ -95,14 +102,14 @@ const TrackerView: React.FC = () => {
 
   const getCurrencySymbol = (currency: string) => {
     switch (currency) {
-      case "INR":
-        return "₹";
-      case "USD":
-        return "$";
-      case "EUR":
-        return "€";
-      case "GBP":
-        return "£";
+      case 'INR':
+        return '₹';
+      case 'USD':
+        return '$';
+      case 'EUR':
+        return '€';
+      case 'GBP':
+        return '£';
       default:
         return currency;
     }
@@ -120,7 +127,7 @@ const TrackerView: React.FC = () => {
   if (!tracker) {
     return (
       <Container maxWidth="xl" sx={{ py: 3 }}>
-        <Paper elevation={3} sx={{ p: 4, textAlign: "center" }}>
+        <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
           <Typography variant="h6" color="error">
             Tracker not found
           </Typography>
@@ -144,9 +151,9 @@ const TrackerView: React.FC = () => {
       >
         {/* Tracker Info Row */}
         <Box sx={{ px: { xs: 2, sm: 3 }, pt: { xs: 1.5, sm: 1.75 }, pb: 1 }}>
-          <Box sx={{ display: "flex", alignItems: "center", mb: 0.75 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.75 }}>
             <IconButton
-              onClick={() => navigate("/trackers")}
+              onClick={() => navigate('/trackers')}
               size="small"
               sx={{
                 mr: 1,
@@ -160,15 +167,16 @@ const TrackerView: React.FC = () => {
               <ArrowBackIcon sx={{ fontSize: { xs: 16, sm: 18 } }} />
             </IconButton>
 
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, flex: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1 }}>
               <Box
                 sx={{
                   width: { xs: 32, sm: 36 },
                   height: { xs: 32, sm: 36 },
                   borderRadius: 1.5,
-                  background: tracker.type === 'business'
-                    ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                    : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  background:
+                    tracker.type === 'business'
+                      ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                      : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -188,7 +196,7 @@ const TrackerView: React.FC = () => {
                   variant="h6"
                   sx={{
                     fontWeight: 600,
-                    fontSize: { xs: "0.95em", sm: "1.05em" },
+                    fontSize: { xs: '0.95em', sm: '1.05em' },
                     color: palette.text.primary,
                     lineHeight: 1.2,
                     mb: 0.15,
@@ -201,7 +209,7 @@ const TrackerView: React.FC = () => {
                     variant="body2"
                     sx={{
                       color: palette.text.secondary,
-                      fontSize: { xs: "0.75em", sm: "0.8em" },
+                      fontSize: { xs: '0.75em', sm: '0.8em' },
                       lineHeight: 1.4,
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
@@ -214,19 +222,22 @@ const TrackerView: React.FC = () => {
               </Box>
             </Box>
 
-            <Box sx={{ display: "flex", gap: 0.75, ml: 2 }}>
+            <Box sx={{ display: 'flex', gap: 0.75, ml: 2 }}>
               <Chip
                 label={tracker.type}
                 size="small"
                 sx={{
-                  backgroundColor: tracker.type === 'business' ? 'rgba(102, 126, 234, 0.1)' : 'rgba(16, 185, 129, 0.1)',
+                  backgroundColor:
+                    tracker.type === 'business'
+                      ? 'rgba(102, 126, 234, 0.1)'
+                      : 'rgba(16, 185, 129, 0.1)',
                   color: tracker.type === 'business' ? '#667eea' : '#10b981',
                   fontWeight: 600,
                   height: { xs: 20, sm: 22 },
-                  fontSize: { xs: "0.65em", sm: "0.7em" },
+                  fontSize: { xs: '0.65em', sm: '0.7em' },
                   textTransform: 'capitalize',
                   border: `1px solid ${tracker.type === 'business' ? 'rgba(102, 126, 234, 0.2)' : 'rgba(16, 185, 129, 0.2)'}`,
-                  "& .MuiChip-label": { px: 0.75 }
+                  '& .MuiChip-label': { px: 0.75 },
                 }}
               />
               <Chip
@@ -237,9 +248,9 @@ const TrackerView: React.FC = () => {
                   color: palette.text.primary,
                   fontWeight: 600,
                   height: { xs: 20, sm: 22 },
-                  fontSize: { xs: "0.65em", sm: "0.7em" },
+                  fontSize: { xs: '0.65em', sm: '0.7em' },
                   border: `1px solid ${palette.border.default}`,
-                  "& .MuiChip-label": { px: 0.75 }
+                  '& .MuiChip-label': { px: 0.75 },
                 }}
               />
             </Box>
@@ -258,7 +269,7 @@ const TrackerView: React.FC = () => {
                 minHeight: { xs: 40, sm: 44 },
                 py: { xs: 0.75, sm: 1 },
                 px: { xs: 1, sm: 2 },
-                fontSize: { xs: "0.8em", sm: "0.875em" },
+                fontSize: { xs: '0.8em', sm: '0.875em' },
                 fontWeight: 500,
                 color: palette.text.secondary,
                 textTransform: 'none',
@@ -278,7 +289,7 @@ const TrackerView: React.FC = () => {
                 borderRadius: '3px 3px 0 0',
               },
               '& .MuiTab-iconWrapper': {
-                fontSize: { xs: "1.1em", sm: "1.2em" },
+                fontSize: { xs: '1.1em', sm: '1.2em' },
                 marginRight: { xs: 0.5, sm: 0.75 },
               },
             }}
@@ -291,7 +302,15 @@ const TrackerView: React.FC = () => {
       </Box>
 
       {/* Scrollable Content */}
-      <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 'calc(100vh - 180px)' }}>
+      <Box
+        sx={{
+          flexGrow: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          minHeight: 'calc(100vh - 180px)',
+        }}
+      >
         <TabPanel value={tabValue} index={0}>
           <ChatInterface trackerId={trackerId} />
         </TabPanel>

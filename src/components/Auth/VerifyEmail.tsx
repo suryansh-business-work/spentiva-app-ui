@@ -163,7 +163,7 @@ const VerifyEmail: React.FC = () => {
             )}
 
             {/* Form */}
-            <Box component="form" onSubmit={(e) => e.preventDefault()}>
+            <Box component="form" onSubmit={e => e.preventDefault()}>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 <TextField
                   fullWidth
@@ -171,8 +171,8 @@ const VerifyEmail: React.FC = () => {
                   label="Email Address"
                   placeholder="Enter your email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  onKeyPress={(e) => handleKeyPress(e, otpSent ? handleVerifyEmail : handleSendOTP)}
+                  onChange={e => setEmail(e.target.value)}
+                  onKeyPress={e => handleKeyPress(e, otpSent ? handleVerifyEmail : handleSendOTP)}
                   disabled={loading || otpSent || success}
                   autoFocus={!otpSent}
                   autoComplete="email"
@@ -196,13 +196,13 @@ const VerifyEmail: React.FC = () => {
                     label="Verification Code"
                     placeholder="6-digit OTP"
                     value={otp}
-                    onChange={(e) => {
+                    onChange={e => {
                       const value = e.target.value.replace(/\D/g, '');
                       if (value.length <= 6) {
                         setOtp(value);
                       }
                     }}
-                    onKeyPress={(e) => handleKeyPress(e, handleVerifyEmail)}
+                    onKeyPress={e => handleKeyPress(e, handleVerifyEmail)}
                     disabled={loading || success}
                     autoFocus
                     autoComplete="one-time-code"

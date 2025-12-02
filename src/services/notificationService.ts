@@ -22,7 +22,7 @@ export const showNotification = (title: string, options?: NotificationOptions) =
   if (Notification.permission === 'granted') {
     if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
       // Use service worker for better notification management
-      navigator.serviceWorker.ready.then((registration) => {
+      navigator.serviceWorker.ready.then(registration => {
         registration.showNotification(title, {
           icon: '/icon.svg',
           badge: '/icon.svg',

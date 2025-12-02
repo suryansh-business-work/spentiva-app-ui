@@ -48,7 +48,7 @@ const Profile: React.FC = () => {
       name: Yup.string().required('Name is required'),
       email: Yup.string().email('Invalid email address').required('Email is required'),
     }),
-    onSubmit: async (values) => {
+    onSubmit: async values => {
       setLoading(true);
       setError('');
       setMessage('');
@@ -126,7 +126,14 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', py: 4, fontFamily: '"Inter", sans-serif' }}>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        bgcolor: 'background.default',
+        py: 4,
+        fontFamily: '"Inter", sans-serif',
+      }}
+    >
       <Container maxWidth="lg">
         <Fade in={true} timeout={500}>
           <Box>
@@ -148,7 +155,9 @@ const Profile: React.FC = () => {
               </Typography>
             </Box>
 
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '350px 1fr' }, gap: 3 }}>
+            <Box
+              sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '350px 1fr' }, gap: 3 }}
+            >
               {/* Left Card - Profile Photo */}
               <Grow in={true} timeout={600}>
                 <Card
@@ -214,7 +223,10 @@ const Profile: React.FC = () => {
                               zIndex: 10,
                             }}
                           >
-                            <CircularProgress size={40} sx={{ color: theme.palette.primary.main }} />
+                            <CircularProgress
+                              size={40}
+                              sx={{ color: theme.palette.primary.main }}
+                            />
                           </Box>
                         )}
                       </Box>
@@ -243,16 +255,14 @@ const Profile: React.FC = () => {
                         }}
                       >
                         <PhotoCameraIcon fontSize="small" />
-                        <input
-                          type="file"
-                          hidden
-                          accept="image/*"
-                          onChange={handlePhotoChange}
-                        />
+                        <input type="file" hidden accept="image/*" onChange={handlePhotoChange} />
                       </IconButton>
                     </Box>
 
-                    <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5, color: theme.palette.text.primary }}>
+                    <Typography
+                      variant="h6"
+                      sx={{ fontWeight: 700, mb: 0.5, color: theme.palette.text.primary }}
+                    >
                       {user?.name}
                     </Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary, mb: 3 }}>
@@ -271,9 +281,10 @@ const Profile: React.FC = () => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            background: user?.accountType === 'business'
-                              ? theme.palette.info.light
-                              : theme.palette.primary.light,
+                            background:
+                              user?.accountType === 'business'
+                                ? theme.palette.info.light
+                                : theme.palette.primary.light,
                           }}
                         >
                           {user?.accountType === 'business' ? (
@@ -283,10 +294,24 @@ const Profile: React.FC = () => {
                           )}
                         </Box>
                         <Box>
-                          <Typography variant="caption" sx={{ color: theme.palette.text.secondary, display: 'block', fontWeight: 500 }}>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: theme.palette.text.secondary,
+                              display: 'block',
+                              fontWeight: 500,
+                            }}
+                          >
                             Account Type
                           </Typography>
-                          <Typography variant="body2" sx={{ fontWeight: 600, color: theme.palette.text.primary, textTransform: 'capitalize' }}>
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              fontWeight: 600,
+                              color: theme.palette.text.primary,
+                              textTransform: 'capitalize',
+                            }}
+                          >
                             {user?.accountType || 'Personal'}
                           </Typography>
                         </Box>
@@ -308,8 +333,18 @@ const Profile: React.FC = () => {
                   }}
                 >
                   <CardContent sx={{ p: 4 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-                      <Typography variant="h6" sx={{ fontWeight: 700, color: theme.palette.text.primary }}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        mb: 4,
+                      }}
+                    >
+                      <Typography
+                        variant="h6"
+                        sx={{ fontWeight: 700, color: theme.palette.text.primary }}
+                      >
                         Profile Information
                       </Typography>
                       <Button
@@ -348,7 +383,11 @@ const Profile: React.FC = () => {
                       </Alert>
                     )}
 
-                    <Box component="form" onSubmit={formik.handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <Box
+                      component="form"
+                      onSubmit={formik.handleSubmit}
+                      sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}
+                    >
                       {/* Name Field */}
                       <Box>
                         <Typography
@@ -382,7 +421,9 @@ const Profile: React.FC = () => {
                           sx={{
                             '& .MuiOutlinedInput-root': {
                               borderRadius: 2,
-                              backgroundColor: isEditing ? theme.palette.background.paper : '#F9FAFB',
+                              backgroundColor: isEditing
+                                ? theme.palette.background.paper
+                                : '#F9FAFB',
                               '& fieldset': {
                                 borderColor: theme.palette.divider,
                               },
@@ -460,7 +501,10 @@ const Profile: React.FC = () => {
                             },
                           }}
                         />
-                        <Typography variant="caption" sx={{ color: theme.palette.text.disabled, mt: 0.5, display: 'block' }}>
+                        <Typography
+                          variant="caption"
+                          sx={{ color: theme.palette.text.disabled, mt: 0.5, display: 'block' }}
+                        >
                           Email cannot be changed directly. Contact support for assistance.
                         </Typography>
                       </Box>
@@ -506,7 +550,14 @@ const Profile: React.FC = () => {
                                 },
                               }}
                             >
-                              {loading ? <CircularProgress size={24} sx={{ color: theme.palette.background.paper }} /> : 'Save Changes'}
+                              {loading ? (
+                                <CircularProgress
+                                  size={24}
+                                  sx={{ color: theme.palette.background.paper }}
+                                />
+                              ) : (
+                                'Save Changes'
+                              )}
                             </Button>
                           </Box>
                         </Grow>

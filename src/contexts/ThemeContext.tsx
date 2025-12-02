@@ -39,8 +39,6 @@ export const ThemeModeProvider: React.FC<ThemeProviderProps> = ({ children }) =>
   };
 
   return (
-    <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
+    <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>{children}</ThemeContext.Provider>
   );
 };

@@ -3,9 +3,9 @@ import { Expense } from './index';
 export interface Tracker {
   id: string;
   name: string;
-  type: "personal" | "business";
+  type: 'personal' | 'business';
   description?: string;
-  currency: "INR" | "USD" | "EUR" | "GBP";
+  currency: 'INR' | 'USD' | 'EUR' | 'GBP';
   createdAt: Date;
   updatedAt: Date;
 }

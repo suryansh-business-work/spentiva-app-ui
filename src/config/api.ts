@@ -41,7 +41,8 @@ export const endpoints = {
   categories: {
     base: `${getApiUrl()}/categories`,
     categories: (trackerId: string) => `${getApiUrl()}/trackers/${trackerId}/categories`,
-    category: (trackerId: string, categoryId: string) => `${getApiUrl()}/trackers/${trackerId}/categories/${categoryId}`,
+    category: (trackerId: string, categoryId: string) =>
+      `${getApiUrl()}/trackers/${trackerId}/categories/${categoryId}`,
   },
   expenses: {
     base: `${getApiUrl()}/expenses`,

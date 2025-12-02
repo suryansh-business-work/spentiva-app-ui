@@ -11,10 +11,7 @@ import {
   Skeleton,
   InputAdornment,
 } from '@mui/material';
-import {
-  Email as EmailIcon,
-  ArrowBack as ArrowBackIcon
-} from '@mui/icons-material';
+import { Email as EmailIcon, ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import { endpoints } from '../../config/api';
 import { postRequest } from '../../utils/http';
 
@@ -96,7 +93,7 @@ const ForgotPassword: React.FC = () => {
                 color: '#6B7280',
                 textTransform: 'none',
                 fontWeight: 600,
-                '&:hover': { color: '#111827', bgcolor: 'transparent' }
+                '&:hover': { color: '#111827', bgcolor: 'transparent' },
               }}
             >
               Back to log in
@@ -193,7 +190,7 @@ const ForgotPassword: React.FC = () => {
                       type="email"
                       placeholder="Enter your email"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={e => setEmail(e.target.value)}
                       disabled={loading || success}
                       autoFocus
                       autoComplete="email"
@@ -289,7 +286,8 @@ const ForgotPassword: React.FC = () => {
             left: 0,
             width: '100%',
             height: '100%',
-            backgroundImage: 'url(https://images.pexels.com/photos/6608880/pexels-photo-6608880.jpeg)',
+            backgroundImage:
+              'url(https://images.pexels.com/photos/6608880/pexels-photo-6608880.jpeg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             '&::after': {

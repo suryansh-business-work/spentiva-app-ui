@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Box,
   TextField,
@@ -9,16 +9,16 @@ import {
   CardContent,
   Skeleton,
   Avatar,
-} from "@mui/material";
-import SendIcon from "@mui/icons-material/Send";
-import SmartToyIcon from "@mui/icons-material/SmartToy";
-import PersonIcon from "@mui/icons-material/Person";
-import { Message } from "../../types";
-import { endpoints } from "../../config/api";
-import { getRequest, postRequest } from "../../utils/http";
-import { notifyExpenseAdded } from "../../services/notificationService";
-import { useAuth } from "../../contexts/AuthContext";
-import "./ChatInterface.scss";
+} from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
+import PersonIcon from '@mui/icons-material/Person';
+import { Message } from '../../types';
+import { endpoints } from '../../config/api';
+import { getRequest, postRequest } from '../../utils/http';
+import { notifyExpenseAdded } from '../../services/notificationService';
+import { useAuth } from '../../contexts/AuthContext';
+import './ChatInterface.scss';
 
 interface ChatInterfaceProps {
   onExpenseAdded?: () => void;
@@ -29,13 +29,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([
     {
-      id: "1",
-      role: "assistant",
-      content: "Hi! I'm your expense tracker assistant. Tell me about your expenses naturally, like 'spend food 50 from credit card' or 'bought groceries 200 cash'.",
+      id: '1',
+      role: 'assistant',
+      content:
+        "Hi! I'm your expense tracker assistant. Tell me about your expenses naturally, like 'spend food 50 from credit card' or 'bought groceries 200 cash'.",
       timestamp: new Date(),
     },
   ]);
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [, setCategories] = useState<any[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -60,9 +61,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
       }
     };
 
-    window.addEventListener("categoriesUpdated", handleCategoriesUpdate);
+    window.addEventListener('categoriesUpdated', handleCategoriesUpdate);
     return () => {
-      window.removeEventListener("categoriesUpdated", handleCategoriesUpdate);
+      window.removeEventListener('categoriesUpdated', handleCategoriesUpdate);
     };
   }, [trackerId]);
 
@@ -73,7 +74,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
       const data = response.data?.categories || response.data?.data || [];
       setCategories(data);
     } catch (error) {
-      console.error("Error loading categories:", error);
+      console.error('Error loading categories:', error);
     }
   };
 
@@ -82,11 +83,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
     const storedUsage = localStorage.getItem('usage_data');
     const currentMonth = new Date().toISOString().slice(0, 7);
 
-    let usageData = storedUsage ? JSON.parse(storedUsage) : {
-      totalMessages: 0,
-      trackerUsage: {},
-      currentMonth,
-    };
+    let usageData = storedUsage
+      ? JSON.parse(storedUsage)
+      : {
+          totalMessages: 0,
+          trackerUsage: {},
+          currentMonth,
+        };
 
     // Reset if new month
     if (usageData.currentMonth !== currentMonth) {
@@ -146,23 +149,24 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
     if (!checkUsageLimit()) {
       const limitMessage: Message = {
         id: Date.now().toString(),
-        role: "assistant",
-        content: "⚠️ You've reached your monthly message limit. Please upgrade your subscription plan to continue using AI features. Visit the Usage page to see available plans.",
+        role: 'assistant',
+        content:
+          "⚠️ You've reached your monthly message limit. Please upgrade your subscription plan to continue using AI features. Visit the Usage page to see available plans.",
         timestamp: new Date(),
       };
-      setMessages((prev) => [...prev, limitMessage]);
+      setMessages(prev => [...prev, limitMessage]);
       return;
     }
 
     const userMessage: Message = {
       id: Date.now().toString(),
-      role: "user",
+      role: 'user',
       content: input,
       timestamp: new Date(),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
-    setInput("");
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
     setIsLoading(true);
 
     try {
@@ -176,11 +180,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
       if (parsed.error) {
         const errorMessage: Message = {
           id: (Date.now() + 1).toString(),
-          role: "assistant",
+          role: 'assistant',
           content: parsed.error,
           timestamp: new Date(),
         };
-        setMessages((prev) => [...prev, errorMessage]);
+        setMessages(prev => [...prev, errorMessage]);
       } else {
         // Create the expense
         const expenseData = { ...parsed, trackerId };
@@ -189,7 +193,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
 
         const successMessage: Message = {
           id: (Date.now() + 1).toString(),
-          role: "assistant",
+          role: 'assistant',
           content: `✅ Expense logged successfully!\n\nAmount: ₹${expense.amount}\nCategory: ${expense.subcategory}\nPayment: ${expense.paymentMethod}`,
           expense,
           timestamp: new Date(),
@@ -206,39 +210,46 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
         notifyExpenseAdded(expense.amount, expense.subcategory);
 
         // Dispatch event for other components
-        window.dispatchEvent(new Event("expenseUpdated"));
+        window.dispatchEvent(new Event('expenseUpdated'));
       }
     } catch (error) {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: "Sorry, I encountered an error. Please try again.",
+        role: 'assistant',
+        content: 'Sorry, I encountered an error. Please try again.',
         timestamp: new Date(),
       };
-      setMessages((prev) => [...prev, errorMessage]);
+      setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
   };
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100% - 300px)', px: 2, py: 1.5 }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: 'calc(100% - 300px)',
+        px: 2,
+        py: 1.5,
+      }}
+    >
       <Box
         className="chat-messages"
         sx={{
           flexGrow: 1,
           minHeight: 'calc(100vh - 320px)',
-          overflowY: "auto",
-          overflowX: "hidden",
+          overflowY: 'auto',
+          overflowX: 'hidden',
           mb: 2,
           pr: 1,
           '&::-webkit-scrollbar': {
@@ -257,33 +268,38 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
           },
         }}
       >
-        {messages.map((message) => (
+        {messages.map(message => (
           <Box
             key={message.id}
             className={`message ${message.role}`}
             sx={{
-              display: "flex",
-              justifyContent: message.role === "user" ? "flex-end" : "flex-start",
+              display: 'flex',
+              justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
               mb: 2,
               gap: 1.5,
-              flexDirection: message.role === "user" ? "row-reverse" : "row",
+              flexDirection: message.role === 'user' ? 'row-reverse' : 'row',
             }}
           >
             {/* Avatar */}
             <Avatar
-              src={message.role === "user" ? getPhotoUrl() : undefined}
+              src={message.role === 'user' ? getPhotoUrl() : undefined}
               sx={{
                 width: 40,
                 height: 40,
-                background: message.role === "user"
-                  ? "linear-gradient(135deg, #10b981 0%, #059669 100%)"
-                  : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                background:
+                  message.role === 'user'
+                    ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                    : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
                 flexShrink: 0,
               }}
             >
-              {message.role === "user" ? (
-                user?.name ? user.name.charAt(0).toUpperCase() : <PersonIcon />
+              {message.role === 'user' ? (
+                user?.name ? (
+                  user.name.charAt(0).toUpperCase()
+                ) : (
+                  <PersonIcon />
+                )
               ) : (
                 <SmartToyIcon />
               )}
@@ -294,20 +310,20 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
               elevation={2}
               sx={{
                 p: 1.5,
-                maxWidth: "75%",
-                backgroundColor: message.role === "user" ? "#10b981" : "#fff",
-                color: message.role === "user" ? "#fff" : "#333",
+                maxWidth: '75%',
+                backgroundColor: message.role === 'user' ? '#10b981' : '#fff',
+                color: message.role === 'user' ? '#fff' : '#333',
                 borderRadius: 2,
               }}
             >
-              <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
+              <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>
                 {message.content}
               </Typography>
               {message.expense && (
-                <Card sx={{ mt: 2, backgroundColor: "rgba(0,0,0,0.05)" }}>
+                <Card sx={{ mt: 2, backgroundColor: 'rgba(0,0,0,0.05)' }}>
                   <CardContent>
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                         <Typography variant="body2" color="text.secondary">
                           Amount:
                         </Typography>
@@ -315,7 +331,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
                           ₹{message.expense.amount}
                         </Typography>
                       </Box>
-                      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                         <Typography variant="body2" color="text.secondary">
                           Category:
                         </Typography>
@@ -323,7 +339,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
                           {message.expense.subcategory}
                         </Typography>
                       </Box>
-                      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                         <Typography variant="body2" color="text.secondary">
                           Payment:
                         </Typography>
@@ -339,18 +355,18 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
           </Box>
         ))}
         {isLoading && (
-          <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 2, gap: 1.5 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2, gap: 1.5 }}>
             <Avatar
               sx={{
                 width: 40,
                 height: 40,
-                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
               }}
             >
               <SmartToyIcon />
             </Avatar>
-            <Paper elevation={2} sx={{ p: 2, minWidth: "200px", borderRadius: 2 }}>
+            <Paper elevation={2} sx={{ p: 2, minWidth: '200px', borderRadius: 2 }}>
               <Skeleton variant="text" width="100%" />
               <Skeleton variant="text" width="80%" />
               <Skeleton variant="rectangular" height={60} sx={{ mt: 1 }} />
@@ -363,11 +379,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
       {/* Input Form - Fixed at bottom */}
       <Paper elevation={3} sx={{ p: 2, position: 'sticky', bottom: 0 }}>
         <form onSubmit={handleSubmit}>
-          <Box sx={{ display: "flex", gap: 2 }}>
+          <Box sx={{ display: 'flex', gap: 2 }}>
             <TextField
               fullWidth
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={e => setInput(e.target.value)}
               placeholder="Type your expense... (e.g., 'spend food 50 from credit card')"
               disabled={isLoading}
               variant="outlined"
@@ -379,8 +395,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
               disabled={isLoading || !input.trim()}
               endIcon={<SendIcon />}
               sx={{
-                background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-                minWidth: "120px",
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                minWidth: '120px',
               }}
             >
               Send

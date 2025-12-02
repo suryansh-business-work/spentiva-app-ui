@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -12,8 +12,8 @@ import {
   InputLabel,
   Box,
   InputAdornment,
-} from "@mui/material";
-import { Expense } from "../../types";
+} from '@mui/material';
+import { Expense } from '../../types';
 
 interface Category {
   id: string;
@@ -38,12 +38,14 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
   categories,
   paymentMethods,
 }) => {
-  const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState("");
-  const [subcategory, setSubcategory] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("");
-  const [description, setDescription] = useState("");
-  const [availableSubcategories, setAvailableSubcategories] = useState<{ id: string; name: string }[]>([]);
+  const [amount, setAmount] = useState('');
+  const [category, setCategory] = useState('');
+  const [subcategory, setSubcategory] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('');
+  const [description, setDescription] = useState('');
+  const [availableSubcategories, setAvailableSubcategories] = useState<
+    { id: string; name: string }[]
+  >([]);
 
   useEffect(() => {
     if (expense) {
@@ -51,8 +53,8 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
       setCategory(expense.category);
       setSubcategory(expense.subcategory);
       setPaymentMethod(expense.paymentMethod);
-      setDescription(expense.description || "");
-      
+      setDescription(expense.description || '');
+
       // Set subcategories for the selected category
       const selectedCat = categories.find(cat => cat.name === expense.category);
       if (selectedCat) {
@@ -68,7 +70,7 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
       setAvailableSubcategories(selectedCat.subcategories);
       // Reset subcategory if it's not in the new category's subcategories
       if (subcategory && !selectedCat.subcategories.find(sub => sub.name === subcategory)) {
-        setSubcategory("");
+        setSubcategory('');
       }
     } else {
       setAvailableSubcategories([]);
@@ -94,13 +96,13 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>Edit Expense</DialogTitle>
       <DialogContent>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
           <TextField
             fullWidth
             label="Amount"
             type="number"
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            onChange={e => setAmount(e.target.value)}
             InputProps={{
               startAdornment: <InputAdornment position="start">₹</InputAdornment>,
             }}
@@ -108,8 +110,8 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
 
           <FormControl fullWidth>
             <InputLabel>Category</InputLabel>
-            <Select value={category} onChange={(e) => setCategory(e.target.value)} label="Category">
-              {categories.map((cat) => (
+            <Select value={category} onChange={e => setCategory(e.target.value)} label="Category">
+              {categories.map(cat => (
                 <MenuItem key={cat.id} value={cat.name}>
                   {cat.name}
                 </MenuItem>
@@ -119,13 +121,13 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
 
           <FormControl fullWidth>
             <InputLabel>Subcategory</InputLabel>
-            <Select 
-              value={subcategory} 
-              onChange={(e) => setSubcategory(e.target.value)} 
+            <Select
+              value={subcategory}
+              onChange={e => setSubcategory(e.target.value)}
               label="Subcategory"
               disabled={!category || availableSubcategories.length === 0}
             >
-              {availableSubcategories.map((sub) => (
+              {availableSubcategories.map(sub => (
                 <MenuItem key={sub.id} value={sub.name}>
                   {sub.name}
                 </MenuItem>
@@ -135,8 +137,12 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
 
           <FormControl fullWidth>
             <InputLabel>Payment Method</InputLabel>
-            <Select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)} label="Payment Method">
-              {paymentMethods.map((method) => (
+            <Select
+              value={paymentMethod}
+              onChange={e => setPaymentMethod(e.target.value)}
+              label="Payment Method"
+            >
+              {paymentMethods.map(method => (
                 <MenuItem key={method} value={method}>
                   {method}
                 </MenuItem>
@@ -150,7 +156,7 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
             multiline
             rows={3}
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={e => setDescription(e.target.value)}
           />
         </Box>
       </DialogContent>

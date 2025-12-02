@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -21,28 +21,28 @@ import {
   MenuItem,
   Alert,
   Collapse,
-} from "@mui/material";
-import { useNavigate, useLocation } from "react-router-dom";
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import FolderIcon from "@mui/icons-material/Folder";
-import MenuIcon from "@mui/icons-material/Menu";
-import Brightness4Icon from "@mui/icons-material/Brightness4";
-import Brightness7Icon from "@mui/icons-material/Brightness7";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import LogoutIcon from "@mui/icons-material/Logout";
-import CloseIcon from "@mui/icons-material/Close";
-import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import ShowChartIcon from "@mui/icons-material/ShowChart";
-import { useThemeMode } from "../../contexts/ThemeContext";
-import { useAuth } from "../../contexts/AuthContext";
-import Logo from "../Logo";
+} from '@mui/material';
+import { useNavigate, useLocation } from 'react-router-dom';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import FolderIcon from '@mui/icons-material/Folder';
+import MenuIcon from '@mui/icons-material/Menu';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import LogoutIcon from '@mui/icons-material/Logout';
+import CloseIcon from '@mui/icons-material/Close';
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
+import ShowChartIcon from '@mui/icons-material/ShowChart';
+import { useThemeMode } from '../../contexts/ThemeContext';
+import { useAuth } from '../../contexts/AuthContext';
+import Logo from '../Logo';
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const muiTheme = useTheme();
   const theme = muiTheme; // Use MUI theme for all theming
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [profileMenuAnchor, setProfileMenuAnchor] = useState<null | HTMLElement>(null);
   const { isDarkMode, toggleTheme } = useThemeMode();
@@ -65,12 +65,12 @@ const Header: React.FC = () => {
   };
 
   // Check if user is in a tracker view
-  const isInTrackerView = location.pathname.startsWith("/tracker/");
+  const isInTrackerView = location.pathname.startsWith('/tracker/');
 
   const menuItems = [
-    { text: "Trackers", icon: <FolderIcon />, path: "/trackers" },
-    { text: "Usage", icon: <ShowChartIcon />, path: "/usage" },
-    { text: "Profile", icon: <AccountCircleIcon />, path: "/profile" },
+    { text: 'Trackers', icon: <FolderIcon />, path: '/trackers' },
+    { text: 'Usage', icon: <ShowChartIcon />, path: '/usage' },
+    { text: 'Profile', icon: <AccountCircleIcon />, path: '/profile' },
   ];
 
   const handleNavigate = (path: string) => {
@@ -117,24 +117,24 @@ const Header: React.FC = () => {
           borderBottom: `1px solid ${theme.palette.divider}`,
           boxShadow: theme.shadows[1],
           transition: 'all 0.3s ease',
-          borderRadius: 0
+          borderRadius: 0,
         }}
       >
         <Toolbar sx={{ minHeight: { xs: 56, sm: 60 }, px: { xs: 2, sm: 2.5 } }}>
           <Box
             sx={{
-              display: "flex",
-              alignItems: "center",
+              display: 'flex',
+              alignItems: 'center',
               gap: 1.5,
               flexGrow: 1,
-              cursor: 'pointer'
+              cursor: 'pointer',
             }}
-            onClick={() => navigate("/trackers")}
+            onClick={() => navigate('/trackers')}
           >
             <Logo width={140} height={40} />
           </Box>
 
-          <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0.5, sm: 1 } }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1 } }}>
             <IconButton
               onClick={toggleTheme}
               size="small"
@@ -142,7 +142,7 @@ const Header: React.FC = () => {
                 color: theme.palette.text.secondary,
                 background: theme.palette.action.hover,
                 transition: 'all 0.2s ease',
-                "&:hover": {
+                '&:hover': {
                   background: theme.palette.action.selected,
                   color: theme.palette.text.primary,
                   transform: 'scale(1.05)',
@@ -150,7 +150,11 @@ const Header: React.FC = () => {
               }}
               aria-label="Toggle dark mode"
             >
-              {isDarkMode ? <Brightness7Icon fontSize="small" /> : <Brightness4Icon fontSize="small" />}
+              {isDarkMode ? (
+                <Brightness7Icon fontSize="small" />
+              ) : (
+                <Brightness4Icon fontSize="small" />
+              )}
             </IconButton>
 
             {isMobile ? (
@@ -162,7 +166,7 @@ const Header: React.FC = () => {
                   color: theme.palette.text.secondary,
                   background: theme.palette.action.hover,
                   transition: 'all 0.2s ease',
-                  "&:hover": {
+                  '&:hover': {
                     background: theme.palette.action.selected,
                     color: theme.palette.text.primary,
                     transform: 'scale(1.05)',
@@ -172,28 +176,31 @@ const Header: React.FC = () => {
                 <MenuIcon />
               </IconButton>
             ) : (
-              <Box sx={{ display: "flex", gap: 1, ml: 1, alignItems: "center" }}>
+              <Box sx={{ display: 'flex', gap: 1, ml: 1, alignItems: 'center' }}>
                 <Button
                   startIcon={<FolderIcon fontSize="small" />}
                   size="small"
-                  onClick={() => navigate("/trackers")}
+                  onClick={() => navigate('/trackers')}
                   sx={{
-                    color: location.pathname === "/trackers" || isInTrackerView
-                      ? theme.palette.primary.contrastText
-                      : theme.palette.text.primary,
-                    textTransform: "none",
+                    color:
+                      location.pathname === '/trackers' || isInTrackerView
+                        ? theme.palette.primary.contrastText
+                        : theme.palette.text.primary,
+                    textTransform: 'none',
                     fontWeight: 600,
-                    fontSize: "0.875em",
+                    fontSize: '0.875em',
                     px: 2,
                     py: 0.75,
                     borderRadius: 2,
-                    background: location.pathname === "/trackers" || isInTrackerView
-                      ? theme.palette.primary.main
-                      : theme.palette.action.hover,
-                    "&:hover": {
-                      background: location.pathname === "/trackers" || isInTrackerView
+                    background:
+                      location.pathname === '/trackers' || isInTrackerView
                         ? theme.palette.primary.main
-                        : theme.palette.divider,
+                        : theme.palette.action.hover,
+                    '&:hover': {
+                      background:
+                        location.pathname === '/trackers' || isInTrackerView
+                          ? theme.palette.primary.main
+                          : theme.palette.divider,
                     },
                   }}
                 >
@@ -202,24 +209,27 @@ const Header: React.FC = () => {
                 <Button
                   startIcon={<ShowChartIcon fontSize="small" />}
                   size="small"
-                  onClick={() => navigate("/usage")}
+                  onClick={() => navigate('/usage')}
                   sx={{
-                    color: location.pathname === "/usage"
-                      ? theme.palette.primary.contrastText
-                      : theme.palette.text.primary,
-                    textTransform: "none",
+                    color:
+                      location.pathname === '/usage'
+                        ? theme.palette.primary.contrastText
+                        : theme.palette.text.primary,
+                    textTransform: 'none',
                     fontWeight: 600,
-                    fontSize: "0.875em",
+                    fontSize: '0.875em',
                     px: 2,
                     py: 0.75,
                     borderRadius: 2,
-                    background: location.pathname === "/usage"
-                      ? theme.palette.primary.main
-                      : theme.palette.action.hover,
-                    "&:hover": {
-                      background: location.pathname === "/usage"
+                    background:
+                      location.pathname === '/usage'
                         ? theme.palette.primary.main
-                        : theme.palette.divider,
+                        : theme.palette.action.hover,
+                    '&:hover': {
+                      background:
+                        location.pathname === '/usage'
+                          ? theme.palette.primary.main
+                          : theme.palette.divider,
                     },
                   }}
                 >
@@ -230,7 +240,7 @@ const Header: React.FC = () => {
                   size="small"
                   sx={{
                     fontWeight: 600,
-                    fontSize: "0.75em",
+                    fontSize: '0.75em',
                     height: 24,
                     background: theme.palette.primary.main,
                     color: theme.palette.primary.contrastText,
@@ -243,8 +253,8 @@ const Header: React.FC = () => {
                   sx={{
                     ml: 0.5,
                     p: 0.25,
-                    border: `2px solid ${location.pathname === "/profile" ? theme.palette.primary.main : theme.palette.divider}`,
-                    "&:hover": {
+                    border: `2px solid ${location.pathname === '/profile' ? theme.palette.primary.main : theme.palette.divider}`,
+                    '&:hover': {
                       borderColor: theme.palette.primary.main,
                     },
                   }}
@@ -255,7 +265,7 @@ const Header: React.FC = () => {
                       width: 32,
                       height: 32,
                       background: theme.palette.primary.main,
-                      fontSize: "0.875em",
+                      fontSize: '0.875em',
                       fontWeight: 700,
                     }}
                   >
@@ -283,7 +293,14 @@ const Header: React.FC = () => {
             },
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%',
+            }}
+          >
             <Typography variant="body2" sx={{ fontWeight: 600 }}>
               User not verified yet. Please verify - check your email.
             </Typography>
@@ -319,9 +336,11 @@ const Header: React.FC = () => {
           },
         }}
       >
-        <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
-          <Box sx={{ p: 3, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+        <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <Box
+            sx={{ p: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
               <Avatar
                 sx={{
                   width: 48,
@@ -333,7 +352,10 @@ const Header: React.FC = () => {
                 <AccountBalanceWalletIcon />
               </Avatar>
               <Box>
-                <Typography variant="subtitle1" sx={{ fontWeight: 700, fontSize: "1.1em", color: theme.palette.text.primary }}>
+                <Typography
+                  variant="subtitle1"
+                  sx={{ fontWeight: 700, fontSize: '1.1em', color: theme.palette.text.primary }}
+                >
                   Expense Tracker
                 </Typography>
                 <Chip
@@ -341,7 +363,7 @@ const Header: React.FC = () => {
                   size="small"
                   sx={{
                     height: 20,
-                    fontSize: "0.7em",
+                    fontSize: '0.7em',
                     fontWeight: 600,
                     background: theme.palette.success.light,
                     color: theme.palette.primary.main,
@@ -355,7 +377,7 @@ const Header: React.FC = () => {
               onClick={() => setDrawerOpen(false)}
               sx={{
                 color: theme.palette.text.secondary,
-                "&:hover": {
+                '&:hover': {
                   background: theme.palette.action.hover,
                   color: theme.palette.text.primary,
                 },
@@ -368,7 +390,7 @@ const Header: React.FC = () => {
           <Divider sx={{ borderColor: theme.palette.divider }} />
 
           <List sx={{ flexGrow: 1, px: 2, py: 2 }}>
-            {menuItems.map((item) => (
+            {menuItems.map(item => (
               <ListItem key={item.text} disablePadding sx={{ mb: 1 }}>
                 <ListItemButton
                   onClick={() => handleNavigate(item.path)}
@@ -376,21 +398,21 @@ const Header: React.FC = () => {
                   sx={{
                     borderRadius: 2.5,
                     py: 1.5,
-                    "&.Mui-selected": {
+                    '&.Mui-selected': {
                       background: theme.palette.primary.main,
                       color: theme.palette.primary.contrastText,
                       boxShadow: `0 4px 12px ${theme.shadows[3]}`,
-                      "& .MuiListItemIcon-root": {
+                      '& .MuiListItemIcon-root': {
                         color: theme.palette.primary.contrastText,
                       },
-                      "&:hover": {
+                      '&:hover': {
                         background: theme.palette.primary.main,
                       },
                     },
-                    "&:hover": {
+                    '&:hover': {
                       background: theme.palette.action.hover,
                     },
-                    transition: "all 0.2s",
+                    transition: 'all 0.2s',
                   }}
                 >
                   <ListItemIcon sx={{ color: theme.palette.text.secondary, minWidth: 40 }}>
@@ -400,7 +422,7 @@ const Header: React.FC = () => {
                     primary={item.text}
                     primaryTypographyProps={{
                       fontWeight: location.pathname === item.path ? 700 : 500,
-                      fontSize: "0.95em",
+                      fontSize: '0.95em',
                     }}
                   />
                 </ListItemButton>
@@ -418,15 +440,15 @@ const Header: React.FC = () => {
                 py: 1.5,
                 border: `1px solid ${theme.palette.divider}`,
                 background: theme.palette.action.hover,
-                "&:hover": {
+                '&:hover': {
                   background: theme.palette.error.light,
                   borderColor: theme.palette.error.main,
                   color: theme.palette.error.main,
-                  "& .MuiListItemIcon-root": {
+                  '& .MuiListItemIcon-root': {
                     color: theme.palette.error.main,
                   },
                 },
-                transition: "all 0.2s",
+                transition: 'all 0.2s',
               }}
             >
               <ListItemIcon sx={{ color: theme.palette.error.main, minWidth: 40 }}>
@@ -436,7 +458,7 @@ const Header: React.FC = () => {
                 primary="Logout"
                 primaryTypographyProps={{
                   fontWeight: 600,
-                  fontSize: "0.95em",
+                  fontSize: '0.95em',
                   color: theme.palette.error.main,
                 }}
               />
@@ -470,7 +492,10 @@ const Header: React.FC = () => {
         }}
       >
         <Box sx={{ px: 2, py: 1.25, borderBottom: `1px solid ${theme.palette.divider}` }}>
-          <Typography variant="body2" sx={{ fontWeight: 700, color: theme.palette.text.primary, fontSize: '0.875em' }}>
+          <Typography
+            variant="body2"
+            sx={{ fontWeight: 700, color: theme.palette.text.primary, fontSize: '0.875em' }}
+          >
             {user?.name}
           </Typography>
         </Box>
@@ -495,7 +520,7 @@ const Header: React.FC = () => {
               color: theme.palette.text.primary,
             }}
           />
-        </MenuItem >
+        </MenuItem>
         <MenuItem
           onClick={handleLogout}
           sx={{
@@ -518,7 +543,7 @@ const Header: React.FC = () => {
             }}
           />
         </MenuItem>
-      </Menu >
+      </Menu>
     </>
   );
 };
