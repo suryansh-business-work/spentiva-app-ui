@@ -19,13 +19,19 @@ interface UseTransactionsDataReturn {
   loadMoreExpenses: () => void;
   handleSaveEdit: (id: string, updatedExpense: Partial<Expense>) => Promise<void>;
   handleConfirmDelete: (expenseId: string) => Promise<void>;
-  setSnackbar: (snackbar: { open: boolean; message: string; severity: 'success' | 'error' }) => void;
+  setSnackbar: (snackbar: {
+    open: boolean;
+    message: string;
+    severity: 'success' | 'error';
+  }) => void;
 }
 
 /**
  * Custom hook to manage transactions data fetching and mutations
  */
-export const useTransactionsData = ({ trackerId }: UseTransactionsDataProps): UseTransactionsDataReturn => {
+export const useTransactionsData = ({
+  trackerId,
+}: UseTransactionsDataProps): UseTransactionsDataReturn => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -49,7 +55,7 @@ export const useTransactionsData = ({ trackerId }: UseTransactionsDataProps): Us
     try {
       const response = await getRequest(endpoints.expenses.all, {
         trackerId,
-        limit: limit.toString()
+        limit: limit.toString(),
       });
       const responseData = response.data;
       const data = responseData?.data?.expenses || responseData?.expenses || [];

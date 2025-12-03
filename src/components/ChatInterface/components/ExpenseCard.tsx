@@ -54,9 +54,7 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({ expense }) => {
               <Typography variant="body2" color="text.secondary">
                 Description:
               </Typography>
-              <Typography variant="body2">
-                {expense.description}
-              </Typography>
+              <Typography variant="body2">{expense.description}</Typography>
             </Box>
           )}
         </Box>

@@ -87,8 +87,8 @@ const Transactions: React.FC<TransactionsProps> = ({ trackerId }) => {
 
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
-      <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h4" gutterBottom sx={{ fontWeight: 700, color: '#667eea' }}>
+      <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
+        <Typography variant="h5" sx={{ fontWeight: 700, color: '#10b981', mb: 2 }}>
           Transaction Logs
         </Typography>
 

@@ -50,12 +50,7 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
     <>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {expenses.map(expense => (
-          <TransactionCard
-            key={expense.id}
-            expense={expense}
-            onEdit={onEdit}
-            onDelete={onDelete}
-          />
+          <TransactionCard key={expense.id} expense={expense} onEdit={onEdit} onDelete={onDelete} />
         ))}
       </Box>
 

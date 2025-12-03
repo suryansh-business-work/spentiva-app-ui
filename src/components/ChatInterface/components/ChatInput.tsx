@@ -41,7 +41,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           <TextField
             fullWidth
             value={value}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={e => onChange(e.target.value)}
             placeholder={placeholder}
             disabled={disabled}
             variant="outlined"

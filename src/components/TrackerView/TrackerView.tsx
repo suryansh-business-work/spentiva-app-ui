@@ -18,7 +18,7 @@ import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import BusinessIcon from '@mui/icons-material/Business';
 import PersonIcon from '@mui/icons-material/Person';
 import ChatInterface from '../ChatInterface/ChatInterface';
-import Dashboard from '../Dashboard/Dashboard';
+import Analytics from '../Analytics/Analytics';
 import Transactions from '../Transactions/Transactions';
 import { endpoints } from '../../config/api';
 import { getRequest } from '../../utils/http';
@@ -316,7 +316,7 @@ const TrackerView: React.FC = () => {
         </TabPanel>
 
         <TabPanel value={tabValue} index={1}>
-          <Dashboard trackerId={trackerId} />
+          <Analytics trackerId={trackerId} />
         </TabPanel>
 
         <TabPanel value={tabValue} index={2}>

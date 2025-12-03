@@ -28,13 +28,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Custom hooks
-  const {
-    messages,
-    addUserMessage,
-    addAssistantMessage,
-    trackMessageUsage,
-    checkUsageLimit,
-  } = useChatMessages(trackerId);
+  const { messages, addUserMessage, addAssistantMessage, trackMessageUsage, checkUsageLimit } =
+    useChatMessages(trackerId);
 
   const { parseExpense, createExpense } = useExpenseActions(trackerId);
 
@@ -108,9 +103,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
       }
     } catch (error: any) {
       console.error('Error processing expense:', error);
-      addAssistantMessage(
-        error.message || 'Sorry, I encountered an error. Please try again.'
-      );
+      addAssistantMessage(error.message || 'Sorry, I encountered an error. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -171,7 +164,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
         }}
       >
         {/* Render Messages */}
-        {messages.map((message) => (
+        {messages.map(message => (
           <ChatMessage
             key={message.id}
             message={message}
@@ -188,12 +181,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
       </Box>
 
       {/* Input Form */}
-      <ChatInput
-        value={input}
-        onChange={setInput}
-        onSubmit={handleSubmit}
-        disabled={isLoading}
-      />
+      <ChatInput value={input} onChange={setInput} onSubmit={handleSubmit} disabled={isLoading} />
     </Box>
   );
 };

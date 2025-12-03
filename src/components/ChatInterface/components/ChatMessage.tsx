@@ -18,11 +18,7 @@ interface ChatMessageProps {
  * ChatMessage Component
  * Displays a single chat message with avatar and content
  */
-const ChatMessage: React.FC<ChatMessageProps> = ({
-  message,
-  userPhotoUrl,
-  userName
-}) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({ message, userPhotoUrl, userName }) => {
   const isUser = message.role === 'user';
 
   /**

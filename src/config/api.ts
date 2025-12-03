@@ -58,6 +58,7 @@ export const endpoints = {
     summary: `${getApiUrl()}/analytics/summary`,
     byCategory: `${getApiUrl()}/analytics/by-category`,
     byMonth: `${getApiUrl()}/analytics/by-month`,
+    byPaymentMethod: `${getApiUrl()}/analytics/by-expense-from`,
     total: `${getApiUrl()}/analytics/total`,
   },
   usage: {

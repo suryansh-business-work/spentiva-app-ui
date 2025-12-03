@@ -22,7 +22,9 @@ interface UseTransactionsFiltersReturn {
 /**
  * Custom hook to manage filtering and sorting of transactions
  */
-export const useTransactionsFilters = ({ expenses }: UseTransactionsFiltersProps): UseTransactionsFiltersReturn => {
+export const useTransactionsFilters = ({
+  expenses,
+}: UseTransactionsFiltersProps): UseTransactionsFiltersReturn => {
   const [filteredExpenses, setFilteredExpenses] = useState<Expense[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');

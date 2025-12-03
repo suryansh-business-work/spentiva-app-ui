@@ -58,12 +58,7 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ expense, onEdit, onDe
               mt: 0.5,
             }}
           >
-            <Chip
-              label={expense.category}
-              size="small"
-              variant="outlined"
-              color="secondary"
-            />
+            <Chip label={expense.category} size="small" variant="outlined" color="secondary" />
             <Chip label={expense.paymentMethod} size="small" variant="outlined" />
             {expense.description && (
               <Typography variant="caption" color="text.secondary">
@@ -73,9 +68,7 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ expense, onEdit, onDe
           </Box>
         </Box>
 
-        <Box
-          sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1 }}
-        >
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1 }}>
           <Typography variant="body2" color="text.secondary">
             {formatDate(expense.timestamp)}
           </Typography>

@@ -35,7 +35,7 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
   expense,
   onClose,
   onSave,
-  categories = [],  // ✅ Default to empty array
+  categories = [], // ✅ Default to empty array
   paymentMethods,
 }) => {
   const [amount, setAmount] = useState('');
