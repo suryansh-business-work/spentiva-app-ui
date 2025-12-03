@@ -15,6 +15,7 @@ import {
   Alert,
   IconButton,
   Tooltip,
+  useTheme,
 } from '@mui/material';
 import { Delete as DeleteIcon, Refresh as RefreshIcon } from '@mui/icons-material';
 import { UsageLog } from '../../../types/usage';
@@ -52,6 +53,7 @@ const UsageLogsTable: React.FC<UsageLogsTableProps> = ({
   onDeleteTrackerLogs,
   deletingTracker = false,
 }) => {
+  const theme = useTheme();
   const handleChangePage = (_event: unknown, newPage: number) => {
     onPageChange(newPage);
   };
@@ -61,7 +63,7 @@ const UsageLogsTable: React.FC<UsageLogsTableProps> = ({
   };
 
   return (
-    <Paper sx={{ width: '100%', overflow: 'hidden', borderRadius: 2 }}>
+    <Paper sx={{ width: '100%', overflow: 'hidden', borderRadius: 2, bgcolor: theme.palette.background.paper, border: 'none', boxShadow: 'none' }}>
       <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
           Usage Logs

@@ -11,11 +11,15 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Typography,
   useTheme,
   useMediaQuery,
   CircularProgress,
 } from '@mui/material';
+import BusinessIcon from '@mui/icons-material/Business';
+import PersonIcon from '@mui/icons-material/Person';
 import { TrackerFormData } from '../types/tracker.types';
+import { palette, darkPalette } from '../../../theme/palette';
 
 interface CreateEditDialogProps {
   open: boolean;
@@ -38,6 +42,9 @@ const CreateEditDialog: React.FC<CreateEditDialogProps> = ({
 }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+  // Use colors from palette based on theme mode
+  const paletteSource = theme.palette.mode === 'dark' ? darkPalette : palette;
 
   return (
     <Dialog
@@ -73,20 +80,131 @@ const CreateEditDialog: React.FC<CreateEditDialogProps> = ({
             }}
           />
 
-          <FormControl fullWidth disabled={disabled}>
-            <InputLabel>Tracker Type</InputLabel>
-            <Select
-              value={formData.type}
-              onChange={e => onChange('type', e.target.value)}
-              label="Tracker Type"
+          {/* Icon-based Tracker Type Selection */}
+          <Box>
+            <Typography
+              variant="subtitle2"
               sx={{
-                bgcolor: theme.palette.background.paper,
+                mb: 1.5,
+                color: theme.palette.text.secondary,
+                fontWeight: 600,
+                fontSize: '0.875rem',
               }}
             >
-              <MenuItem value="personal">Personal Use</MenuItem>
-              <MenuItem value="business">Business Use</MenuItem>
-            </Select>
-          </FormControl>
+              Tracker Type *
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              {/* Business Option */}
+              <Box
+                onClick={() => !disabled && onChange('type', 'business')}
+                sx={{
+                  flex: 1,
+                  p: 2.5,
+                  borderRadius: 2,
+                  border: `2px solid ${formData.type === 'business' ? paletteSource.trackerTypes.business.primary : theme.palette.divider}`,
+                  bgcolor: formData.type === 'business' ? paletteSource.trackerTypes.business.bg : theme.palette.background.paper,
+                  cursor: disabled ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.2s ease',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 1,
+                  opacity: disabled ? 0.6 : 1,
+                  '&:hover': disabled ? {} : {
+                    borderColor: paletteSource.trackerTypes.business.primary,
+                    bgcolor: paletteSource.trackerTypes.business.bg,
+                    transform: 'translateY(-2px)',
+                  },
+                }}
+              >
+                <Box
+                  sx={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: 2,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: formData.type === 'business'
+                      ? paletteSource.trackerTypes.business.gradient
+                      : theme.palette.action.hover,
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <BusinessIcon
+                    sx={{
+                      fontSize: 28,
+                      color: formData.type === 'business' ? '#fff' : theme.palette.text.secondary,
+                    }}
+                  />
+                </Box>
+                <Typography
+                  variant="body2"
+                  fontWeight={formData.type === 'business' ? 700 : 500}
+                  sx={{
+                    color: formData.type === 'business' ? paletteSource.trackerTypes.business.primary : theme.palette.text.primary,
+                  }}
+                >
+                  Business
+                </Typography>
+              </Box>
+
+              {/* Personal Option */}
+              <Box
+                onClick={() => !disabled && onChange('type', 'personal')}
+                sx={{
+                  flex: 1,
+                  p: 2.5,
+                  borderRadius: 2,
+                  border: `2px solid ${formData.type === 'personal' ? paletteSource.trackerTypes.personal.primary : theme.palette.divider}`,
+                  bgcolor: formData.type === 'personal' ? paletteSource.trackerTypes.personal.bg : theme.palette.background.paper,
+                  cursor: disabled ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.2s ease',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 1,
+                  opacity: disabled ? 0.6 : 1,
+                  '&:hover': disabled ? {} : {
+                    borderColor: paletteSource.trackerTypes.personal.primary,
+                    bgcolor: paletteSource.trackerTypes.personal.bg,
+                    transform: 'translateY(-2px)',
+                  },
+                }}
+              >
+                <Box
+                  sx={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: 2,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: formData.type === 'personal'
+                      ? paletteSource.trackerTypes.personal.gradient
+                      : theme.palette.action.hover,
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <PersonIcon
+                    sx={{
+                      fontSize: 28,
+                      color: formData.type === 'personal' ? '#fff' : theme.palette.text.secondary,
+                    }}
+                  />
+                </Box>
+                <Typography
+                  variant="body2"
+                  fontWeight={formData.type === 'personal' ? 700 : 500}
+                  sx={{
+                    color: formData.type === 'personal' ? paletteSource.trackerTypes.personal.primary : theme.palette.text.primary,
+                  }}
+                >
+                  Personal
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
 
           <TextField
             fullWidth

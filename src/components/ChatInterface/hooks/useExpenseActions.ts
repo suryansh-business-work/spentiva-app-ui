@@ -46,9 +46,21 @@ export const useExpenseActions = (trackerId?: string) => {
         });
 
         return response.data?.data || response.data;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error parsing expense:', error);
-        throw new Error('Failed to parse expense');
+
+        // Check if error is related to category parsing
+        // API returns: { data: { error: "message about category" } }
+        const apiError = error.response?.data?.data?.error || error.response?.data?.error || '';
+        const errorMessage = error.response?.data?.message || error.message || '';
+
+        if (apiError.toLowerCase().includes('category') || errorMessage.toLowerCase().includes('category')) {
+          throw new Error(
+            `CATEGORY_ERROR::Make sure you use only the categories that are already added. If you want to add a new category to this tracker, <a href="/tracker/${trackerId}/settings" style="color: #14B8A6; text-decoration: underline; cursor: pointer;">click here</a>.`
+          );
+        }
+
+        throw new Error(errorMessage || 'Failed to parse expense');
       }
     },
     [trackerId]

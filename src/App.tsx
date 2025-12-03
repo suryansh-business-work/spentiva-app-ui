@@ -15,7 +15,7 @@ import Usage from './components/Usage/Usage';
 import { ThemeModeProvider, useThemeMode } from './contexts/ThemeContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { requestNotificationPermission } from './services/notificationService';
-import { themeConfig } from './theme/palette';
+import { themeConfig, getDarkModeConfig } from './theme/palette';
 
 const AppContent = () => {
   const { isDarkMode } = useThemeMode();
@@ -25,22 +25,7 @@ const AppContent = () => {
     () =>
       createTheme({
         ...themeConfig,
-        palette: {
-          ...themeConfig.palette,
-          mode: isDarkMode ? 'dark' : 'light',
-          ...(isDarkMode && {
-            background: {
-              default: '#1a1a1a',
-              paper: '#242424',
-            },
-            text: {
-              primary: '#ffffff',
-              secondary: '#b0b0b0',
-              disabled: '#6b6b6b',
-            },
-            divider: '#404040',
-          }),
-        },
+        ...(isDarkMode && getDarkModeConfig()),
       }),
     [isDarkMode]
   );

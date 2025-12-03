@@ -1,175 +1,207 @@
 /**
- * Expensia - Professional Color Palette
- * Smooth, light, and modern design system
+ * Spentiva - Modern Teal Color Palette
+ * Smooth, premium design with proper dark mode support
  */
 
 export const palette = {
-  // Primary Colors - Light and Professional
+  // Primary Colors - Modern Teal
   primary: {
-    main: '#8892a9', // Sephiroth Grey - Main brand color
-    light: '#b7bac3', // Silver Springs - Light variant
-    lighter: '#d2d6db', // Angel Hair Silver - Very light
-    lightest: '#e8eaec', // Mourn Mountain Snow - Subtle backgrounds
-    white: '#fdfdfd', // Brilliance - Pure white
-    dark: '#845c58', // Book Binder - Accent/dark elements
+    main: '#14B8A6', // Teal - Main brand color
+    light: '#5EEAD4', // Light teal - Hover states
+    lighter: '#99F6E4', // Very light teal
+    lightest: '#CCFBF1', // Faintest teal
+    dark: '#0D9488', // Dark teal
+    darker: '#0F766E', // Darker teal
   },
 
-  // Background Colors
+  // Secondary/Accent Colors
+  accent: {
+    orange: '#FB923C', // Orange - CTAs
+    orangeLight: '#FDBA74',
+    orangeDark: '#F97316',
+  },
+
+  // Background Colors - Light Mode
   background: {
-    default: '#fdfdfd', // Brilliance - Main background
-    paper: '#ffffff', // Pure white for cards
-    subtle: '#e8eaec', // Mourn Mountain Snow - Subtle sections
-    hover: '#f5f6f7', // Light hover state
+    default: '#FAFAFA', // Clean light gray
+    paper: '#FFFFFF', // White cards
+    subtle: '#F5F5F5', // Subtle sections
+    hover: '#F9FAFB', // Hover state
   },
 
-  // Text Colors - Enhanced for better contrast
+  // Text Colors - Light Mode
   text: {
-    primary: '#1a202c', // Darker for better contrast (WCAG AA)
-    secondary: '#6b7280', // Medium gray with good contrast
-    muted: '#9ca3af', // Light gray for less important text
-    light: '#d1d5db', // Very light for disabled states
-    accent: '#845c58', // Book Binder - Accent text
+    primary: '#1F2937', // Dark gray - Main text
+    secondary: '#6B7280', // Medium gray
+    muted: '#9CA3AF', // Light gray
+    light: '#D1D5DB', // Very light
+    white: '#FFFFFF',
   },
 
-  // Header specific colors
-  header: {
-    background: '#ffffff', // Solid white background
-    text: '#1a202c', // Dark text for contrast
-    border: '#e5e7eb', // Light border
-  },
-
-  // Border Colors
+  // Border Colors - Light Mode
   border: {
-    light: '#e8eaec', // Mourn Mountain Snow
-    default: '#d2d6db', // Angel Hair Silver
-    medium: '#b7bac3', // Silver Springs
+    light: '#E5E7EB',
+    default: '#D1D5DB',
+    medium: '#9CA3AF',
   },
 
-  // Status Colors - Adapted to palette
+  // Status Colors
   status: {
     success: {
-      main: '#8892a9',
-      light: '#b7bac3',
-      bg: '#e8eaec',
+      main: '#10B981',
+      light: '#34D399',
+      bg: '#D1FAE5',
     },
     error: {
-      main: '#845c58',
-      light: '#a87873',
-      bg: '#f5eeed',
+      main: '#EF4444',
+      light: '#F87171',
+      bg: '#FEE2E2',
     },
     warning: {
-      main: '#b7bac3',
-      light: '#d2d6db',
-      bg: '#e8eaec',
+      main: '#F59E0B',
+      light: '#FBBF24',
+      bg: '#FEF3C7',
     },
     info: {
-      main: '#8892a9',
-      light: '#b7bac3',
-      bg: '#e8eaec',
+      main: '#14B8A6',
+      light: '#5EEAD4',
+      bg: '#CCFBF1',
     },
   },
 
   // Gradient Combinations
   gradients: {
-    primary: 'linear-gradient(135deg, #8892a9 0%, #b7bac3 100%)',
-    subtle: 'linear-gradient(135deg, #e8eaec 0%, #fdfdfd 100%)',
-    accent: 'linear-gradient(135deg, #845c58 0%, #8892a9 100%)',
-    card: 'linear-gradient(145deg, #ffffff 0%, #fdfdfd 100%)',
-    overlay: 'linear-gradient(to bottom, rgba(136, 146, 169, 0.05), rgba(255, 255, 255, 0))',
+    primary: 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)',
+    accent: 'linear-gradient(135deg, #FB923C 0%, #F97316 100%)',
   },
 
-  // Shadow Colors
+  // Tracker Type Colors - Lighter & Softer
+  trackerTypes: {
+    business: {
+      primary: '#60A5FA', // Soft blue
+      light: '#93C5FD', // Lighter blue
+      lighter: '#BFDBFE', // Very light blue
+      dark: '#3B82F6', // Darker blue for contrast
+      bg: 'rgba(96, 165, 250, 0.08)', // Very subtle background
+      border: 'rgba(96, 165, 250, 0.2)', // Light border
+      gradient: 'linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%)',
+    },
+    personal: {
+      primary: '#A78BFA', // Soft purple
+      light: '#C4B5FD', // Lighter purple
+      lighter: '#DDD6FE', // Very light purple
+      dark: '#8B5CF6', // Darker purple for contrast
+      bg: 'rgba(167, 139, 250, 0.08)', // Very subtle background
+      border: 'rgba(167, 139, 250, 0.2)', // Light border
+      gradient: 'linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%)',
+    },
+  },
+
+  // Shadow Colors (minimal use)
   shadows: {
-    light: 'rgba(136, 146, 169, 0.08)',
-    medium: 'rgba(136, 146, 169, 0.12)',
-    strong: 'rgba(136, 146, 169, 0.16)',
-    subtle: 'rgba(232, 234, 236, 0.5)',
+    subtle: 'rgba(0, 0, 0, 0.03)',
   },
 };
 
 /**
- * Dark Mode Palette
+ * Dark Mode Palette - Using reference colors
  */
 export const darkPalette = {
-  // Primary Colors - Dark Mode
+  // Primary Colors - Brighter for dark mode
   primary: {
-    main: '#a8b2c9', // Lighter variant for dark mode
-    light: '#c7cfd9', // Even lighter for dark mode
-    lighter: '#e2e6eb', // Very light
-    lightest: '#1e1e1e', // Dark backgrounds
-    white: '#0a0a0a', // Dark pure background
-    dark: '#a87873', // Accent for dark mode
+    main: '#14B8A6',
+    light: '#5EEAD4',
+    lighter: '#99F6E4',
+    lightest: '#CCFBF1',
+    dark: '#0D9488',
+    darker: '#0F766E',
   },
 
-  // Background Colors - Dark Mode
+  // Secondary/Accent Colors
+  accent: {
+    orange: '#FB923C',
+    orangeLight: '#FDBA74',
+    orangeDark: '#F97316',
+  },
+
+  // Background Colors - Dark Mode (from reference)
   background: {
-    default: '#0a0a0a', // Main dark background
-    paper: '#1a1a1a', // Card backgrounds
-    subtle: '#242424', // Subtle sections
-    hover: '#2a2a2a', // Hover state
+    default: '#191B19', // Darkest background
+    paper: '#272927', // Card backgrounds
+    subtle: '#363A36', // Subtle sections
+    hover: '#4B4F4B', // Hover state
   },
 
-  // Text Colors - Dark Mode with good contrast
+  // Text Colors - Dark Mode (high contrast)
   text: {
-    primary: '#e8eaec', // Light text for dark bg
-    secondary: '#b0b0b0', // Medium gray
-    muted: '#707070', // Muted text
-    light: '#404040', // Very muted
-    accent: '#a87873', // Accent text
-  },
-
-  // Header specific colors - Dark Mode
-  header: {
-    background: '#1a1a1a', // Dark header
-    text: '#e8eaec', // Light text
-    border: '#2a2a2a', // Dark border
+    primary: '#FFFFFF', // Pure white for main text
+    secondary: '#C0C4C4', // Light gray for secondary text
+    muted: '#8D8E8E', // Medium gray for muted text
+    light: '#696969', // Darker gray for less important text
+    white: '#FFFFFF',
   },
 
   // Border Colors - Dark Mode
   border: {
-    light: '#2a2a2a', // Light dark border
-    default: '#3a3a3a', // Default dark border
-    medium: '#4a4a4a', // Medium dark border
+    light: '#363A36',
+    default: '#4B4F4B',
+    medium: '#696969',
   },
 
-  // Status Colors - Dark Mode
+  // Status Colors - Dark Mode (brighter)
   status: {
     success: {
-      main: '#a8b2c9',
-      light: '#c7cfd9',
-      bg: '#242424',
+      main: '#10B981',
+      light: '#34D399',
+      bg: '#064E3B',
     },
     error: {
-      main: '#a87873',
-      light: '#c79893',
-      bg: '#2a1e1e',
+      main: '#EF4444',
+      light: '#F87171',
+      bg: '#7F1D1D',
     },
     warning: {
-      main: '#c7cfd9',
-      light: '#e2e6eb',
-      bg: '#242424',
+      main: '#F59E0B',
+      light: '#FBBF24',
+      bg: '#78350F',
     },
     info: {
-      main: '#a8b2c9',
-      light: '#c7cfd9',
-      bg: '#242424',
+      main: '#14B8A6',
+      light: '#5EEAD4',
+      bg: '#134E4A',
     },
   },
 
-  // Gradient Combinations - Dark Mode
+  // Gradient Combinations
   gradients: {
-    primary: 'linear-gradient(135deg, #a8b2c9 0%, #c7cfd9 100%)',
-    subtle: 'linear-gradient(135deg, #242424 0%, #1a1a1a 100%)',
-    accent: 'linear-gradient(135deg, #a87873 0%, #a8b2c9 100%)',
-    card: 'linear-gradient(145deg, #1a1a1a 0%, #242424 100%)',
-    overlay: 'linear-gradient(to bottom, rgba(168, 178, 201, 0.05), rgba(0, 0, 0, 0))',
+    primary: 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)',
+    accent: 'linear-gradient(135deg, #FB923C 0%, #F97316 100%)',
   },
 
-  // Shadow Colors - Dark Mode
+  // Tracker Type Colors - Dark Mode
+  trackerTypes: {
+    business: {
+      primary: '#60A5FA', // Soft blue (same)
+      light: '#93C5FD', // Lighter blue
+      lighter: '#BFDBFE', // Very light blue
+      dark: '#3B82F6', // Darker blue
+      bg: 'rgba(96, 165, 250, 0.12)', // Slightly more visible in dark
+      border: 'rgba(96, 165, 250, 0.25)', // Slightly stronger border
+      gradient: 'linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%)',
+    },
+    personal: {
+      primary: '#A78BFA', // Soft purple (same)
+      light: '#C4B5FD', // Lighter purple
+      lighter: '#DDD6FE', // Very light purple
+      dark: '#8B5CF6', // Darker purple
+      bg: 'rgba(167, 139, 250, 0.12)', // Slightly more visible in dark
+      border: 'rgba(167, 139, 250, 0.25)', // Slightly stronger border
+      gradient: 'linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%)',
+    },
+  },
+
+  // Shadow Colors
   shadows: {
-    light: 'rgba(0, 0, 0, 0.3)',
-    medium: 'rgba(0, 0, 0, 0.5)',
-    strong: 'rgba(0, 0, 0, 0.7)',
     subtle: 'rgba(0, 0, 0, 0.2)',
   },
 };
@@ -184,13 +216,13 @@ export const themeConfig = {
       main: palette.primary.main,
       light: palette.primary.light,
       dark: palette.primary.dark,
-      contrastText: '#ffffff',
+      contrastText: '#FFFFFF',
     },
     secondary: {
-      main: palette.primary.dark,
-      light: palette.primary.lighter,
-      dark: palette.primary.main,
-      contrastText: '#ffffff',
+      main: palette.accent.orange,
+      light: palette.accent.orangeLight,
+      dark: palette.accent.orangeDark,
+      contrastText: '#FFFFFF',
     },
     background: {
       default: palette.background.default,
@@ -205,63 +237,71 @@ export const themeConfig = {
     error: {
       main: palette.status.error.main,
       light: palette.status.error.light,
-      dark: '#6b4a47',
-      contrastText: '#ffffff',
+      dark: '#DC2626',
+      contrastText: '#FFFFFF',
     },
     success: {
-      main: palette.primary.main,
-      light: palette.primary.light,
-      dark: '#6b7589',
-      contrastText: '#ffffff',
+      main: palette.status.success.main,
+      light: palette.status.success.light,
+      dark: '#059669',
+      contrastText: '#FFFFFF',
     },
     warning: {
-      main: palette.primary.light,
-      light: palette.primary.lighter,
-      dark: palette.primary.main,
-      contrastText: '#2c3e50',
+      main: palette.status.warning.main,
+      light: palette.status.warning.light,
+      dark: '#D97706',
+      contrastText: '#FFFFFF',
     },
     info: {
-      main: palette.primary.main,
-      light: palette.primary.light,
-      dark: palette.primary.dark,
-      contrastText: '#ffffff',
+      main: palette.status.info.main,
+      light: palette.status.info.light,
+      dark: '#0D9488',
+      contrastText: '#FFFFFF',
     },
   },
   typography: {
-    fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
     h1: {
       fontWeight: 800,
-      color: palette.text.primary,
+      fontSize: '2.5rem',
+      lineHeight: 1.2,
     },
     h2: {
       fontWeight: 700,
-      color: palette.text.primary,
+      fontSize: '2rem',
+      lineHeight: 1.3,
     },
     h3: {
       fontWeight: 700,
-      color: palette.text.primary,
+      fontSize: '1.75rem',
+      lineHeight: 1.3,
     },
     h4: {
       fontWeight: 600,
-      color: palette.text.primary,
+      fontSize: '1.5rem',
+      lineHeight: 1.4,
     },
     h5: {
       fontWeight: 600,
-      color: palette.text.primary,
+      fontSize: '1.25rem',
+      lineHeight: 1.4,
     },
     h6: {
       fontWeight: 600,
-      color: palette.text.primary,
+      fontSize: '1.125rem',
+      lineHeight: 1.4,
     },
     body1: {
-      color: palette.text.primary,
+      fontSize: '1rem',
+      lineHeight: 1.6,
     },
     body2: {
-      color: palette.text.secondary,
+      fontSize: '0.875rem',
+      lineHeight: 1.6,
     },
   },
   shape: {
-    borderRadius: 8,
+    borderRadius: 4, // Max 4px as requested
   },
   spacing: 8,
   components: {
@@ -270,61 +310,40 @@ export const themeConfig = {
         root: {
           textTransform: 'none' as const,
           fontWeight: 600,
-          borderRadius: 8,
-          padding: '8px 20px',
-          transition: 'all 0.3s ease',
+          borderRadius: 4,
+          padding: '10px 24px',
+          boxShadow: 'none',
+          transition: 'all 0.2s ease',
           '&:hover': {
-            transform: 'translateY(-1px)',
-            boxShadow: `0 4px 12px ${palette.shadows.medium}`,
+            boxShadow: 'none',
           },
-        },
-        contained: {
-          background: palette.gradients.primary,
-          boxShadow: `0 2px 8px ${palette.shadows.medium}`,
-          '&:hover': {
-            boxShadow: `0 4px 16px ${palette.shadows.strong}`,
-          },
-        },
-        small: {
-          padding: '6px 16px',
-          fontSize: '0.875em',
         },
       },
     },
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 16,
-          boxShadow: `0 4px 12px ${palette.shadows.light}`,
-          transition: 'all 0.3s ease',
-          '&:hover': {
-            transform: 'translateY(-4px)',
-            boxShadow: `0 8px 24px ${palette.shadows.medium}`,
-          },
+          borderRadius: 4,
+          boxShadow: 'none',
+          border: '1px solid',
+          transition: 'all 0.2s ease',
         },
       },
     },
     MuiPaper: {
       styleOverrides: {
         root: {
-          borderRadius: 16,
-        },
-        elevation1: {
-          boxShadow: `0 2px 8px ${palette.shadows.light}`,
-        },
-        elevation2: {
-          boxShadow: `0 4px 12px ${palette.shadows.light}`,
-        },
-        elevation3: {
-          boxShadow: `0 6px 16px ${palette.shadows.medium}`,
+          borderRadius: 4,
+          boxShadow: 'none',
         },
       },
     },
     MuiChip: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
+          borderRadius: 4,
           fontWeight: 600,
+          fontSize: '0.875em',
         },
       },
     },
@@ -332,14 +351,7 @@ export const themeConfig = {
       styleOverrides: {
         root: {
           '& .MuiOutlinedInput-root': {
-            borderRadius: 10,
-            transition: 'all 0.3s ease',
-            '&:hover': {
-              boxShadow: `0 2px 8px ${palette.shadows.light}`,
-            },
-            '&.Mui-focused': {
-              boxShadow: `0 4px 12px ${palette.shadows.medium}`,
-            },
+            borderRadius: 4,
           },
         },
       },
@@ -357,13 +369,13 @@ export const getDarkModeConfig = () => ({
       main: darkPalette.primary.main,
       light: darkPalette.primary.light,
       dark: darkPalette.primary.dark,
-      contrastText: '#0a0a0a',
+      contrastText: darkPalette.background.default,
     },
     secondary: {
-      main: darkPalette.primary.dark,
-      light: darkPalette.primary.lighter,
-      dark: darkPalette.primary.main,
-      contrastText: '#0a0a0a',
+      main: darkPalette.accent.orange,
+      light: darkPalette.accent.orangeLight,
+      dark: darkPalette.accent.orangeDark,
+      contrastText: darkPalette.background.default,
     },
     background: {
       default: darkPalette.background.default,
@@ -378,26 +390,26 @@ export const getDarkModeConfig = () => ({
     error: {
       main: darkPalette.status.error.main,
       light: darkPalette.status.error.light,
-      dark: '#8b5a56',
-      contrastText: '#e8eaec',
+      dark: '#B91C1C',
+      contrastText: darkPalette.text.primary,
     },
     success: {
-      main: darkPalette.primary.main,
-      light: darkPalette.primary.light,
-      dark: '#8892a9',
-      contrastText: '#0a0a0a',
+      main: darkPalette.status.success.main,
+      light: darkPalette.status.success.light,
+      dark: '#047857',
+      contrastText: darkPalette.text.primary,
     },
     warning: {
-      main: darkPalette.primary.light,
-      light: darkPalette.primary.lighter,
-      dark: darkPalette.primary.main,
-      contrastText: '#0a0a0a',
+      main: darkPalette.status.warning.main,
+      light: darkPalette.status.warning.light,
+      dark: '#B45309',
+      contrastText: darkPalette.text.primary,
     },
     info: {
-      main: darkPalette.primary.main,
-      light: darkPalette.primary.light,
-      dark: darkPalette.primary.dark,
-      contrastText: '#0a0a0a',
+      main: darkPalette.status.info.main,
+      light: darkPalette.status.info.light,
+      dark: '#115E59',
+      contrastText: darkPalette.text.primary,
     },
   },
 });

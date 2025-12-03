@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Paper, Typography, Chip, Skeleton, Alert, Stack, Divider } from '@mui/material';
+import { Box, Paper, Typography, Chip, Skeleton, Alert, Stack, Divider, useTheme } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { TrackerStats } from '../../../types/usage';
 
@@ -14,6 +14,7 @@ interface TrackerStatsPanelProps {
  * Displays detailed statistics for a specific tracker
  */
 const TrackerStatsPanel: React.FC<TrackerStatsPanelProps> = ({ data, loading, error }) => {
+  const theme = useTheme();
   if (loading) {
     return (
       <Box>
@@ -21,7 +22,7 @@ const TrackerStatsPanel: React.FC<TrackerStatsPanelProps> = ({ data, loading, er
         <Grid container spacing={3}>
           {[1, 2, 3, 4].map(i => (
             <Grid size={{ xs: 6, md: 3 }} key={i}>
-              <Paper sx={{ p: 2.5, borderRadius: 2, bgcolor: 'background.default' }}>
+              <Paper sx={{ p: 2.5, borderRadius: 2, bgcolor: theme.palette.background.paper, border: 'none', boxShadow: 'none' }}>
                 <Skeleton variant="text" width="60%" height={20} sx={{ mb: 1 }} />
                 <Skeleton variant="text" width="80%" height={48} />
               </Paper>
@@ -77,7 +78,7 @@ const TrackerStatsPanel: React.FC<TrackerStatsPanelProps> = ({ data, loading, er
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {stats.map(({ label, value, color }) => (
           <Grid size={{ xs: 6, md: 3 }} key={label}>
-            <Paper sx={{ p: 2.5, borderRadius: 2, bgcolor: 'background.default' }}>
+            <Paper sx={{ p: 2.5, borderRadius: 2, bgcolor: theme.palette.background.paper, border: 'none', boxShadow: 'none' }}>
               <Typography
                 variant="caption"
                 color="text.secondary"
@@ -95,7 +96,7 @@ const TrackerStatsPanel: React.FC<TrackerStatsPanelProps> = ({ data, loading, er
 
       {/* Recent Messages */}
       {data.messages && data.messages.length > 0 && (
-        <Paper sx={{ p: 3, borderRadius: 2 }}>
+        <Paper sx={{ p: 3, borderRadius: 2, bgcolor: theme.palette.background.paper, border: 'none', boxShadow: 'none' }}>
           <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
             Recent Messages ({data.messages.length})
           </Typography>

@@ -10,6 +10,7 @@ import {
   Skeleton,
   Chip,
   IconButton,
+  useTheme,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ChatIcon from '@mui/icons-material/Chat';
@@ -22,7 +23,6 @@ import Analytics from '../Analytics/Analytics';
 import Transactions from '../Transactions/Transactions';
 import { endpoints } from '../../config/api';
 import { getRequest } from '../../utils/http';
-import { palette } from '../../theme/palette';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -55,10 +55,10 @@ const TrackerView: React.FC = () => {
   const { trackerId } = useParams<{ trackerId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const theme = useTheme();
   const [tracker, setTracker] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  // Get current tab from URL search params, default to 'chat'
   const searchParams = new URLSearchParams(location.search);
   const currentTab = searchParams.get('tab') || 'chat';
 
@@ -85,7 +85,6 @@ const TrackerView: React.FC = () => {
     setLoading(true);
     try {
       const response = await getRequest(endpoints.trackers.byId(trackerId!));
-      // The API returns nested data structure: { message, data: { tracker } }
       const trackerData = response.data?.tracker || response.data?.data?.tracker || null;
       setTracker(trackerData);
     } catch (error) {
@@ -118,8 +117,8 @@ const TrackerView: React.FC = () => {
   if (loading) {
     return (
       <Container maxWidth="xl" sx={{ py: 3 }}>
-        <Skeleton variant="rectangular" height={120} sx={{ borderRadius: 2, mb: 3 }} />
-        <Skeleton variant="rectangular" height={400} sx={{ borderRadius: 2 }} />
+        <Skeleton variant="rectangular" height={120} sx={{ borderRadius: 1, mb: 3 }} />
+        <Skeleton variant="rectangular" height={400} sx={{ borderRadius: 1 }} />
       </Container>
     );
   }
@@ -127,7 +126,7 @@ const TrackerView: React.FC = () => {
   if (!tracker) {
     return (
       <Container maxWidth="xl" sx={{ py: 3 }}>
-        <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
+        <Paper sx={{ p: 4, textAlign: 'center' }}>
           <Typography variant="h6" color="error">
             Tracker not found
           </Typography>
@@ -141,9 +140,8 @@ const TrackerView: React.FC = () => {
       {/* Fixed Header with Tabs */}
       <Box
         sx={{
-          background: '#f8f9fa',
-          borderBottom: `1px solid ${palette.border.light}`,
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)',
+          background: theme.palette.background.paper,
+          borderBottom: `1px solid ${theme.palette.divider}`,
           position: 'sticky',
           top: 0,
           zIndex: 10,
@@ -157,10 +155,10 @@ const TrackerView: React.FC = () => {
               size="small"
               sx={{
                 mr: 1,
-                color: palette.text.secondary,
+                color: theme.palette.text.secondary,
                 '&:hover': {
-                  background: palette.background.subtle,
-                  color: palette.text.primary,
+                  background: theme.palette.action.hover,
+                  color: theme.palette.text.primary,
                 },
               }}
             >
@@ -172,15 +170,14 @@ const TrackerView: React.FC = () => {
                 sx={{
                   width: { xs: 32, sm: 36 },
                   height: { xs: 32, sm: 36 },
-                  borderRadius: 1.5,
-                  background:
-                    tracker.type === 'business'
-                      ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                      : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  borderRadius: 1,
+                  background: tracker.type === 'business'
+                    ? `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`
+                    : `linear-gradient(135deg, ${theme.palette.success.main} 0%, ${theme.palette.success.dark} 100%)`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: 'white',
+                  color: theme.palette.primary.contrastText,
                   flexShrink: 0,
                 }}
               >
@@ -196,8 +193,8 @@ const TrackerView: React.FC = () => {
                   variant="h6"
                   sx={{
                     fontWeight: 600,
-                    fontSize: { xs: '0.95em', sm: '1.05em' },
-                    color: palette.text.primary,
+                    fontSize: { xs: '0.95rem', sm: '1.05rem' },
+                    color: theme.palette.text.primary,
                     lineHeight: 1.2,
                     mb: 0.15,
                   }}
@@ -208,8 +205,8 @@ const TrackerView: React.FC = () => {
                   <Typography
                     variant="body2"
                     sx={{
-                      color: palette.text.secondary,
-                      fontSize: { xs: '0.75em', sm: '0.8em' },
+                      color: theme.palette.text.secondary,
+                      fontSize: { xs: '0.75rem', sm: '0.8rem' },
                       lineHeight: 1.4,
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
@@ -227,16 +224,17 @@ const TrackerView: React.FC = () => {
                 label={tracker.type}
                 size="small"
                 sx={{
-                  backgroundColor:
-                    tracker.type === 'business'
-                      ? 'rgba(102, 126, 234, 0.1)'
-                      : 'rgba(16, 185, 129, 0.1)',
-                  color: tracker.type === 'business' ? '#667eea' : '#10b981',
+                  backgroundColor: tracker.type === 'business'
+                    ? `${theme.palette.primary.main}15`
+                    : `${theme.palette.success.main}15`,
+                  color: tracker.type === 'business'
+                    ? theme.palette.primary.main
+                    : theme.palette.success.main,
                   fontWeight: 600,
                   height: { xs: 20, sm: 22 },
-                  fontSize: { xs: '0.65em', sm: '0.7em' },
+                  fontSize: { xs: '0.65rem', sm: '0.7rem' },
                   textTransform: 'capitalize',
-                  border: `1px solid ${tracker.type === 'business' ? 'rgba(102, 126, 234, 0.2)' : 'rgba(16, 185, 129, 0.2)'}`,
+                  border: `1px solid ${tracker.type === 'business' ? `${theme.palette.primary.main}30` : `${theme.palette.success.main}30`}`,
                   '& .MuiChip-label': { px: 0.75 },
                 }}
               />
@@ -244,12 +242,12 @@ const TrackerView: React.FC = () => {
                 label={getCurrencySymbol(tracker.currency)}
                 size="small"
                 sx={{
-                  backgroundColor: palette.background.subtle,
-                  color: palette.text.primary,
+                  backgroundColor: theme.palette.action.hover,
+                  color: theme.palette.text.primary,
                   fontWeight: 600,
                   height: { xs: 20, sm: 22 },
-                  fontSize: { xs: '0.65em', sm: '0.7em' },
-                  border: `1px solid ${palette.border.default}`,
+                  fontSize: { xs: '0.65rem', sm: '0.7rem' },
+                  border: `1px solid ${theme.palette.divider}`,
                   '& .MuiChip-label': { px: 0.75 },
                 }}
               />
@@ -269,27 +267,31 @@ const TrackerView: React.FC = () => {
                 minHeight: { xs: 40, sm: 44 },
                 py: { xs: 0.75, sm: 1 },
                 px: { xs: 1, sm: 2 },
-                fontSize: { xs: '0.8em', sm: '0.875em' },
+                fontSize: { xs: '0.8rem', sm: '0.875rem' },
                 fontWeight: 500,
-                color: palette.text.secondary,
+                color: theme.palette.text.secondary,
                 textTransform: 'none',
                 transition: 'all 0.2s',
                 '&.Mui-selected': {
-                  color: tracker.type === 'business' ? '#667eea' : '#10b981',
+                  color: tracker.type === 'business'
+                    ? theme.palette.primary.main
+                    : theme.palette.success.main,
                   fontWeight: 600,
                 },
                 '&:hover': {
-                  color: palette.text.primary,
-                  background: palette.background.hover,
+                  color: theme.palette.text.primary,
+                  background: theme.palette.action.hover,
                 },
               },
               '& .MuiTabs-indicator': {
-                backgroundColor: tracker.type === 'business' ? '#667eea' : '#10b981',
+                backgroundColor: tracker.type === 'business'
+                  ? theme.palette.primary.main
+                  : theme.palette.success.main,
                 height: 3,
                 borderRadius: '3px 3px 0 0',
               },
               '& .MuiTab-iconWrapper': {
-                fontSize: { xs: '1.1em', sm: '1.2em' },
+                fontSize: { xs: '1.1rem', sm: '1.2rem' },
                 marginRight: { xs: 0.5, sm: 0.75 },
               },
             }}
@@ -312,15 +314,15 @@ const TrackerView: React.FC = () => {
         }}
       >
         <TabPanel value={tabValue} index={0}>
-          <ChatInterface trackerId={trackerId} />
+          <ChatInterface trackerId={trackerId!} />
         </TabPanel>
 
         <TabPanel value={tabValue} index={1}>
-          <Analytics trackerId={trackerId} />
+          <Analytics trackerId={trackerId!} />
         </TabPanel>
 
         <TabPanel value={tabValue} index={2}>
-          <Transactions trackerId={trackerId} />
+          <Transactions trackerId={trackerId!} />
         </TabPanel>
       </Box>
     </Box>

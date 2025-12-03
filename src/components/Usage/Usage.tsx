@@ -9,6 +9,7 @@ import {
   CircularProgress,
   Divider,
   Button,
+  useTheme,
 } from '@mui/material';
 import { Refresh as RefreshIcon, DeleteForever as DeleteForeverIcon } from '@mui/icons-material';
 
@@ -26,6 +27,7 @@ import TrackerStatsPanel from './components/TrackerStatsPanel';
 import UsageLogsTable from './components/UsageLogsTable';
 
 const Usage: React.FC = () => {
+  const theme = useTheme();
   // State
   const [selectedTrackerId, setSelectedTrackerId] = useState<string>('');
   const [logPage, setLogPage] = useState(0);
@@ -148,7 +150,7 @@ const Usage: React.FC = () => {
     <Container maxWidth="xl" sx={{ py: 3 }}>
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" sx={{ fontWeight: 600, color: '#1a202c' }}>
+        <Typography variant="h4" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
           Usage Statistics
         </Typography>
         <Box sx={{ display: 'flex', gap: 1 }}>
@@ -182,7 +184,7 @@ const Usage: React.FC = () => {
 
       {/* Overall Stats */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#1a202c' }}>
+        <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: theme.palette.text.primary }}>
           Overall Usage
         </Typography>
         {overviewLoading ? (
@@ -203,7 +205,7 @@ const Usage: React.FC = () => {
 
       {/* Tracker Details Section */}
       <Box sx={{ mb: 3 }}>
-        <Typography variant="h5" sx={{ fontWeight: 600, mb: 3, color: '#1a202c' }}>
+        <Typography variant="h5" sx={{ fontWeight: 600, mb: 3, color: theme.palette.text.primary }}>
           Tracker Details
         </Typography>
 
@@ -234,7 +236,7 @@ const Usage: React.FC = () => {
 
             {/* Tracker Graphs */}
             <Box sx={{ mb: 4 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#1a202c' }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: theme.palette.text.primary }}>
                 Tracker Usage Graphs
               </Typography>
               <UsageGraphsPanel

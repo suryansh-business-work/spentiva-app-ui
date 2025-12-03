@@ -30,7 +30,7 @@ export const ThemeModeProvider: React.FC<ThemeProviderProps> = ({ children }) =>
     // Update meta theme-color based on mode
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
-      metaThemeColor.setAttribute('content', isDarkMode ? '#1a1a1a' : '#667eea');
+      metaThemeColor.setAttribute('content', isDarkMode ? '#191B19' : '#14B8A6');
     }
   }, [isDarkMode]);
 

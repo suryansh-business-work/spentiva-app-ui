@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Avatar, Paper, Typography } from '@mui/material';
+import { Box, Avatar, Paper, Typography, useTheme } from '@mui/material';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import PersonIcon from '@mui/icons-material/Person';
 import { Message } from '../../../types';
@@ -20,6 +20,7 @@ interface ChatMessageProps {
  */
 const ChatMessage: React.FC<ChatMessageProps> = ({ message, userPhotoUrl, userName }) => {
   const isUser = message.role === 'user';
+  const theme = useTheme();
 
   /**
    * Get avatar content based on message role
@@ -33,6 +34,10 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, userPhotoUrl, userNa
     }
     return <SmartToyIcon />;
   };
+
+  // Check if message contains HTML (for category error links)
+  const hasHtmlLink = message.content.includes('<a href=');
+  const displayContent = hasHtmlLink ? message.content.replace('CATEGORY_ERROR::', '') : message.content;
 
   return (
     <Box
@@ -52,9 +57,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, userPhotoUrl, userNa
           width: 40,
           height: 40,
           background: isUser
-            ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
-            : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            ? `linear-gradient(135deg, ${theme.palette.success.main} 0%, ${theme.palette.success.dark} 100%)`
+            : `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
           flexShrink: 0,
         }}
       >
@@ -63,18 +67,32 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, userPhotoUrl, userNa
 
       {/* Message Content */}
       <Paper
-        elevation={2}
         sx={{
           p: 1.5,
           maxWidth: '75%',
-          backgroundColor: isUser ? '#10b981' : '#fff',
-          color: isUser ? '#fff' : '#333',
-          borderRadius: 2,
+          backgroundColor: isUser ? theme.palette.success.main : theme.palette.background.paper,
+          color: isUser ? theme.palette.primary.contrastText : theme.palette.text.primary,
+          borderRadius: 1,
         }}
       >
-        <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>
-          {message.content}
-        </Typography>
+        {hasHtmlLink ? (
+          <Typography
+            variant="body1"
+            sx={{
+              whiteSpace: 'pre-line',
+              '& a': {
+                color: theme.palette.primary.main,
+                textDecoration: 'underline',
+                cursor: 'pointer',
+              },
+            }}
+            dangerouslySetInnerHTML={{ __html: displayContent }}
+          />
+        ) : (
+          <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>
+            {message.content}
+          </Typography>
+        )}
 
         {/* Expense Card (if expense data is present) */}
         {message.expense && <ExpenseCard expense={message.expense} />}

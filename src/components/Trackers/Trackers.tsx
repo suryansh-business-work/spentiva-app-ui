@@ -1,21 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Container,
-  Paper,
-  Typography,
-  Box,
-  Button,
-  Fab,
-  Snackbar,
-  Alert,
-  Fade,
-  useTheme,
-} from '@mui/material';
+import React, { useState } from 'react';
+import { Container, Box, Button, Fab, Snackbar, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
-import { endpoints } from '../../config/api';
-import { getRequest, postRequest, putRequest, deleteRequest } from '../../utils/http';
-import { Tracker, TrackerFormData, SnackbarState } from './types/tracker.types';
+import { Tracker, TrackerFormData } from './types/tracker.types';
+import { useTrackers } from './hooks/useTrackers';
+import GreetingHeader from './components/GreetingHeader';
 import LoadingState from './components/LoadingState';
 import EmptyState from './components/EmptyState';
 import TrackerCard from './components/TrackerCard';
@@ -25,47 +14,30 @@ import DeleteDialog from './components/DeleteDialog';
 
 const Trackers: React.FC = () => {
   const navigate = useNavigate();
-  const theme = useTheme();
-  const [trackers, setTrackers] = useState<Tracker[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [deleting, setDeleting] = useState(false);
+  const {
+    trackers,
+    loading,
+    saving,
+    deleting,
+    snackbar,
+    createTracker,
+    updateTracker,
+    deleteTracker,
+    closeSnackbar,
+  } = useTrackers();
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [selectedTracker, setSelectedTracker] = useState<Tracker | null>(null);
-  const [snackbar, setSnackbar] = useState<SnackbarState>({
-    open: false,
-    message: '',
-    severity: 'success',
-  });
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [menuTracker, setMenuTracker] = useState<Tracker | null>(null);
-
   const [formData, setFormData] = useState<TrackerFormData>({
     name: '',
     type: 'personal',
     description: '',
     currency: 'INR',
   });
-
-  useEffect(() => {
-    loadTrackers();
-  }, []);
-
-  const loadTrackers = async () => {
-    setLoading(true);
-    try {
-      const response = await getRequest(endpoints.trackers.getAll);
-      const trackersData = response.data?.trackers || response.data?.data?.trackers || [];
-      setTrackers(trackersData);
-    } catch (error) {
-      console.error('Error loading trackers:', error);
-      setSnackbar({ open: true, message: 'Failed to load trackers', severity: 'error' });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleOpenDialog = (tracker?: Tracker) => {
     if (tracker) {
@@ -80,39 +52,19 @@ const Trackers: React.FC = () => {
     } else {
       setEditMode(false);
       setSelectedTracker(null);
-      setFormData({
-        name: '',
-        type: 'personal',
-        description: '',
-        currency: 'INR',
-      });
+      setFormData({ name: '', type: 'personal', description: '', currency: 'INR' });
     }
     setDialogOpen(true);
   };
 
-  const handleCloseDialog = () => {
-    setDialogOpen(false);
-    setEditMode(false);
-    setSelectedTracker(null);
-  };
-
   const handleSave = async () => {
-    setSaving(true);
-    try {
-      if (editMode && selectedTracker) {
-        await putRequest(endpoints.trackers.update(selectedTracker.id), formData);
-        setSnackbar({ open: true, message: 'Tracker updated successfully', severity: 'success' });
-      } else {
-        await postRequest(endpoints.trackers.create, formData);
-        setSnackbar({ open: true, message: 'Tracker created successfully', severity: 'success' });
-      }
-      handleCloseDialog();
-      loadTrackers();
-    } catch (error) {
-      console.error('Error saving tracker:', error);
-      setSnackbar({ open: true, message: 'Failed to save tracker', severity: 'error' });
-    } finally {
-      setSaving(false);
+    const success = editMode && selectedTracker
+      ? await updateTracker(selectedTracker.id, formData)
+      : await createTracker(formData);
+    if (success) {
+      setDialogOpen(false);
+      setEditMode(false);
+      setSelectedTracker(null);
     }
   };
 
@@ -122,34 +74,9 @@ const Trackers: React.FC = () => {
   };
 
   const handleConfirmDelete = async () => {
-    if (!selectedTracker) return;
-
-    setDeleting(true);
-    try {
-      await deleteRequest(endpoints.trackers.delete(selectedTracker.id));
-      setDeleteDialogOpen(false);
-      setSnackbar({ open: true, message: 'Tracker deleted successfully', severity: 'success' });
-      loadTrackers();
-    } catch (error) {
-      console.error('Error deleting tracker:', error);
-      setSnackbar({ open: true, message: 'Failed to delete tracker', severity: 'error' });
-    } finally {
-      setDeleting(false);
-    }
-  };
-
-  const getCurrencySymbol = (currency: string) => {
-    switch (currency) {
-      case 'INR':
-        return '₹';
-      case 'USD':
-        return '$';
-      case 'EUR':
-        return '€';
-      case 'GBP':
-        return '£';
-      default:
-        return currency;
+    if (selectedTracker) {
+      const success = await deleteTracker(selectedTracker.id);
+      if (success) setDeleteDialogOpen(false);
     }
   };
 
@@ -159,98 +86,33 @@ const Trackers: React.FC = () => {
     setMenuTracker(tracker);
   };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    setMenuTracker(null);
-  };
-
-  const handleAddToHomeScreen = async (tracker: Tracker) => {
-    try {
-      window.open(`/tracker/${tracker.id}`, '_blank');
-      setSnackbar({
-        open: true,
-        message: `Opening ${tracker.name}. Use your browser's "Add to Home Screen" option to create an icon!`,
-        severity: 'success',
-      });
-    } catch (error) {
-      console.error('Error creating PWA shortcut:', error);
-      setSnackbar({
-        open: true,
-        message: 'Opening tracker in new window. Use browser menu to add to home screen.',
-        severity: 'success',
-      });
-      window.open(`/tracker/${tracker.id}`, '_blank');
-    }
+  const getCurrencySymbol = (currency: string) => {
+    const symbols: Record<string, string> = { INR: '₹', USD: '$', EUR: '€', GBP: '£' };
+    return symbols[currency] || currency;
   };
 
   return (
-    <Container maxWidth="xl" sx={{ py: { xs: 2, sm: 3 }, px: { xs: 2, sm: 3 } }}>
-      <Fade in={true} timeout={500}>
-        <Paper
-          elevation={0}
-          sx={{
-            p: { xs: 2.5, sm: 3 },
-            mb: { xs: 2, sm: 3 },
-            borderRadius: 1,
-            background: theme.palette.background.paper,
-            border: `1px solid ${theme.palette.divider}`,
-          }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: 2,
-            }}
-          >
-            <Box>
-              <Typography
-                variant="h5"
-                gutterBottom
-                sx={{
-                  fontWeight: 700,
-                  mb: 0.5,
-                  color: theme.palette.text.primary,
-                  fontSize: { xs: '1.25em', sm: '1.5em' },
-                }}
-              >
-                Expense Trackers
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: theme.palette.text.secondary,
-                  fontSize: { xs: '0.875em', sm: '0.9375em' },
-                }}
-              >
-                Create separate trackers for different purposes
-              </Typography>
-            </Box>
-            <Button
-              variant="contained"
-              size="small"
-              startIcon={<AddIcon />}
-              onClick={() => handleOpenDialog()}
-              aria-label="Create new expense tracker"
-              sx={{
-                display: { xs: 'none', md: 'inline-flex' },
-                background: theme.palette.primary.main,
-                color: theme.palette.primary.contrastText,
-                fontWeight: 600,
-                px: { xs: 2, sm: 2.5 },
-                py: { xs: 1, sm: 1.25 },
-                borderRadius: 2,
-                textTransform: 'none',
-                fontSize: { xs: '0.875em', sm: '0.9375em' },
-              }}
-            >
-              Create Tracker
-            </Button>
+    <Container maxWidth="xl" sx={{ py: { xs: 2, md: 2.5 } }}>
+      <GreetingHeader />
+
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5 }}>
+        <Box>
+          <Box sx={{ fontSize: '1.25rem', fontWeight: 700, color: 'text.primary', mb: 0.25 }}>
+            Expense Trackers
           </Box>
-        </Paper>
-      </Fade>
+          <Box sx={{ color: 'text.secondary', fontSize: '0.8125rem' }}>
+            Create separate trackers for different purposes
+          </Box>
+        </Box>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => handleOpenDialog()}
+          sx={{ display: { xs: 'none', md: 'inline-flex' }, py: 1, px: 2 }}
+        >
+          Create Tracker
+        </Button>
+      </Box>
 
       {loading ? (
         <LoadingState />
@@ -266,7 +128,7 @@ const Trackers: React.FC = () => {
               md: 'repeat(3, 1fr)',
               lg: 'repeat(4, 1fr)',
             },
-            gap: 3,
+            gap: 2,
           }}
         >
           {trackers.map((tracker, index) => (
@@ -282,30 +144,32 @@ const Trackers: React.FC = () => {
         </Box>
       )}
 
-      {/* Actions Drawer/Menu */}
       <TrackerActionsDrawer
         anchorEl={anchorEl}
         tracker={menuTracker}
-        onClose={handleMenuClose}
+        onClose={() => {
+          setAnchorEl(null);
+          setMenuTracker(null);
+        }}
         onEdit={() => menuTracker && handleOpenDialog(menuTracker)}
         onDelete={() => menuTracker && handleDelete(menuTracker)}
         onSettings={() => menuTracker && navigate(`/tracker/${menuTracker.id}/settings`)}
-        onAddToHome={() => menuTracker && handleAddToHomeScreen(menuTracker)}
+        onAddToHome={() => {
+          if (menuTracker) window.open(`/tracker/${menuTracker.id}`, '_blank');
+        }}
         getCurrencySymbol={getCurrencySymbol}
       />
 
-      {/* Create/Edit Dialog */}
       <CreateEditDialog
         open={dialogOpen}
         editMode={editMode}
         formData={formData}
-        onClose={handleCloseDialog}
+        onClose={() => setDialogOpen(false)}
         onSave={handleSave}
         onChange={(field, value) => setFormData({ ...formData, [field]: value })}
         disabled={saving}
       />
 
-      {/* Delete Confirmation Dialog */}
       <DeleteDialog
         open={deleteDialogOpen}
         tracker={selectedTracker}
@@ -314,55 +178,29 @@ const Trackers: React.FC = () => {
         deleting={deleting}
       />
 
-      {/* Snackbar */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={3000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        onClose={closeSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Alert
-          severity={snackbar.severity}
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-        >
+        <Alert severity={snackbar.severity} onClose={closeSnackbar}>
           {snackbar.message}
         </Alert>
       </Snackbar>
 
-      {/* Mobile FAB */}
       <Fab
         color="primary"
-        aria-label="Create new tracker"
         onClick={() => handleOpenDialog()}
         sx={{
           position: 'fixed',
           bottom: { xs: 16, sm: 24 },
           right: { xs: 16, sm: 24 },
           display: { xs: 'flex', md: 'none' },
-          zIndex: 1000,
-          boxShadow: theme.shadows[6],
         }}
       >
         <AddIcon />
       </Fab>
-
-      {/* Screen reader live region */}
-      <Box
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-        sx={{
-          position: 'absolute',
-          left: '-10000px',
-          width: '1px',
-          height: '1px',
-          overflow: 'hidden',
-        }}
-      >
-        {loading
-          ? 'Loading trackers...'
-          : `${trackers.length} tracker${trackers.length !== 1 ? 's' : ''} available`}
-      </Box>
     </Container>
   );
 };

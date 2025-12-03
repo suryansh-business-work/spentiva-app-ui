@@ -1,5 +1,6 @@
 import React from 'react';
-import { FormControl, Select, MenuItem, Box, Typography, Chip } from '@mui/material';
+import { FormControl, Select, MenuItem, Box, Typography, Chip, useTheme } from '@mui/material';
+import { palette, darkPalette } from '../../../theme/palette';
 
 interface Tracker {
   _id: string;
@@ -22,6 +23,9 @@ const TrackerSelector: React.FC<TrackerSelectorProps> = ({
   selectedTrackerId,
   onChange,
 }) => {
+  const theme = useTheme();
+  const paletteSource = theme.palette.mode === 'dark' ? darkPalette : palette;
+
   const handleChange = (event: any) => {
     onChange(event.target.value);
   };
@@ -57,9 +61,11 @@ const TrackerSelector: React.FC<TrackerSelectorProps> = ({
                   textTransform: 'capitalize',
                   bgcolor:
                     tracker.type === 'business'
-                      ? 'rgba(102, 126, 234, 0.1)'
-                      : 'rgba(16, 185, 129, 0.1)',
-                  color: tracker.type === 'business' ? '#667eea' : '#10b981',
+                      ? paletteSource.trackerTypes.business.bg
+                      : paletteSource.trackerTypes.personal.bg,
+                  color: tracker.type === 'business'
+                    ? paletteSource.trackerTypes.business.primary
+                    : paletteSource.trackerTypes.personal.primary,
                 }}
               />
             </Box>
