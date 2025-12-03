@@ -62,8 +62,15 @@ export const endpoints = {
     total: `${getApiUrl()}/analytics/total`,
   },
   usage: {
-    overall: `${getApiUrl()}/usage/overall`,
-    tracker: (trackerId: string) => `${getApiUrl()}/usage/tracker/${trackerId}`,
-    logs: (trackerId: string) => `${getApiUrl()}/usage/tracker/${trackerId}/logs`,
+    overview: `${getApiUrl()}/usage/overview`,
+    graphs: `${getApiUrl()}/usage/graphs`,
+    trackerStats: (trackerId: string) => `${getApiUrl()}/usage/tracker/${trackerId}/stats`,
+    trackerGraphs: (trackerId: string) => `${getApiUrl()}/usage/tracker/${trackerId}/graphs`,
+    trackerLogs: (trackerId: string) => `${getApiUrl()}/usage/tracker/${trackerId}/logs`,
+  },
+  usageLogs: {
+    getAll: `${getApiUrl()}/usage-logs`,
+    create: `${getApiUrl()}/usage-logs`,
+    cleanup: `${getApiUrl()}/usage-logs/cleanup`,
   },
 };

@@ -1,0 +1,89 @@
+import React from 'react';
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+} from '@mui/material';
+import Grid from '@mui/material/Grid';
+import {
+  MessageOutlined as MessageIcon,
+  TokenOutlined as TokenIcon,
+  PersonOutline as PersonIcon,
+  SmartToy as AIIcon,
+} from '@mui/icons-material';
+import { UsageOverview } from '../../../types/usage';
+
+interface UsageOverviewCardsProps {
+  data: UsageOverview;
+}
+
+/**
+ * UsageOverviewCards Component
+ * Displays overall usage statistics in gradient cards
+ */
+const UsageOverviewCards: React.FC<UsageOverviewCardsProps> = ({ data }) => {
+  const cards = [
+    {
+      title: 'Total Messages',
+      value: data.overall.totalMessages,
+      Icon: MessageIcon,
+      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      shadow: 'rgba(102, 126, 234, 0.3)',
+    },
+    {
+      title: 'Total Tokens',
+      value: data.overall.totalTokens,
+      Icon: TokenIcon,
+      gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+      shadow: 'rgba(16, 185, 129, 0.3)',
+    },
+    {
+      title: 'User Messages',
+      value: data.overall.userMessages,
+      Icon: PersonIcon,
+      gradient: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+      shadow: 'rgba(59, 130, 246, 0.3)',
+    },
+    {
+      title: 'AI Messages',
+      value: data.overall.aiMessages,
+      Icon: AIIcon,
+      gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+      shadow: 'rgba(245, 158, 11, 0.3)',
+    },
+  ];
+
+  return (
+    <Grid container spacing={3}>
+      {cards.map(({ title, value, Icon, gradient, shadow }) => (
+        <Grid size={{ xs: 12, sm: 6, md: 3 }} key={title}>
+          <Card
+            sx={{
+              borderRadius: 3,
+              background: gradient,
+              boxShadow: `0 4px 20px ${shadow}`,
+            }}
+          >
+            <CardContent sx={{ p: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, color: 'white' }}>
+                <Icon sx={{ mr: 1, fontSize: '1.5em' }} />
+                <Typography
+                  variant="body1"
+                  sx={{ opacity: 0.95, fontSize: '0.95em', fontWeight: 500 }}
+                >
+                  {title}
+                </Typography>
+              </Box>
+              <Typography variant="h3" sx={{ fontWeight: 700, color: 'white' }}>
+                {value.toLocaleString()}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      ))}
+    </Grid>
+  );
+};
+
+export default UsageOverviewCards;
