@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Container, Box, Typography, Fade, useTheme } from '@mui/material';
 import { useAuth } from '../../contexts/AuthContext';
 import { User } from '../../types';
@@ -23,6 +23,15 @@ const Profile: React.FC = () => {
     clearMessages: clearUpdateMessages,
   } = useProfileUpdate(user, updateUser, token);
 
+  // Memoize the verification success callback
+  const handleVerificationSuccess = useCallback(async () => {
+    // Reload user data after successful verification
+    if (user) {
+      const updatedUser: User = { ...user, emailVerified: true };
+      updateUser(updatedUser);
+    }
+  }, [user, updateUser]);
+
   // Email verification hook
   const {
     loading: verificationLoading,
@@ -36,51 +45,52 @@ const Profile: React.FC = () => {
     openDialog,
     closeDialog,
     clearMessages: clearVerificationMessages,
-  } = useEmailVerification(user?.email || '', async () => {
-    // Reload user data after successful verification
-    if (user) {
-      const updatedUser: User = { ...user, emailVerified: true };
-      updateUser(updatedUser);
-    }
-  });
+  } = useEmailVerification(user?.email || '', handleVerificationSuccess);
 
   /**
    * Handle photo change
    */
-  const handlePhotoChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       await uploadPhoto(file);
     }
-  };
+  }, [uploadPhoto]);
 
   /**
    * Handle profile update
    */
-  const handleUpdateProfile = async (name: string) => {
+  const handleUpdateProfile = useCallback(async (name: string) => {
     return await updateProfile(name);
-  };
+  }, [updateProfile]);
 
   /**
    * Handle verification button click
    */
-  const handleVerifyEmail = () => {
+  const handleVerifyEmail = useCallback(() => {
     openDialog();
-  };
+  }, [openDialog]);
 
   /**
    * Handle send OTP
    */
-  const handleSendOtp = async () => {
+  const handleSendOtp = useCallback(async () => {
     await sendVerificationOtp();
-  };
+  }, [sendVerificationOtp]);
 
   /**
    * Handle verify OTP
    */
-  const handleVerifyOtp = async (otp: string) => {
+  const handleVerifyOtp = useCallback(async (otp: string) => {
     await verifyEmail(otp);
-  };
+  }, [verifyEmail]);
+
+  /**
+   * Handle resend OTP
+   */
+  const handleResendOtp = useCallback(async () => {
+    await sendVerificationOtp();
+  }, [sendVerificationOtp]);
 
   return (
     <Box
@@ -128,11 +138,16 @@ const Profile: React.FC = () => {
               <ProfileDetailsCard
                 user={user}
                 loading={updateLoading}
+                verificationLoading={verificationLoading}
                 message={updateMessage}
                 error={updateError}
+                verificationSuccess={verificationSuccess}
+                verificationError={verificationError}
                 onUpdateProfile={handleUpdateProfile}
                 onClearMessages={clearUpdateMessages}
                 onVerifyEmail={handleVerifyEmail}
+                onResendOtp={handleResendOtp}
+                onClearVerificationMessages={clearVerificationMessages}
               />
             </Box>
           </Box>

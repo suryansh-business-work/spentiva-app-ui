@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { endpoints, getApiUrl } from '../../../config/api';
 import { putRequest, postRequest } from '../../../utils/http';
 
@@ -24,7 +24,7 @@ export const useProfileUpdate = (
   /**
    * Get profile photo URL
    */
-  const getPhotoUrl = (): string | undefined => {
+  const getPhotoUrl = useCallback((): string | undefined => {
     if (photoPreview) return photoPreview;
     if (user?.profilePhoto) {
       if (user.profilePhoto.startsWith('http')) {
@@ -33,12 +33,12 @@ export const useProfileUpdate = (
       return `${getApiUrl()}/${user.profilePhoto}`;
     }
     return undefined;
-  };
+  }, [photoPreview, user?.profilePhoto]);
 
   /**
    * Update user profile (name)
    */
-  const updateProfile = async (name: string) => {
+  const updateProfile = useCallback(async (name: string) => {
     setState({ loading: true, error: '', message: '' });
 
     try {
@@ -58,12 +58,12 @@ export const useProfileUpdate = (
       setState({ loading: false, error: errorMessage, message: '' });
       return false;
     }
-  };
+  }, [updateUser]);
 
   /**
    * Upload profile photo
    */
-  const uploadPhoto = async (file: File) => {
+  const uploadPhoto = useCallback(async (file: File) => {
     setState({ loading: true, error: '', message: '' });
 
     const formData = new FormData();
@@ -89,21 +89,21 @@ export const useProfileUpdate = (
       setState({ loading: false, error: errorMessage, message: '' });
       return false;
     }
-  };
+  }, [updateUser]);
 
   /**
    * Clear messages
    */
-  const clearMessages = () => {
+  const clearMessages = useCallback(() => {
     setState(prev => ({ ...prev, error: '', message: '' }));
-  };
+  }, []);
 
-  return {
+  return useMemo(() => ({
     ...state,
     photoPreview,
     getPhotoUrl,
     updateProfile,
     uploadPhoto,
     clearMessages,
-  };
+  }), [state, photoPreview, getPhotoUrl, updateProfile, uploadPhoto, clearMessages]);
 };

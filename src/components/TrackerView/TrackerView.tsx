@@ -149,7 +149,7 @@ const TrackerView: React.FC = () => {
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       {/* Fixed Header with Tabs */}
       <Box
         sx={{

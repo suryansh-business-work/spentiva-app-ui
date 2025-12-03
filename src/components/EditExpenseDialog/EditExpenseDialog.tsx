@@ -114,8 +114,8 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
           <FormControl fullWidth>
             <InputLabel>Category</InputLabel>
             <Select value={category} onChange={e => setCategory(e.target.value)} label="Category">
-              {safeCategories.map(cat => (
-                <MenuItem key={cat.id} value={cat.name}>
+              {safeCategories.map((cat, index) => (
+                <MenuItem key={`${cat.id}-${index}`} value={cat.name}>
                   {cat.name}
                 </MenuItem>
               ))}
@@ -130,8 +130,8 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
               label="Subcategory"
               disabled={!category || availableSubcategories.length === 0}
             >
-              {availableSubcategories.map(sub => (
-                <MenuItem key={sub.id} value={sub.name}>
+              {availableSubcategories.map((sub, index) => (
+                <MenuItem key={`${sub.id}-${index}`} value={sub.name}>
                   {sub.name}
                 </MenuItem>
               ))}
@@ -145,8 +145,8 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
               onChange={e => setPaymentMethod(e.target.value)}
               label="Payment Method"
             >
-              {paymentMethods.map(method => (
-                <MenuItem key={method} value={method}>
+              {paymentMethods.map((method, index) => (
+                <MenuItem key={`payment-${method}-${index}`} value={method}>
                   {method}
                 </MenuItem>
               ))}

@@ -15,7 +15,6 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import EmailIcon from '@mui/icons-material/Email';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 interface EmailVerificationDialogProps {
   open: boolean;
@@ -36,7 +35,6 @@ const EmailVerificationDialog: React.FC<EmailVerificationDialogProps> = ({
   email,
   loading,
   error,
-  otpSent,
   countdown,
   onClose,
   onSendOtp,
@@ -106,129 +104,88 @@ const EmailVerificationDialog: React.FC<EmailVerificationDialogProps> = ({
       </DialogTitle>
 
       <DialogContent sx={{ pt: 2 }}>
-        {!otpSent ? (
-          <Box>
-            <Typography variant="body2" sx={{ color: theme.palette.text.secondary, mb: 3, lineHeight: 1.6 }}>
-              We'll send a verification code to <strong>{email}</strong>. Please check your inbox and enter the code below.
-            </Typography>
+        <Box>
+          <Typography variant="body2" sx={{ color: theme.palette.text.secondary, mb: 3, lineHeight: 1.6 }}>
+            A verification code was sent to <strong>{email}</strong> when you signed up. Please enter the 6-digit code below.
+          </Typography>
 
-            {error && (
-              <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }} onClose={onClearMessages}>
-                {error}
-              </Alert>
-            )}
-          </Box>
-        ) : (
-          <Box>
-            <Alert
-              severity="success"
-              icon={<CheckCircleIcon />}
-              sx={{ mb: 3, borderRadius: 2 }}
-            >
-              Code sent! Check your email at <strong>{email}</strong>
-            </Alert>
+          <Typography variant="caption" sx={{ color: theme.palette.text.secondary, mb: 1, display: 'block' }}>
+            Enter 6-digit verification code
+          </Typography>
 
-            <Typography variant="caption" sx={{ color: theme.palette.text.secondary, mb: 1, display: 'block' }}>
-              Enter 6-digit verification code
-            </Typography>
-
-            <TextField
-              fullWidth
-              value={otp}
-              onChange={handleOtpChange}
-              placeholder="000000"
-              disabled={loading}
-              inputProps={{
-                maxLength: 6,
-                style: { textAlign: 'center', fontSize: '1.5rem', letterSpacing: '0.5rem', fontWeight: 600 },
-              }}
-              sx={{
-                mb: 2,
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 2,
-                  '& fieldset': {
-                    borderColor: theme.palette.divider,
-                    borderWidth: 2,
-                  },
-                  '&:hover fieldset': {
-                    borderColor: theme.palette.primary.light,
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: theme.palette.primary.main,
-                  },
+          <TextField
+            fullWidth
+            value={otp}
+            onChange={handleOtpChange}
+            placeholder="000000"
+            disabled={loading}
+            inputProps={{
+              maxLength: 6,
+              style: { textAlign: 'center', fontSize: '1.5rem', letterSpacing: '0.5rem', fontWeight: 600 },
+            }}
+            sx={{
+              mb: 2,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                '& fieldset': {
+                  borderColor: theme.palette.divider,
+                  borderWidth: 2,
                 },
-              }}
-            />
+                '&:hover fieldset': {
+                  borderColor: theme.palette.primary.light,
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: theme.palette.primary.main,
+                },
+              },
+            }}
+          />
 
-            {error && (
-              <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }} onClose={onClearMessages}>
-                {error}
-              </Alert>
-            )}
+          {error && (
+            <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }} onClose={onClearMessages}>
+              {error}
+            </Alert>
+          )}
 
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                Didn't receive code?
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+              Didn't receive the code?
+            </Typography>
+            {countdown > 0 ? (
+              <Typography variant="body2" sx={{ color: theme.palette.text.disabled }}>
+                Resend in {countdown}s
               </Typography>
-              {countdown > 0 ? (
-                <Typography variant="body2" sx={{ color: theme.palette.text.disabled }}>
-                  Resend in {countdown}s
-                </Typography>
-              ) : (
-                <Button
-                  size="small"
-                  onClick={handleSendOtp}
-                  disabled={loading}
-                  sx={{ textTransform: 'none', fontWeight: 600 }}
-                >
-                  Resend Code
-                </Button>
-              )}
-            </Box>
+            ) : (
+              <Button
+                size="small"
+                onClick={handleSendOtp}
+                disabled={loading}
+                sx={{ textTransform: 'none', fontWeight: 600 }}
+              >
+                Resend Code
+              </Button>
+            )}
           </Box>
-        )}
+        </Box>
       </DialogContent>
 
       <DialogActions sx={{ px: 3, pb: 3, pt: 2 }}>
-        {!otpSent ? (
-          <>
-            <Button onClick={onClose} sx={{ textTransform: 'none', fontWeight: 600 }}>
-              Cancel
-            </Button>
-            <Button
-              variant="contained"
-              onClick={handleSendOtp}
-              disabled={loading}
-              sx={{
-                textTransform: 'none',
-                fontWeight: 600,
-                px: 3,
-                borderRadius: 2,
-              }}
-            >
-              {loading ? <CircularProgress size={24} color="inherit" /> : 'Send Code'}
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button onClick={onClose} sx={{ textTransform: 'none', fontWeight: 600 }}>
-              Cancel
-            </Button>
-            <Button
-              variant="contained"
-              onClick={handleVerify}
-              disabled={loading || otp.length !== 6}
-              sx={{
-                textTransform: 'none',
-                fontWeight: 600,
-                px: 3,
-                borderRadius: 2,
-              }}
-            >
-              {loading ? <CircularProgress size={24} color="inherit" /> : 'Verify'}
-            </Button>
-          </>
-        )}
+        <Button onClick={onClose} sx={{ textTransform: 'none', fontWeight: 600 }}>
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          onClick={handleVerify}
+          disabled={loading || otp.length !== 6}
+          sx={{
+            textTransform: 'none',
+            fontWeight: 600,
+            px: 3,
+            borderRadius: 2,
+          }}
+        >
+          {loading ? <CircularProgress size={24} color="inherit" /> : 'Verify'}
+        </Button>
       </DialogActions>
     </Dialog>
   );

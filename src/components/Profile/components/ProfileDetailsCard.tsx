@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Card,
   CardContent,
@@ -22,30 +22,46 @@ import * as Yup from 'yup';
 interface ProfileDetailsCardProps {
   user: any;
   loading: boolean;
+  verificationLoading: boolean;
   message: string;
   error: string;
+  verificationSuccess: string;
+  verificationError: string;
   onUpdateProfile: (name: string) => Promise<boolean>;
   onClearMessages: () => void;
   onVerifyEmail: () => void;
+  onResendOtp: () => void;
+  onClearVerificationMessages: () => void;
 }
 
 const ProfileDetailsCard: React.FC<ProfileDetailsCardProps> = ({
   user,
   loading,
+  verificationLoading,
   message,
   error,
+  verificationSuccess,
+  verificationError,
   onUpdateProfile,
   onClearMessages,
   onVerifyEmail,
+  onResendOtp,
+  onClearVerificationMessages,
 }) => {
   const theme = useTheme();
   const [isEditing, setIsEditing] = useState(false);
 
-  const formik = useFormik({
-    initialValues: {
+  // Memoize initial values to prevent infinite re-renders with enableReinitialize
+  const initialValues = useMemo(
+    () => ({
       name: user?.name || '',
       email: user?.email || '',
-    },
+    }),
+    [user?.name, user?.email]
+  );
+
+  const formik = useFormik({
+    initialValues,
     enableReinitialize: true,
     validationSchema: Yup.object({
       name: Yup.string().required('Name is required'),
@@ -102,6 +118,19 @@ const ProfileDetailsCard: React.FC<ProfileDetailsCardProps> = ({
           {error && (
             <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }} onClose={onClearMessages}>
               {error}
+            </Alert>
+          )}
+
+          {/* Verification Messages */}
+          {verificationSuccess && (
+            <Alert severity="success" sx={{ mb: 3, borderRadius: 2 }} onClose={onClearVerificationMessages}>
+              {verificationSuccess}
+            </Alert>
+          )}
+
+          {verificationError && (
+            <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }} onClose={onClearVerificationMessages}>
+              {verificationError}
             </Alert>
           )}
 
@@ -216,28 +245,67 @@ const ProfileDetailsCard: React.FC<ProfileDetailsCardProps> = ({
 
               {/* Verification Info/Button */}
               {!user?.emailVerified ? (
-                <Box sx={{ mt: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <Typography variant="caption" sx={{ color: theme.palette.text.disabled }}>
-                    Please verify your email address
-                  </Typography>
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    onClick={onVerifyEmail}
+                <Box sx={{ mt: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+                    <Typography variant="caption" sx={{ color: theme.palette.text.disabled }}>
+                      Please verify your email address
+                    </Typography>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={onVerifyEmail}
+                      sx={{
+                        textTransform: 'none',
+                        fontWeight: 600,
+                        borderRadius: 2,
+                        borderColor: theme.palette.primary.main,
+                        color: theme.palette.primary.main,
+                        '&:hover': {
+                          borderColor: theme.palette.primary.dark,
+                          background: theme.palette.action.hover,
+                        },
+                      }}
+                    >
+                      Verify OTP
+                    </Button>
+                  </Box>
+                  <Typography
+                    variant="caption"
                     sx={{
-                      textTransform: 'none',
-                      fontWeight: 600,
-                      borderRadius: 2,
-                      borderColor: theme.palette.primary.main,
-                      color: theme.palette.primary.main,
-                      '&:hover': {
-                        borderColor: theme.palette.primary.dark,
-                        background: theme.palette.action.hover,
-                      },
+                      color: theme.palette.text.secondary,
+                      display: 'block'
                     }}
                   >
-                    Verify Email
-                  </Button>
+                    Didn't receive the email?{' '}
+                    <Button
+                      size="small"
+                      onClick={onResendOtp}
+                      disabled={verificationLoading}
+                      sx={{
+                        textTransform: 'none',
+                        fontWeight: 600,
+                        minWidth: 'auto',
+                        p: 0,
+                        verticalAlign: 'baseline',
+                        color: verificationLoading ? theme.palette.text.disabled : theme.palette.primary.main,
+                        textDecoration: 'underline',
+                        '&:hover': {
+                          background: 'transparent',
+                          textDecoration: 'underline',
+                          color: verificationLoading ? theme.palette.text.disabled : theme.palette.primary.dark,
+                        },
+                      }}
+                    >
+                      {verificationLoading ? (
+                        <>
+                          <CircularProgress size={12} sx={{ mr: 0.5 }} />
+                          Sending...
+                        </>
+                      ) : (
+                        'Resend OTP'
+                      )}
+                    </Button>
+                  </Typography>
                 </Box>
               ) : (
                 <Typography variant="caption" sx={{ color: theme.palette.text.disabled, mt: 0.5, display: 'block' }}>

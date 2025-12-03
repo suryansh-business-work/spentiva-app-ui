@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { endpoints } from '../../../config/api';
 import { postRequest } from '../../../utils/http';
 
@@ -23,7 +23,7 @@ export const useEmailVerification = (userEmail: string, onVerificationSuccess: (
   /**
    * Send verification OTP to email
    */
-  const sendVerificationOtp = async () => {
+  const sendVerificationOtp = useCallback(async () => {
     setState(prev => ({ ...prev, loading: true, error: '', success: '' }));
 
     try {
@@ -51,12 +51,12 @@ export const useEmailVerification = (userEmail: string, onVerificationSuccess: (
       setState(prev => ({ ...prev, loading: false, error: errorMessage }));
       return false;
     }
-  };
+  }, [userEmail]);
 
   /**
    * Verify email with OTP
    */
-  const verifyEmail = async (otp: string) => {
+  const verifyEmail = useCallback(async (otp: string) => {
     setState(prev => ({ ...prev, loading: true, error: '', success: '' }));
 
     try {
@@ -75,30 +75,30 @@ export const useEmailVerification = (userEmail: string, onVerificationSuccess: (
       setState(prev => ({ ...prev, loading: false, error: errorMessage }));
       return false;
     }
-  };
+  }, [userEmail, onVerificationSuccess]);
 
   /**
    * Open verification dialog
    */
-  const openDialog = () => {
+  const openDialog = useCallback(() => {
     setState(prev => ({ ...prev, isDialogOpen: true, error: '', success: '' }));
-  };
+  }, []);
 
   /**
    * Close verification dialog
    */
-  const closeDialog = () => {
+  const closeDialog = useCallback(() => {
     setState(prev => ({ ...prev, isDialogOpen: false, error: '', success: '' }));
     setOtpSent(false);
     setCountdown(0);
-  };
+  }, []);
 
   /**
    * Clear messages
    */
-  const clearMessages = () => {
+  const clearMessages = useCallback(() => {
     setState(prev => ({ ...prev, error: '', success: '' }));
-  };
+  }, []);
 
   return {
     ...state,

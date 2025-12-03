@@ -147,7 +147,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
           overflowX: 'hidden',
           px: 2,
           pt: 2,
-          pb: 1,
+          pb: '60px',
           height: 'calc(100vh - 175px)',
           '&::-webkit-scrollbar': {
             width: '6px',
