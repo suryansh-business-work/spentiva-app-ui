@@ -14,7 +14,6 @@ import {
   useMediaQuery,
   IconButton,
 } from '@mui/material';
-import AddToHomeScreenIcon from '@mui/icons-material/AddToHomeScreen';
 import SettingsIcon from '@mui/icons-material/Settings';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -41,7 +40,6 @@ const TrackerActionsDrawer: React.FC<TrackerActionsDrawerProps> = ({
   onEdit,
   onDelete,
   onSettings,
-  onAddToHome,
   getCurrencySymbol,
 }) => {
   const theme = useTheme();
@@ -55,7 +53,7 @@ const TrackerActionsDrawer: React.FC<TrackerActionsDrawerProps> = ({
         anchor="bottom"
         open={open && Boolean(tracker)}
         onClose={onClose}
-        onOpen={() => {}}
+        onOpen={() => { }}
         sx={{
           '& .MuiDrawer-paper': {
             borderTopLeftRadius: 16,
@@ -157,35 +155,7 @@ const TrackerActionsDrawer: React.FC<TrackerActionsDrawerProps> = ({
             </Box>
 
             <Divider sx={{ my: 2 }} />
-
-            {/* Action Items */}
             <Box>
-              <MenuItem
-                onClick={() => {
-                  onAddToHome();
-                  onClose();
-                }}
-                sx={{
-                  py: 1.5,
-                  borderRadius: 2,
-                  mb: 1,
-                  '&:hover': {
-                    bgcolor: theme.palette.action.hover,
-                  },
-                }}
-              >
-                <ListItemIcon>
-                  <AddToHomeScreenIcon sx={{ color: theme.palette.primary.main }} />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Add to Desktop"
-                  primaryTypographyProps={{
-                    color: theme.palette.text.primary,
-                    fontWeight: 500,
-                  }}
-                />
-              </MenuItem>
-
               <MenuItem
                 onClick={() => {
                   onSettings();
@@ -288,26 +258,6 @@ const TrackerActionsDrawer: React.FC<TrackerActionsDrawerProps> = ({
         },
       }}
     >
-      <MenuItem
-        onClick={() => {
-          onAddToHome();
-          onClose();
-        }}
-        sx={{
-          py: 1.5,
-          borderRadius: 2,
-          mx: 1,
-          my: 0.5,
-          '&:hover': {
-            bgcolor: theme.palette.action.hover,
-          },
-        }}
-      >
-        <ListItemIcon>
-          <AddToHomeScreenIcon fontSize="small" sx={{ color: theme.palette.primary.main }} />
-        </ListItemIcon>
-        <ListItemText sx={{ color: theme.palette.text.primary }}>Add to Desktop</ListItemText>
-      </MenuItem>
       <MenuItem
         onClick={() => {
           onSettings();

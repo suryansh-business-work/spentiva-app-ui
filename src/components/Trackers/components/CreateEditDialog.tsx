@@ -13,6 +13,7 @@ import {
   MenuItem,
   useTheme,
   useMediaQuery,
+  CircularProgress,
 } from '@mui/material';
 import { TrackerFormData } from '../types/tracker.types';
 
@@ -122,13 +123,14 @@ const CreateEditDialog: React.FC<CreateEditDialogProps> = ({
         </Box>
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button onClick={onClose} sx={{ color: theme.palette.text.secondary }}>
+        <Button onClick={onClose} disabled={disabled} sx={{ color: theme.palette.text.secondary }}>
           Cancel
         </Button>
         <Button
           onClick={onSave}
           variant="contained"
           disabled={!formData.name || !formData.type || !formData.currency || disabled}
+          startIcon={disabled ? <CircularProgress size={20} color="inherit" /> : undefined}
           sx={{
             bgcolor: theme.palette.primary.main,
             color: theme.palette.primary.contrastText,
@@ -137,7 +139,7 @@ const CreateEditDialog: React.FC<CreateEditDialogProps> = ({
             },
           }}
         >
-          {editMode ? 'Update' : 'Create'}
+          {disabled ? 'Saving...' : editMode ? 'Update' : 'Create'}
         </Button>
       </DialogActions>
     </Dialog>

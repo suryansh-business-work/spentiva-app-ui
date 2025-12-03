@@ -7,6 +7,7 @@ import {
   Typography,
   Button,
   useTheme,
+  CircularProgress,
 } from '@mui/material';
 import { Tracker } from '../types/tracker.types';
 
@@ -15,9 +16,10 @@ interface DeleteDialogProps {
   tracker: Tracker | null;
   onClose: () => void;
   onConfirm: () => void;
+  deleting?: boolean;
 }
 
-const DeleteDialog: React.FC<DeleteDialogProps> = ({ open, tracker, onClose, onConfirm }) => {
+const DeleteDialog: React.FC<DeleteDialogProps> = ({ open, tracker, onClose, onConfirm, deleting = false }) => {
   const theme = useTheme();
 
   return (
@@ -47,12 +49,14 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({ open, tracker, onClose, onC
         </Typography>
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button onClick={onClose} sx={{ color: theme.palette.text.secondary }}>
+        <Button onClick={onClose} disabled={deleting} sx={{ color: theme.palette.text.secondary }}>
           Cancel
         </Button>
         <Button
           onClick={onConfirm}
           variant="contained"
+          disabled={deleting}
+          startIcon={deleting ? <CircularProgress size={20} color="inherit" /> : undefined}
           sx={{
             bgcolor: theme.palette.error.main,
             color: theme.palette.error.contrastText,
@@ -61,7 +65,7 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({ open, tracker, onClose, onC
             },
           }}
         >
-          Delete
+          {deleting ? 'Deleting...' : 'Delete'}
         </Button>
       </DialogActions>
     </Dialog>

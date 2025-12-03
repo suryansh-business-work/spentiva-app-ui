@@ -28,6 +28,8 @@ const Trackers: React.FC = () => {
   const theme = useTheme();
   const [trackers, setTrackers] = useState<Tracker[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -95,6 +97,7 @@ const Trackers: React.FC = () => {
   };
 
   const handleSave = async () => {
+    setSaving(true);
     try {
       if (editMode && selectedTracker) {
         await putRequest(endpoints.trackers.update(selectedTracker.id), formData);
@@ -108,6 +111,8 @@ const Trackers: React.FC = () => {
     } catch (error) {
       console.error('Error saving tracker:', error);
       setSnackbar({ open: true, message: 'Failed to save tracker', severity: 'error' });
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -119,6 +124,7 @@ const Trackers: React.FC = () => {
   const handleConfirmDelete = async () => {
     if (!selectedTracker) return;
 
+    setDeleting(true);
     try {
       await deleteRequest(endpoints.trackers.delete(selectedTracker.id));
       setDeleteDialogOpen(false);
@@ -127,6 +133,8 @@ const Trackers: React.FC = () => {
     } catch (error) {
       console.error('Error deleting tracker:', error);
       setSnackbar({ open: true, message: 'Failed to delete tracker', severity: 'error' });
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -294,6 +302,7 @@ const Trackers: React.FC = () => {
         onClose={handleCloseDialog}
         onSave={handleSave}
         onChange={(field, value) => setFormData({ ...formData, [field]: value })}
+        disabled={saving}
       />
 
       {/* Delete Confirmation Dialog */}
@@ -302,6 +311,7 @@ const Trackers: React.FC = () => {
         tracker={selectedTracker}
         onClose={() => setDeleteDialogOpen(false)}
         onConfirm={handleConfirmDelete}
+        deleting={deleting}
       />
 
       {/* Snackbar */}
