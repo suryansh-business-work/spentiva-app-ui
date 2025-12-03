@@ -51,13 +51,14 @@ const UsageOverviewCards: React.FC<UsageOverviewCardsProps> = ({ data }) => {
 
   return (
     <Grid container spacing={3}>
-      {cards.map(({ title, value, Icon, gradient, shadow }) => (
+      {cards.map(({ title, value, Icon, gradient }) => (
         <Grid size={{ xs: 12, sm: 6, md: 3 }} key={title}>
           <Card
             sx={{
-              borderRadius: 3,
+              borderRadius: 2,
               background: gradient,
-              boxShadow: `0 4px 20px ${shadow}`,
+              boxShadow: `none`,
+              border: `none`,
             }}
           >
             <CardContent sx={{ p: 3 }}>
@@ -101,7 +102,8 @@ export const UsageOverviewCardsSkeleton: React.FC = () => {
             sx={{
               borderRadius: 3,
               background: card.gradient,
-              boxShadow: 'none',
+              boxShadow: `none`,
+              border: `none`,
             }}
           >
             <CardContent sx={{ p: 3 }}>

@@ -81,6 +81,19 @@ const TrackerView: React.FC = () => {
     }
   }, [trackerId]);
 
+  // Handle body overflow for chat tab
+  useEffect(() => {
+    if (currentTab === 'chat') {
+      document.body.style.overflowY = 'hidden';
+    } else {
+      document.body.style.overflowY = 'auto';
+    }
+
+    return () => {
+      document.body.style.overflowY = 'auto';
+    };
+  }, [currentTab]);
+
   const loadTracker = async () => {
     setLoading(true);
     try {
@@ -136,15 +149,14 @@ const TrackerView: React.FC = () => {
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
       {/* Fixed Header with Tabs */}
       <Box
         sx={{
           background: theme.palette.background.paper,
           borderBottom: `1px solid ${theme.palette.divider}`,
-          position: 'sticky',
-          top: 0,
           zIndex: 10,
+          flexShrink: 0,
         }}
       >
         {/* Tracker Info Row */}
@@ -306,11 +318,12 @@ const TrackerView: React.FC = () => {
       {/* Scrollable Content */}
       <Box
         sx={{
-          flexGrow: 1,
+          flex: 1,
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
-          minHeight: 'calc(100vh - 180px)',
+          height: '100%',
+          bgcolor: theme.palette.background.default,
         }}
       >
         <TabPanel value={tabValue} index={0}>

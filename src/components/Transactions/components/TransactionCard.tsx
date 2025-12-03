@@ -30,10 +30,10 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ expense, onEdit, onDe
       elevation={3}
       sx={{
         transition: 'all 0.2s',
-        '&:hover': { transform: 'translateY(-2px)', boxShadow: 6 },
+        borderColor: '#ddd'
       }}
     >
-      <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, py: 2 }}>
+      <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, py: 2, border: 0 }}>
         <Chip
           label={`₹${expense.amount.toLocaleString('en-IN')}`}
           color="primary"

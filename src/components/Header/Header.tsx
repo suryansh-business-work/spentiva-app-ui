@@ -66,9 +66,9 @@ const Header: React.FC = () => {
           borderBottom: `1px solid ${theme.palette.divider}`,
         }}
       >
-        <Toolbar sx={{ minHeight: 56, px: 2, gap: 2 }}>
+        <Toolbar sx={{ minHeight: 48, px: { xs: 1.5, sm: 2 }, gap: 1.5 }}>
           <Box sx={{ flexGrow: 1, cursor: 'pointer' }} onClick={() => navigate('/trackers')}>
-            <Logo width={120} height={32} />
+            <Logo width={100} height={28} />
           </Box>
 
           <IconButton
@@ -77,6 +77,7 @@ const Header: React.FC = () => {
             sx={{
               color: theme.palette.text.secondary,
               borderRadius: 1,
+              p: 0.5,
               '&:hover': { color: theme.palette.text.primary },
             }}
           >
@@ -97,9 +98,11 @@ const Header: React.FC = () => {
                       : theme.palette.text.primary,
                     textTransform: 'none',
                     fontWeight: 600,
-                    px: 2,
-                    py: 0.75,
+                    px: 1.5,
+                    py: 0.5,
+                    minHeight: 32,
                     borderRadius: 1,
+                    fontSize: '0.875rem',
                     background: location.pathname === item.path
                       ? theme.palette.primary.main
                       : 'transparent',
@@ -116,14 +119,14 @@ const Header: React.FC = () => {
               <IconButton
                 onClick={(e) => setProfileMenuAnchor(e.currentTarget)}
                 size="small"
-                sx={{ p: 0.25, border: `2px solid ${theme.palette.divider}` }}
+                sx={{ p: 0.25, border: `1.5px solid ${theme.palette.divider}` }}
               >
                 <Avatar
                   sx={{
-                    width: 32,
-                    height: 32,
+                    width: 28,
+                    height: 28,
                     background: theme.palette.primary.main,
-                    fontSize: '0.875rem',
+                    fontSize: '0.8rem',
                   }}
                 >
                   {user?.name?.charAt(0).toUpperCase()}

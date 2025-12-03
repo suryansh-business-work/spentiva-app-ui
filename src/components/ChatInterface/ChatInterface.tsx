@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Box } from '@mui/material';
+import { Box, useTheme } from '@mui/material';
 import { useAuth } from '../../contexts/AuthContext';
 import { notifyExpenseAdded } from '../../services/notificationService';
 import { useChatMessages } from './hooks/useChatMessages';
@@ -23,6 +23,7 @@ interface ChatInterfaceProps {
  */
 const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId }) => {
   const { user } = useAuth();
+  const theme = useTheme();
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -86,7 +87,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
 
         // Add success message with expense details
         addAssistantMessage(
-          `✅ Expense logged successfully!\n\nAmount: ₹${expense.amount}\nCategory: ${expense.subcategory}\nPayment: ${expense.paymentMethod}`,
+          `✅ Expense logged successfully!`,
           expense
         );
 
@@ -132,31 +133,31 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        height: 'calc(100% - 300px)',
-        px: 2,
-        py: 1.5,
+        height: 'calc(100vh - 175px)',
+        position: 'relative',
+        bgcolor: theme.palette.mode === 'dark' ? 'background.default' : '#eee',
       }}
     >
-      {/* Messages Container */}
+      {/* Messages Container - Scrollable */}
       <Box
         className="chat-messages"
         sx={{
           flexGrow: 1,
-          minHeight: 'calc(100vh - 320px)',
           overflowY: 'auto',
           overflowX: 'hidden',
-          mb: 2,
-          pr: 1,
+          px: 2,
+          pt: 2,
+          pb: 1,
+          height: 'calc(100vh - 175px)',
           '&::-webkit-scrollbar': {
-            width: '8px',
+            width: '6px',
           },
           '&::-webkit-scrollbar-track': {
-            background: 'rgba(0,0,0,0.05)',
-            borderRadius: '4px',
+            background: 'transparent',
           },
           '&::-webkit-scrollbar-thumb': {
             background: 'rgba(16, 185, 129, 0.3)',
-            borderRadius: '4px',
+            borderRadius: '3px',
             '&:hover': {
               background: 'rgba(16, 185, 129, 0.5)',
             },
@@ -180,7 +181,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
         <div ref={messagesEndRef} />
       </Box>
 
-      {/* Input Form */}
+      {/* Input Form - Fixed at Bottom */}
       <ChatInput value={input} onChange={setInput} onSubmit={handleSubmit} disabled={isLoading} />
     </Box>
   );
