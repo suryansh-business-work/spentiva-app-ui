@@ -56,7 +56,7 @@ export const useExpenseActions = (trackerId?: string) => {
 
         if (apiError.toLowerCase().includes('category') || errorMessage.toLowerCase().includes('category')) {
           throw new Error(
-            `CATEGORY_ERROR::Make sure you use only the categories that are already added. If you want to add a new category to this tracker, <a href="/tracker/${trackerId}/settings" style="color: #14B8A6; text-decoration: underline; cursor: pointer;">click here</a>.`
+            `CATEGORY_ERROR:: Please ensure the payment method (cash, card, etc.) is included in the user message. Use only existing categories. To add a new one, <a href="/tracker/${trackerId}/settings" style="color: #14B8A6; text-decoration: underline; cursor: pointer;">click here</a>.`
           );
         }
 

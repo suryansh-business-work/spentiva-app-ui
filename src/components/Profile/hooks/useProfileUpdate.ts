@@ -11,7 +11,7 @@ interface ProfileUpdateState {
 export const useProfileUpdate = (
   user: any,
   updateUser: (user: any) => void,
-  token: string | null
+  _token: string | null
 ) => {
   const [state, setState] = useState<ProfileUpdateState>({
     loading: false,
