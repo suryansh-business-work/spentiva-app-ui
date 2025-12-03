@@ -82,17 +82,17 @@ const TrackerView: React.FC = () => {
   }, [trackerId]);
 
   // Handle body overflow for chat tab
-  useEffect(() => {
-    if (currentTab === 'chat') {
-      document.body.style.overflowY = 'hidden';
-    } else {
-      document.body.style.overflowY = 'auto';
-    }
+  // useEffect(() => {
+  //   if (currentTab === 'chat') {
+  //     document.body.style.overflowY = 'hidden';
+  //   } else {
+  //     document.body.style.overflowY = 'auto';
+  //   }
 
-    return () => {
-      document.body.style.overflowY = 'auto';
-    };
-  }, [currentTab]);
+  //   return () => {
+  //     document.body.style.overflowY = 'auto';
+  //   };
+  // }, [currentTab]);
 
   const loadTracker = async () => {
     setLoading(true);
