@@ -36,14 +36,10 @@ interface SubCategory {
 }
 
 interface Category {
-  id: string;
+  _id: string;
   trackerId: string;
   name: string;
   subcategories: SubCategory[];
-}
-
-interface CategorySettingsProps {
-  trackerId: string;
 }
 
 interface CategorySettingsProps {
@@ -74,8 +70,8 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
   const loadCategories = async () => {
     setLoading(true);
     try {
-      const response = await getRequest(endpoints.categories.categories(trackerId));
-      const data = response.data?.categories || response.data?.data || [];
+      const response = await getRequest(endpoints.categories.getAll(trackerId));
+      const data = response.data?.data?.categories || [];
       setCategories(data);
     } catch (error) {
       console.error('Error loading categories:', error);
@@ -118,7 +114,7 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
       )
     ) {
       try {
-        await deleteRequest(endpoints.categories.category(trackerId, category.id));
+        await deleteRequest(endpoints.categories.delete(category._id));
         setSnackbar({ open: true, message: 'Category deleted successfully', severity: 'success' });
         loadCategories();
       } catch (error) {
@@ -152,7 +148,7 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
         const updatedSubcategories = category.subcategories.filter(
           sub => sub.id !== subcategory.id
         );
-        await putRequest(endpoints.categories.category(trackerId, category.id), {
+        await putRequest(endpoints.categories.update(category._id), {
           name: category.name,
           subcategories: updatedSubcategories,
         });
@@ -178,13 +174,14 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
 
       try {
         if (dialogMode === 'add') {
-          await postRequest(endpoints.categories.categories(trackerId), {
+          await postRequest(endpoints.categories.create, {
+            trackerId,
             name: categoryName,
             subcategories: [],
           });
           setSnackbar({ open: true, message: 'Category added successfully', severity: 'success' });
         } else if (selectedCategory) {
-          await putRequest(endpoints.categories.category(trackerId, selectedCategory.id), {
+          await putRequest(endpoints.categories.update(selectedCategory._id), {
             name: categoryName,
             subcategories: selectedCategory.subcategories,
           });
@@ -214,7 +211,7 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
             name: subcategoryName,
           };
           const updatedSubcategories = [...selectedCategory.subcategories, newSubcategory];
-          await putRequest(endpoints.categories.category(trackerId, selectedCategory.id), {
+          await putRequest(endpoints.categories.update(selectedCategory._id), {
             name: selectedCategory.name,
             subcategories: updatedSubcategories,
           });
@@ -227,7 +224,7 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
           const updatedSubcategories = selectedCategory.subcategories.map(sub =>
             sub.id === selectedSubcategory.id ? { ...sub, name: subcategoryName } : sub
           );
-          await putRequest(endpoints.categories.category(trackerId, selectedCategory.id), {
+          await putRequest(endpoints.categories.update(selectedCategory._id), {
             name: selectedCategory.name,
             subcategories: updatedSubcategories,
           });
@@ -284,7 +281,7 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
         ) : (
           <List>
             {categories.map((category, index) => (
-              <React.Fragment key={category.id}>
+              <React.Fragment key={category._id}>
                 <ListItem
                   sx={{
                     borderRadius: 1,
@@ -295,10 +292,10 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
                 >
                   <IconButton
                     size="small"
-                    onClick={() => toggleCategory(category.id)}
+                    onClick={() => toggleCategory(category._id)}
                     sx={{ mr: 1 }}
                   >
-                    {expandedCategories.has(category.id) ? (
+                    {expandedCategories.has(category._id) ? (
                       <ExpandMoreIcon />
                     ) : (
                       <ChevronRightIcon />
@@ -338,7 +335,7 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
                   </ListItemSecondaryAction>
                 </ListItem>
 
-                <Collapse in={expandedCategories.has(category.id)} timeout="auto" unmountOnExit>
+                <Collapse in={expandedCategories.has(category._id)} timeout="auto" unmountOnExit>
                   <List component="div" disablePadding sx={{ ml: 4 }}>
                     {category.subcategories.map(subcategory => (
                       <ListItem

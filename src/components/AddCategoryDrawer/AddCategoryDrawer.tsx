@@ -54,7 +54,8 @@ const AddCategoryDrawer: React.FC<AddCategoryDrawerProps> = ({
         ? [{ id: Date.now().toString(), name: subcategoryName.trim() }]
         : [];
 
-      await postRequest(endpoints.categories.categories(trackerId), {
+      await postRequest(endpoints.categories.create, {
+        trackerId,
         name: categoryName.trim(),
         subcategories,
       });

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -35,7 +35,7 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
   expense,
   onClose,
   onSave,
-  categories,
+  categories = [],  // ✅ Default to empty array
   paymentMethods,
 }) => {
   const [amount, setAmount] = useState('');
@@ -47,6 +47,9 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
     { id: string; name: string }[]
   >([]);
 
+  // Ensure categories is always an array
+  const safeCategories = useMemo(() => (Array.isArray(categories) ? categories : []), [categories]);
+
   useEffect(() => {
     if (expense) {
       setAmount(expense.amount.toString());
@@ -56,16 +59,16 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
       setDescription(expense.description || '');
 
       // Set subcategories for the selected category
-      const selectedCat = categories.find(cat => cat.name === expense.category);
+      const selectedCat = safeCategories.find(cat => cat.name === expense.category);
       if (selectedCat) {
         setAvailableSubcategories(selectedCat.subcategories);
       }
     }
-  }, [expense, categories]);
+  }, [expense, safeCategories]);
 
   useEffect(() => {
     // Update subcategories when category changes
-    const selectedCat = categories.find(cat => cat.name === category);
+    const selectedCat = safeCategories.find(cat => cat.name === category);
     if (selectedCat) {
       setAvailableSubcategories(selectedCat.subcategories);
       // Reset subcategory if it's not in the new category's subcategories
@@ -75,7 +78,7 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
     } else {
       setAvailableSubcategories([]);
     }
-  }, [category, categories]);
+  }, [category, safeCategories]);
 
   const handleSave = () => {
     if (!expense) return;
@@ -111,7 +114,7 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
           <FormControl fullWidth>
             <InputLabel>Category</InputLabel>
             <Select value={category} onChange={e => setCategory(e.target.value)} label="Category">
-              {categories.map(cat => (
+              {safeCategories.map(cat => (
                 <MenuItem key={cat.id} value={cat.name}>
                   {cat.name}
                 </MenuItem>

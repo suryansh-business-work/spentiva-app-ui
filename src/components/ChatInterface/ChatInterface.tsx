@@ -1,47 +1,47 @@
-import React, { useState, useRef, useEffect } from 'react';
-import {
-  Box,
-  TextField,
-  Button,
-  Paper,
-  Typography,
-  Card,
-  CardContent,
-  Skeleton,
-  Avatar,
-} from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
-import SmartToyIcon from '@mui/icons-material/SmartToy';
-import PersonIcon from '@mui/icons-material/Person';
-import { Message } from '../../types';
-import { endpoints } from '../../config/api';
-import { getRequest, postRequest } from '../../utils/http';
-import { notifyExpenseAdded } from '../../services/notificationService';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Box } from '@mui/material';
 import { useAuth } from '../../contexts/AuthContext';
+import { notifyExpenseAdded } from '../../services/notificationService';
+import { useChatMessages } from './hooks/useChatMessages';
+import { useExpenseActions } from './hooks/useExpenseActions';
+import ChatMessage from './components/ChatMessage';
+import ChatInput from './components/ChatInput';
+import LoadingSkeleton from './components/LoadingSkeleton';
 import './ChatInterface.scss';
 
+/**
+ * Props for ChatInterface component
+ */
 interface ChatInterfaceProps {
   onExpenseAdded?: () => void;
   trackerId?: string;
 }
 
+/**
+ * ChatInterface Component
+ * Main chat interface for expense tracking with AI assistance
+ */
 const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId }) => {
   const { user } = useAuth();
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content:
-        "Hi! I'm your expense tracker assistant. Tell me about your expenses naturally, like 'spend food 50 from credit card' or 'bought groceries 200 cash'.",
-      timestamp: new Date(),
-    },
-  ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [, setCategories] = useState<any[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const getPhotoUrl = () => {
+  // Custom hooks
+  const {
+    messages,
+    addUserMessage,
+    addAssistantMessage,
+    trackMessageUsage,
+    checkUsageLimit,
+  } = useChatMessages(trackerId);
+
+  const { parseExpense, createExpense } = useExpenseActions(trackerId);
+
+  /**
+   * Get user profile photo URL
+   */
+  const getUserPhotoUrl = (): string => {
     if (user?.profilePhoto) {
       return user.profilePhoto.startsWith('http')
         ? user.profilePhoto
@@ -50,122 +50,29 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
     return '';
   };
 
-  useEffect(() => {
-    if (trackerId) {
-      loadCategories();
-    }
+  /**
+   * Scroll to bottom of messages
+   */
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, []);
 
-    const handleCategoriesUpdate = () => {
-      if (trackerId) {
-        loadCategories();
-      }
-    };
-
-    window.addEventListener('categoriesUpdated', handleCategoriesUpdate);
-    return () => {
-      window.removeEventListener('categoriesUpdated', handleCategoriesUpdate);
-    };
-  }, [trackerId]);
-
-  const loadCategories = async () => {
-    if (!trackerId) return;
-    try {
-      const response = await getRequest(endpoints.categories.categories(trackerId));
-      const data = response.data?.categories || response.data?.data || [];
-      setCategories(data);
-    } catch (error) {
-      console.error('Error loading categories:', error);
-    }
-  };
-
-  const trackMessageUsage = (trackerId?: string) => {
-    // Get current usage data
-    const storedUsage = localStorage.getItem('usage_data');
-    const currentMonth = new Date().toISOString().slice(0, 7);
-
-    let usageData = storedUsage
-      ? JSON.parse(storedUsage)
-      : {
-          totalMessages: 0,
-          trackerUsage: {},
-          currentMonth,
-        };
-
-    // Reset if new month
-    if (usageData.currentMonth !== currentMonth) {
-      usageData = {
-        totalMessages: 0,
-        trackerUsage: {},
-        currentMonth,
-      };
-    }
-
-    // Increment total messages
-    usageData.totalMessages += 1;
-
-    // Increment tracker-specific usage
-    if (trackerId) {
-      usageData.trackerUsage[trackerId] = (usageData.trackerUsage[trackerId] || 0) + 1;
-    }
-
-    // Save to localStorage
-    localStorage.setItem('usage_data', JSON.stringify(usageData));
-
-    return usageData;
-  };
-
-  const checkUsageLimit = (): boolean => {
-    const storedUsage = localStorage.getItem('usage_data');
-    const storedPlan = localStorage.getItem('subscription_plan') || 'Free';
-
-    const plans: { [key: string]: number } = {
-      Free: 50,
-      Pro: 500,
-      Business: 2000,
-    };
-
-    const currentLimit = plans[storedPlan] || 50;
-
-    if (storedUsage) {
-      const usageData = JSON.parse(storedUsage);
-      const currentMonth = new Date().toISOString().slice(0, 7);
-
-      // Reset if new month
-      if (usageData.currentMonth !== currentMonth) {
-        return true; // Allow message in new month
-      }
-
-      return usageData.totalMessages < currentLimit;
-    }
-
-    return true; // First message
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  /**
+   * Handle message submission
+   */
+  const handleSubmit = useCallback(async () => {
     if (!input.trim() || isLoading) return;
 
     // Check usage limit before processing
     if (!checkUsageLimit()) {
-      const limitMessage: Message = {
-        id: Date.now().toString(),
-        role: 'assistant',
-        content:
-          "⚠️ You've reached your monthly message limit. Please upgrade your subscription plan to continue using AI features. Visit the Usage page to see available plans.",
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, limitMessage]);
+      addAssistantMessage(
+        "⚠️ You've reached your monthly message limit. Please upgrade your subscription plan to continue using AI features. Visit the Usage page to see available plans."
+      );
       return;
     }
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: input,
-      timestamp: new Date(),
-    };
-
-    setMessages(prev => [...prev, userMessage]);
+    // Add user message
+    addUserMessage(input);
     setInput('');
     setIsLoading(true);
 
@@ -173,65 +80,59 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
       // Track message usage
       trackMessageUsage(trackerId);
 
-      // Parse the expense using ChatGPT (now includes message logging)
-      const parseResponse = await postRequest(endpoints.expenses.parse, { input, trackerId });
-      const parsed = parseResponse.data?.data || parseResponse.data;
+      // Parse the expense using AI
+      const parsed = await parseExpense(input);
 
       if (parsed.error) {
-        const errorMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          content: parsed.error,
-          timestamp: new Date(),
-        };
-        setMessages(prev => [...prev, errorMessage]);
+        addAssistantMessage(parsed.error);
       } else {
         // Create the expense
-        const expenseData = { ...parsed, trackerId };
-        const createResponse = await postRequest(endpoints.expenses.base, expenseData);
-        const expense = createResponse.data?.expense || createResponse.data?.data;
+        const expense = await createExpense(parsed);
 
-        const successMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          content: `✅ Expense logged successfully!\n\nAmount: ₹${expense.amount}\nCategory: ${expense.subcategory}\nPayment: ${expense.paymentMethod}`,
-          expense,
-          timestamp: new Date(),
-        };
-
-        setMessages((prev: Message[]) => [...prev, successMessage]);
+        // Add success message with expense details
+        addAssistantMessage(
+          `✅ Expense logged successfully!\n\nAmount: ₹${expense.amount}\nCategory: ${expense.subcategory}\nPayment: ${expense.paymentMethod}`,
+          expense
+        );
 
         // Notify parent component
         if (onExpenseAdded) {
           onExpenseAdded();
         }
 
-        // Show notification
+        // Show system notification
         notifyExpenseAdded(expense.amount, expense.subcategory);
 
         // Dispatch event for other components
         window.dispatchEvent(new Event('expenseUpdated'));
       }
-    } catch (error) {
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: 'Sorry, I encountered an error. Please try again.',
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, errorMessage]);
+    } catch (error: any) {
+      console.error('Error processing expense:', error);
+      addAssistantMessage(
+        error.message || 'Sorry, I encountered an error. Please try again.'
+      );
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [
+    input,
+    isLoading,
+    trackerId,
+    checkUsageLimit,
+    addUserMessage,
+    addAssistantMessage,
+    trackMessageUsage,
+    parseExpense,
+    createExpense,
+    onExpenseAdded,
+  ]);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
+  /**
+   * Auto-scroll when messages update
+   */
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, scrollToBottom]);
 
   return (
     <Box
@@ -243,6 +144,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
         py: 1.5,
       }}
     >
+      {/* Messages Container */}
       <Box
         className="chat-messages"
         sx={{
@@ -268,142 +170,30 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
           },
         }}
       >
-        {messages.map(message => (
-          <Box
+        {/* Render Messages */}
+        {messages.map((message) => (
+          <ChatMessage
             key={message.id}
-            className={`message ${message.role}`}
-            sx={{
-              display: 'flex',
-              justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
-              mb: 2,
-              gap: 1.5,
-              flexDirection: message.role === 'user' ? 'row-reverse' : 'row',
-            }}
-          >
-            {/* Avatar */}
-            <Avatar
-              src={message.role === 'user' ? getPhotoUrl() : undefined}
-              sx={{
-                width: 40,
-                height: 40,
-                background:
-                  message.role === 'user'
-                    ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
-                    : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                flexShrink: 0,
-              }}
-            >
-              {message.role === 'user' ? (
-                user?.name ? (
-                  user.name.charAt(0).toUpperCase()
-                ) : (
-                  <PersonIcon />
-                )
-              ) : (
-                <SmartToyIcon />
-              )}
-            </Avatar>
-
-            {/* Message Content */}
-            <Paper
-              elevation={2}
-              sx={{
-                p: 1.5,
-                maxWidth: '75%',
-                backgroundColor: message.role === 'user' ? '#10b981' : '#fff',
-                color: message.role === 'user' ? '#fff' : '#333',
-                borderRadius: 2,
-              }}
-            >
-              <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>
-                {message.content}
-              </Typography>
-              {message.expense && (
-                <Card sx={{ mt: 2, backgroundColor: 'rgba(0,0,0,0.05)' }}>
-                  <CardContent>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="body2" color="text.secondary">
-                          Amount:
-                        </Typography>
-                        <Typography variant="body1" fontWeight="bold">
-                          ₹{message.expense.amount}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="body2" color="text.secondary">
-                          Category:
-                        </Typography>
-                        <Typography variant="body1" fontWeight="bold">
-                          {message.expense.subcategory}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="body2" color="text.secondary">
-                          Payment:
-                        </Typography>
-                        <Typography variant="body1" fontWeight="bold">
-                          {message.expense.paymentMethod}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </CardContent>
-                </Card>
-              )}
-            </Paper>
-          </Box>
+            message={message}
+            userPhotoUrl={getUserPhotoUrl()}
+            userName={user?.name}
+          />
         ))}
-        {isLoading && (
-          <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2, gap: 1.5 }}>
-            <Avatar
-              sx={{
-                width: 40,
-                height: 40,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-              }}
-            >
-              <SmartToyIcon />
-            </Avatar>
-            <Paper elevation={2} sx={{ p: 2, minWidth: '200px', borderRadius: 2 }}>
-              <Skeleton variant="text" width="100%" />
-              <Skeleton variant="text" width="80%" />
-              <Skeleton variant="rectangular" height={60} sx={{ mt: 1 }} />
-            </Paper>
-          </Box>
-        )}
+
+        {/* Loading Indicator */}
+        {isLoading && <LoadingSkeleton />}
+
+        {/* Scroll Anchor */}
         <div ref={messagesEndRef} />
       </Box>
 
-      {/* Input Form - Fixed at bottom */}
-      <Paper elevation={3} sx={{ p: 2, position: 'sticky', bottom: 0 }}>
-        <form onSubmit={handleSubmit}>
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <TextField
-              fullWidth
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              placeholder="Type your expense... (e.g., 'spend food 50 from credit card')"
-              disabled={isLoading}
-              variant="outlined"
-              size="medium"
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={isLoading || !input.trim()}
-              endIcon={<SendIcon />}
-              sx={{
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                minWidth: '120px',
-              }}
-            >
-              Send
-            </Button>
-          </Box>
-        </form>
-      </Paper>
+      {/* Input Form */}
+      <ChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={handleSubmit}
+        disabled={isLoading}
+      />
     </Box>
   );
 };
