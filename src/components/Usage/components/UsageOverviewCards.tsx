@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-} from '@mui/material';
+import { Box, Card, CardContent, Typography, Skeleton } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import {
   MessageOutlined as MessageIcon,
@@ -78,6 +73,58 @@ const UsageOverviewCards: React.FC<UsageOverviewCardsProps> = ({ data }) => {
               <Typography variant="h3" sx={{ fontWeight: 700, color: 'white' }}>
                 {value.toLocaleString()}
               </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      ))}
+    </Grid>
+  );
+};
+
+/**
+ * UsageOverviewCardsSkeleton Component
+ * Shows skeleton loaders while overview data is loading
+ */
+export const UsageOverviewCardsSkeleton: React.FC = () => {
+  const skeletonCards = [
+    { gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
+    { gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' },
+    { gradient: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)' },
+    { gradient: ' linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' },
+  ];
+
+  return (
+    <Grid container spacing={3}>
+      {skeletonCards.map((card, index) => (
+        <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
+          <Card
+            sx={{
+              borderRadius: 3,
+              background: card.gradient,
+              boxShadow: 'none',
+            }}
+          >
+            <CardContent sx={{ p: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Skeleton
+                  variant="circular"
+                  width={24}
+                  height={24}
+                  sx={{ mr: 1, bgcolor: 'rgba(255, 255, 255, 0.3)' }}
+                />
+                <Skeleton
+                  variant="text"
+                  width={120}
+                  height={20}
+                  sx={{ bgcolor: 'rgba(255, 255, 255, 0.3)' }}
+                />
+              </Box>
+              <Skeleton
+                variant="text"
+                width="60%"
+                height={48}
+                sx={{ bgcolor: 'rgba(255, 255, 255, 0.3)' }}
+              />
             </CardContent>
           </Card>
         </Grid>

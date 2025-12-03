@@ -1,14 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  Paper,
-  Typography,
-  Chip,
-  CircularProgress,
-  Alert,
-  Stack,
-  Divider,
-} from '@mui/material';
+import { Box, Paper, Typography, Chip, Skeleton, Alert, Stack, Divider } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { TrackerStats } from '../../../types/usage';
 
@@ -25,8 +16,18 @@ interface TrackerStatsPanelProps {
 const TrackerStatsPanel: React.FC<TrackerStatsPanelProps> = ({ data, loading, error }) => {
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-        <CircularProgress />
+      <Box>
+        <Skeleton variant="text" width={300} height={40} sx={{ mb: 3 }} />
+        <Grid container spacing={3}>
+          {[1, 2, 3, 4].map(i => (
+            <Grid size={{ xs: 6, md: 3 }} key={i}>
+              <Paper sx={{ p: 2.5, borderRadius: 2, bgcolor: 'background.default' }}>
+                <Skeleton variant="text" width="60%" height={20} sx={{ mb: 1 }} />
+                <Skeleton variant="text" width="80%" height={48} />
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
       </Box>
     );
   }
@@ -69,9 +70,7 @@ const TrackerStatsPanel: React.FC<TrackerStatsPanelProps> = ({ data, loading, er
         <Typography variant="h6" sx={{ fontWeight: 600 }}>
           {data.tracker.trackerName} - Detailed Usage
         </Typography>
-        {data.tracker.isDeleted && (
-          <Chip label="Deleted Tracker" color="error" size="small" />
-        )}
+        {data.tracker.isDeleted && <Chip label="Deleted Tracker" color="error" size="small" />}
       </Box>
 
       {/* Stats Grid */}

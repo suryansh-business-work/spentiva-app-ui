@@ -16,8 +16,13 @@ interface UseUsageLogsReturn {
   hasMore: boolean;
   loading: boolean;
   error: string | null;
+  deletingTracker: boolean;
+  deletingAll: boolean;
   fetchLogs: (params?: { trackerId?: string; limit?: number; offset?: number }) => Promise<void>;
-  cleanupOldLogs: (daysOld?: number) => Promise<{ success: boolean; message?: string }>;
+  deleteTrackerLogs: (
+    trackerId: string
+  ) => Promise<{ success: boolean; data?: any; message?: string }>;
+  deleteAllUserLogs: () => Promise<{ success: boolean; data?: any; message?: string }>;
 }
 
 /**
@@ -31,6 +36,8 @@ export const useUsageLogs = (params: UseUsageLogsParams = {}): UseUsageLogsRetur
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(autoFetch);
   const [error, setError] = useState<string | null>(null);
+  const [deletingTracker, setDeletingTracker] = useState(false);
+  const [deletingAll, setDeletingAll] = useState(false);
 
   const fetchLogs = useCallback(
     async (fetchParams?: { trackerId?: string; limit?: number; offset?: number }) => {
@@ -65,22 +72,45 @@ export const useUsageLogs = (params: UseUsageLogsParams = {}): UseUsageLogsRetur
     [trackerId, limit, offset]
   );
 
-  const cleanupOldLogs = useCallback(async (daysOld: number = 90) => {
+  const deleteTrackerLogs = useCallback(async (trackerId: string) => {
+    setDeletingTracker(true);
     try {
-      const response = await deleteRequest(endpoints.usageLogs.cleanup, {
-        daysOld: daysOld.toString(),
-      });
+      const response = await deleteRequest(endpoints.usageLogs.deleteByTracker(trackerId));
 
       return {
         success: true,
-        message: response.data?.message || 'Logs cleaned up successfully',
+        data: response.data?.data,
+        message: response.data?.message || 'Tracker logs deleted successfully',
       };
     } catch (err: any) {
-      console.error('Error cleaning up logs:', err);
+      console.error('Error deleting tracker logs:', err);
       return {
         success: false,
-        message: err.response?.data?.error || err.message || 'Failed to cleanup logs',
+        message: err.response?.data?.message || 'Failed to delete tracker logs',
       };
+    } finally {
+      setDeletingTracker(false);
+    }
+  }, []);
+
+  const deleteAllUserLogs = useCallback(async () => {
+    setDeletingAll(true);
+    try {
+      const response = await deleteRequest(endpoints.usageLogs.deleteAllUser);
+
+      return {
+        success: true,
+        data: response.data?.data,
+        message: response.data?.message || 'All user logs deleted successfully',
+      };
+    } catch (err: any) {
+      console.error('Error deleting all user logs:', err);
+      return {
+        success: false,
+        message: err.response?.data?.message || 'Failed to delete all user logs',
+      };
+    } finally {
+      setDeletingAll(false);
     }
   }, []);
 
@@ -98,7 +128,10 @@ export const useUsageLogs = (params: UseUsageLogsParams = {}): UseUsageLogsRetur
     hasMore,
     loading,
     error,
+    deletingTracker,
+    deletingAll,
     fetchLogs,
-    cleanupOldLogs,
+    deleteTrackerLogs,
+    deleteAllUserLogs,
   };
 };

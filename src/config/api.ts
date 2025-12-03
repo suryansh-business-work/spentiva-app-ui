@@ -70,7 +70,7 @@ export const endpoints = {
   },
   usageLogs: {
     getAll: `${getApiUrl()}/usage-logs`,
-    create: `${getApiUrl()}/usage-logs`,
-    cleanup: `${getApiUrl()}/usage-logs/cleanup`,
+    deleteByTracker: (trackerId: string) => `${getApiUrl()}/usage-logs/tracker/${trackerId}`,
+    deleteAllUser: `${getApiUrl()}/usage-logs/user`,
   },
 };

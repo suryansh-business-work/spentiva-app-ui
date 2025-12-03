@@ -7,10 +7,10 @@ import {
   IconButton,
   Tooltip,
   CircularProgress,
+  Divider,
+  Button,
 } from '@mui/material';
-import {
-  Refresh as RefreshIcon,
-} from '@mui/icons-material';
+import { Refresh as RefreshIcon, DeleteForever as DeleteForeverIcon } from '@mui/icons-material';
 
 // Hooks
 import { useUsageOverview } from './hooks/useUsageOverview';
@@ -19,14 +19,15 @@ import { useTrackerUsage } from './hooks/useTrackerUsage';
 import { useUsageLogs } from './hooks/useUsageLogs';
 
 // Components
-import UsageOverviewCards from './components/UsageOverviewCards';
+import UsageOverviewCards, { UsageOverviewCardsSkeleton } from './components/UsageOverviewCards';
 import TrackerSelector from './components/TrackerSelector';
-import UsageTabs from './components/UsageTabs';
+import UsageGraphsPanel from './components/UsageGraphsPanel';
+import TrackerStatsPanel from './components/TrackerStatsPanel';
+import UsageLogsTable from './components/UsageLogsTable';
 
 const Usage: React.FC = () => {
   // State
-  const [currentTab, setCurrentTab] = useState(0);
-  const [selectedTrackerId, setSelectedTrackerId] = useState<string>('all');
+  const [selectedTrackerId, setSelectedTrackerId] = useState<string>('');
   const [logPage, setLogPage] = useState(0);
   const [logRowsPerPage, setLogRowsPerPage] = useState(50);
 
@@ -35,21 +36,18 @@ const Usage: React.FC = () => {
     data: overviewData,
     loading: overviewLoading,
     error: overviewError,
-    refetch: refetchOverview
+    refetch: refetchOverview,
   } = useUsageOverview();
 
-  const {
-    data: graphsData,
-    loading: graphsLoading,
-    refetch: refetchGraphs
-  } = useUsageGraphs();
+  const { data: graphsData, loading: graphsLoading, refetch: refetchGraphs } = useUsageGraphs();
 
   const {
     stats: trackerStats,
+    graphs: trackerGraphs,
     loading: trackerLoading,
     error: trackerError,
-    refetch: refetchTracker
-  } = useTrackerUsage(selectedTrackerId !== 'all' ? selectedTrackerId : null);
+    refetch: refetchTracker,
+  } = useTrackerUsage(selectedTrackerId || null);
 
   const {
     logs,
@@ -57,56 +55,90 @@ const Usage: React.FC = () => {
     loading: logsLoading,
     error: logsError,
     fetchLogs,
-    cleanupOldLogs
+    deleteTrackerLogs,
+    deleteAllUserLogs,
+    deletingTracker,
+    deletingAll,
   } = useUsageLogs({
     limit: logRowsPerPage,
     offset: logPage * logRowsPerPage,
-    autoFetch: false
+    autoFetch: false,
   });
 
   // Effects
   useEffect(() => {
-    if (currentTab === 2) {
+    if (selectedTrackerId) {
       fetchLogs({
-        trackerId: selectedTrackerId !== 'all' ? selectedTrackerId : undefined,
+        trackerId: selectedTrackerId,
         limit: logRowsPerPage,
-        offset: logPage * logRowsPerPage
+        offset: logPage * logRowsPerPage,
       });
     }
-  }, [currentTab, selectedTrackerId, logPage, logRowsPerPage, fetchLogs]);
+  }, [selectedTrackerId, logPage, logRowsPerPage, fetchLogs]);
 
   // Handlers
   const handleRefresh = () => {
     refetchOverview();
     refetchGraphs();
-    if (selectedTrackerId !== 'all') {
+    if (selectedTrackerId) {
       refetchTracker();
-    }
-    if (currentTab === 2) {
       fetchLogs();
     }
-  };
-
-  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-    setCurrentTab(newValue);
   };
 
   const handleTrackerChange = (trackerId: string) => {
     setSelectedTrackerId(trackerId);
-    // Reset logs page when tracker changes
     setLogPage(0);
   };
 
-  const handleCleanupLogs = async () => {
-    if (window.confirm('Are you sure you want to delete logs older than 90 days?')) {
-      await cleanupOldLogs();
-      fetchLogs();
+  const handleDeleteTrackerLogs = async () => {
+    if (!selectedTrackerId) return;
+    if (
+      window.confirm(
+        'Are you sure you want to delete all logs for this tracker? This action cannot be undone.'
+      )
+    ) {
+      const result = await deleteTrackerLogs(selectedTrackerId);
+      if (result.success) {
+        fetchLogs();
+        refetchTracker();
+        refetchOverview();
+        refetchGraphs();
+      }
+      alert(result.message);
+    }
+  };
+
+  const handleDeleteAllLogs = async () => {
+    if (
+      window.confirm(
+        'WARNING: Are you sure you want to delete ALL usage logs? This will wipe your entire history and cannot be undone.'
+      )
+    ) {
+      const result = await deleteAllUserLogs();
+      if (result.success) {
+        fetchLogs();
+        if (selectedTrackerId) refetchTracker();
+        refetchOverview();
+        refetchGraphs();
+      }
+      alert(result.message);
     }
   };
 
   if (overviewLoading && !overviewData) {
     return (
-      <Container maxWidth="xl" sx={{ mt: 3, mb: 4, display: 'flex', justifyContent: 'center', minHeight: '400px', alignItems: 'center' }}>
+      <Container
+        maxWidth="xl"
+        sx={{
+          mt: 3,
+          mb: 4,
+          display: 'flex',
+          justifyContent: 'center',
+          minHeight: '400px',
+          alignItems: 'center',
+        }}
+      >
         <CircularProgress />
       </Container>
     );
@@ -119,11 +151,27 @@ const Usage: React.FC = () => {
         <Typography variant="h4" sx={{ fontWeight: 600, color: '#1a202c' }}>
           Usage Statistics
         </Typography>
-        <Tooltip title="Refresh data">
-          <IconButton onClick={handleRefresh} color="primary">
-            <RefreshIcon />
-          </IconButton>
-        </Tooltip>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Tooltip title="Refresh data">
+            <IconButton onClick={handleRefresh} color="primary">
+              <RefreshIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete ALL usage logs (irreversible)">
+            <span>
+              <Button
+                variant="outlined"
+                color="error"
+                startIcon={deletingAll ? <CircularProgress size={16} /> : <DeleteForeverIcon />}
+                onClick={handleDeleteAllLogs}
+                disabled={deletingAll}
+                size="small"
+              >
+                Delete All Logs
+              </Button>
+            </span>
+          </Tooltip>
+        </Box>
       </Box>
 
       {overviewError && (
@@ -137,47 +185,85 @@ const Usage: React.FC = () => {
         <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#1a202c' }}>
           Overall Usage
         </Typography>
-        {overviewData ? (
+        {overviewLoading ? (
+          <UsageOverviewCardsSkeleton />
+        ) : overviewData ? (
           <UsageOverviewCards data={overviewData} />
         ) : (
           <Alert severity="info">No usage data available.</Alert>
         )}
       </Box>
 
-      {/* Controls */}
-      <Box sx={{ mb: 3 }}>
-        <TrackerSelector
-          trackers={overviewData?.byTracker.map(t => ({
-            _id: t.trackerId,
-            name: t.trackerName,
-            type: t.trackerType
-          })) || []}
-          selectedTrackerId={selectedTrackerId}
-          onChange={handleTrackerChange}
-        />
+      {/* Global Graphs */}
+      <Box sx={{ mb: 5 }}>
+        <UsageGraphsPanel data={graphsData} loading={graphsLoading} />
       </Box>
 
-      {/* Tabs Content */}
-      <UsageTabs
-        currentTab={currentTab}
-        onTabChange={handleTabChange}
-        selectedTrackerId={selectedTrackerId}
-        trackerStats={trackerStats}
-        trackerLoading={trackerLoading}
-        trackerError={trackerError}
-        graphsData={graphsData}
-        graphsLoading={graphsLoading}
-        logs={logs}
-        totalCount={totalCount}
-        logsLoading={logsLoading}
-        logsError={logsError}
-        logPage={logPage}
-        logRowsPerPage={logRowsPerPage}
-        onLogPageChange={setLogPage}
-        onLogRowsPerPageChange={setLogRowsPerPage}
-        onRefreshLogs={() => fetchLogs()}
-        onCleanupLogs={selectedTrackerId === 'all' ? handleCleanupLogs : undefined}
-      />
+      <Divider sx={{ mb: 4 }} />
+
+      {/* Tracker Details Section */}
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h5" sx={{ fontWeight: 600, mb: 3, color: '#1a202c' }}>
+          Tracker Details
+        </Typography>
+
+        <Box sx={{ mb: 4 }}>
+          <TrackerSelector
+            trackers={
+              overviewData?.byTracker.map(t => ({
+                _id: t.trackerId,
+                name: t.trackerName,
+                type: t.trackerType,
+              })) || []
+            }
+            selectedTrackerId={selectedTrackerId}
+            onChange={handleTrackerChange}
+          />
+        </Box>
+
+        {selectedTrackerId && (
+          <Box>
+            {/* Tracker Stats */}
+            <Box sx={{ mb: 4 }}>
+              <TrackerStatsPanel
+                data={trackerStats}
+                loading={trackerLoading}
+                error={trackerError}
+              />
+            </Box>
+
+            {/* Tracker Graphs */}
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#1a202c' }}>
+                Tracker Usage Graphs
+              </Typography>
+              <UsageGraphsPanel
+                data={trackerGraphs}
+                loading={trackerLoading}
+                pieChartTitle="Message Distribution (User vs AI)"
+              />
+            </Box>
+
+            {/* Logs Table */}
+            <Box>
+              <UsageLogsTable
+                logs={logs}
+                totalCount={totalCount}
+                loading={logsLoading}
+                error={logsError}
+                page={logPage}
+                rowsPerPage={logRowsPerPage}
+                onPageChange={setLogPage}
+                onRowsPerPageChange={setLogRowsPerPage}
+                onRefresh={() => fetchLogs()}
+                selectedTrackerId={selectedTrackerId}
+                onDeleteTrackerLogs={handleDeleteTrackerLogs}
+                deletingTracker={deletingTracker}
+              />
+            </Box>
+          </Box>
+        )}
+      </Box>
     </Container>
   );
 };

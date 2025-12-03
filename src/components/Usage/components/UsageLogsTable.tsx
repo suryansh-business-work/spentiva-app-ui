@@ -16,10 +16,7 @@ import {
   IconButton,
   Tooltip,
 } from '@mui/material';
-import {
-  Delete as DeleteIcon,
-  Refresh as RefreshIcon,
-} from '@mui/icons-material';
+import { Delete as DeleteIcon, Refresh as RefreshIcon } from '@mui/icons-material';
 import { UsageLog } from '../../../types/usage';
 
 interface UsageLogsTableProps {
@@ -32,7 +29,9 @@ interface UsageLogsTableProps {
   onPageChange: (newPage: number) => void;
   onRowsPerPageChange: (newRowsPerPage: number) => void;
   onRefresh: () => void;
-  onCleanup?: () => void;
+  selectedTrackerId?: string;
+  onDeleteTrackerLogs?: () => void;
+  deletingTracker?: boolean;
 }
 
 /**
@@ -49,7 +48,9 @@ const UsageLogsTable: React.FC<UsageLogsTableProps> = ({
   onPageChange,
   onRowsPerPageChange,
   onRefresh,
-  onCleanup,
+  selectedTrackerId,
+  onDeleteTrackerLogs,
+  deletingTracker = false,
 }) => {
   const handleChangePage = (_event: unknown, newPage: number) => {
     onPageChange(newPage);
@@ -66,10 +67,15 @@ const UsageLogsTable: React.FC<UsageLogsTableProps> = ({
           Usage Logs
         </Typography>
         <Box>
-          {onCleanup && (
-            <Tooltip title="Cleanup logs older than 90 days">
-              <IconButton onClick={onCleanup} color="warning" sx={{ mr: 1 }}>
-                <DeleteIcon />
+          {selectedTrackerId && onDeleteTrackerLogs && (
+            <Tooltip title="Delete all logs for this tracker">
+              <IconButton
+                onClick={onDeleteTrackerLogs}
+                color="error"
+                sx={{ mr: 1 }}
+                disabled={deletingTracker}
+              >
+                {deletingTracker ? <CircularProgress size={20} /> : <DeleteIcon />}
               </IconButton>
             </Tooltip>
           )}
@@ -112,11 +118,9 @@ const UsageLogsTable: React.FC<UsageLogsTableProps> = ({
                 </TableCell>
               </TableRow>
             ) : (
-              logs.map((log) => (
+              logs.map(log => (
                 <TableRow hover role="checkbox" tabIndex={-1} key={log._id}>
-                  <TableCell>
-                    {new Date(log.timestamp).toLocaleString()}
-                  </TableCell>
+                  <TableCell>{new Date(log.timestamp).toLocaleString()}</TableCell>
                   <TableCell>
                     <Box>
                       <Typography variant="body2" fontWeight={500}>

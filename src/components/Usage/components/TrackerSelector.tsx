@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Box,
-  Typography,
-  Chip,
-} from '@mui/material';
+import { FormControl, Select, MenuItem, Box, Typography, Chip } from '@mui/material';
 
 interface Tracker {
   _id: string;
@@ -36,15 +28,22 @@ const TrackerSelector: React.FC<TrackerSelectorProps> = ({
 
   return (
     <FormControl fullWidth sx={{ maxWidth: 400 }}>
-      <InputLabel id="tracker-select-label">Select Tracker</InputLabel>
       <Select
-        labelId="tracker-select-label"
         id="tracker-select"
-        value={selectedTrackerId || 'all'}
-        label="Select Tracker"
+        value={selectedTrackerId || ''}
         onChange={handleChange}
+        displayEmpty
+        sx={{
+          '& .MuiSelect-select': {
+            color: !selectedTrackerId ? 'text.secondary' : 'text.primary',
+          },
+        }}
       >
-        <MenuItem value="all">All Trackers</MenuItem>
+        <MenuItem value="" disabled>
+          <Typography sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
+            Select a tracker to view details
+          </Typography>
+        </MenuItem>
         {trackers.map(tracker => (
           <MenuItem key={tracker._id} value={tracker._id}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}>
