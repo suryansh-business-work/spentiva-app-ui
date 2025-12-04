@@ -13,6 +13,7 @@ import ResetPassword from './components/Auth/ResetPassword';
 import Profile from './components/Profile/Profile';
 import Usage from './components/Usage/Usage';
 import Billing from './pages/Billing';
+import UpcomingFeatures from './pages/UpcomingFeatures';
 import Policy from './pages/Policy';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import NotFound from './pages/NotFound';
@@ -150,9 +151,13 @@ const AppContent = () => {
                 path="/billing"
                 element={isAuthenticated ? <Billing /> : <Navigate to="/login" replace />}
               />
+              <Route
+                path="/upcoming-features"
+                element={isAuthenticated ? <UpcomingFeatures /> : <Navigate to="/login" replace />}
+              />
               <Route path="/policy" element={<Policy />} />
               <Route
-                path="/admin"
+                path="/admin/*"
                 element={
                   isAuthenticated && user?.role === 'admin' ? (
                     <AdminDashboard />

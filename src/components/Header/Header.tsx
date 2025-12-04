@@ -1,19 +1,22 @@
 import React, { useState } from 'react';
-import { AppBar, Toolbar, Button, Box, IconButton, Avatar, useTheme } from '@mui/material';
+import { AppBar, Toolbar, Button, Box, IconButton, Avatar, useTheme, Tooltip } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import FolderIcon from '@mui/icons-material/Folder';
+import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import { useThemeMode } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import Logo from '../Logo';
 import NavigationDrawer from './NavigationDrawer';
+import SupportDialog from '../Support/SupportDialog';
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [supportDialogOpen, setSupportDialogOpen] = useState(false);
   const { isDarkMode, toggleTheme } = useThemeMode();
   const { user } = useAuth();
 
@@ -53,6 +56,27 @@ const Header: React.FC = () => {
               <DarkModeIcon sx={{ fontSize: 20, color: theme.palette.primary.main }} />
             )}
           </IconButton>
+
+          {/* Support Icon */}
+          <Tooltip title="Contact Support" arrow>
+            <IconButton
+              onClick={() => setSupportDialogOpen(true)}
+              sx={{
+                bgcolor:
+                  theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+                borderRadius: 2,
+                px: 1.5,
+                py: 0.75,
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  bgcolor:
+                    theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)',
+                },
+              }}
+            >
+              <SupportAgentIcon />
+            </IconButton>
+          </Tooltip>
 
           {/* Trackers Button */}
           <Button
@@ -116,6 +140,15 @@ const Header: React.FC = () => {
 
       {/* Navigation Drawer */}
       <NavigationDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+
+      {/* Support Dialog */}
+      <SupportDialog
+        open={supportDialogOpen}
+        onClose={() => setSupportDialogOpen(false)}
+        userName={user?.name || ''}
+        userEmail={user?.email || ''}
+        currentPlan={(user?.accountType as 'free' | 'pro' | 'businesspro') || 'free'}
+      />
     </>
   );
 };

@@ -16,6 +16,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import ShieldIcon from '@mui/icons-material/Shield';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -33,6 +34,7 @@ const NavigationDrawer: React.FC<NavigationDrawerProps> = ({ open, onClose }) =>
   const drawerItems = [
     { text: 'Usage', icon: <ShowChartIcon />, path: '/usage' },
     { text: 'Billing & Subscription', icon: <CreditCardIcon />, path: '/billing' },
+    { text: 'Upcoming Features', icon: <RocketLaunchIcon />, path: '/upcoming-features' },
     { text: 'Privacy & Policy', icon: <ShieldIcon />, path: '/policy' },
   ];
 
@@ -138,7 +140,7 @@ const NavigationDrawer: React.FC<NavigationDrawerProps> = ({ open, onClose }) =>
         <List sx={{ flexGrow: 1, py: 1 }}>
           {drawerItems.map(item => (
             <ListItemButton
-              key={item.path}
+              key={item.text}
               onClick={() => handleNavigate(item.path)}
               selected={location.pathname === item.path}
               sx={{
@@ -173,7 +175,7 @@ const NavigationDrawer: React.FC<NavigationDrawerProps> = ({ open, onClose }) =>
         <Divider />
 
         {/* Logout Button */}
-        <Box sx={{ p: 2 }}>
+        <Box sx={{ p: 2, pt: 1.5 }}>
           <ListItemButton
             onClick={handleLogout}
             sx={{

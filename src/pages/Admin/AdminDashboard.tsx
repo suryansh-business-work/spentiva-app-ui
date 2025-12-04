@@ -9,6 +9,7 @@ import {
   useMediaQuery,
   Typography,
 } from '@mui/material';
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
 import AdminSidebar from '../../components/Admin/AdminSidebar';
 import AdminGreeting from '../../components/Admin/AdminGreeting';
@@ -19,14 +20,19 @@ import UsersTable from '../../components/Admin/UsersTable';
 import UserDetailDialog from '../../components/Admin/UserDetailDialog';
 import UserEditDialog from '../../components/Admin/UserEditDialog';
 import DeleteConfirmDialog from '../../components/Admin/DeleteConfirmDialog';
+import AdminSupport from '../../components/Admin/AdminSupport';
+import AdminPayments from '../../components/Admin/AdminPayments';
 import { endpoints } from '../../config/api';
 import { getRequest, putRequest, deleteRequest } from '../../utils/http';
 
 const AdminDashboard: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const [activeSection, setActiveSection] = useState<'dashboard' | 'users'>('dashboard');
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [statsData, setStatsData] = useState<any>(null);
   const [statsLoading, setStatsLoading] = useState(true);
   const [users, setUsers] = useState<any[]>([]);
@@ -50,12 +56,20 @@ const AdminDashboard: React.FC = () => {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Redirect /admin to /admin/dashboard
+  useEffect(() => {
+    if (location.pathname === '/admin' || location.pathname === '/admin/') {
+      navigate('/admin/dashboard', { replace: true });
+    }
+  }, [location.pathname, navigate]);
+
   useEffect(() => {
     fetchStats();
   }, [dateFilter, customDates]);
+
   useEffect(() => {
-    if (activeSection === 'users') fetchUsers();
-  }, [page, rowsPerPage, filters, activeSection]);
+    if (location.pathname === '/admin/users') fetchUsers();
+  }, [page, rowsPerPage, filters, location.pathname]);
 
   const fetchStats = async () => {
     try {
@@ -107,11 +121,6 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  const handleSectionChange = (section: 'dashboard' | 'users') => {
-    setActiveSection(section);
-    if (isMobile) setMobileDrawerOpen(false);
-  };
-
   const handleSaveEdit = async (data: any) => {
     try {
       setEditLoading(true);
@@ -141,7 +150,12 @@ const AdminDashboard: React.FC = () => {
   };
 
   const getSectionTitle = () => {
-    return activeSection === 'dashboard' ? 'Dashboard' : 'User Management';
+    const path = location.pathname;
+    if (path.includes('/admin/dashboard')) return 'Dashboard';
+    if (path.includes('/admin/users')) return 'User Management';
+    if (path.includes('/admin/support')) return 'Support Tickets';
+    if (path.includes('/admin/payments')) return 'Payment Logs';
+    return 'Dashboard';
   };
 
   return (
@@ -156,21 +170,50 @@ const AdminDashboard: React.FC = () => {
       {!isMobile && (
         <Box
           sx={{
-            width: 240,
             flexShrink: 0,
             borderRight: `1px solid ${theme.palette.divider}`,
             bgcolor: theme.palette.background.paper,
           }}
         >
-          <Box sx={{ p: 2, borderBottom: `1px solid ${theme.palette.divider}` }}>
-            <Typography variant="h6" fontWeight={800} color="primary">
-              Admin Panel
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              Spentiva
-            </Typography>
+          <Box
+            sx={{
+              p: 2,
+              borderBottom: `1px solid ${theme.palette.divider}`,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: sidebarExpanded ? 'flex-start' : 'center',
+              transition: 'all 0.3s ease',
+            }}
+          >
+            {sidebarExpanded ? (
+              <>
+                <Typography variant="h6" fontWeight={800} color="primary">
+                  Admin Panel
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Spentiva
+                </Typography>
+              </>
+            ) : (
+              <Box
+                sx={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 2,
+                  bgcolor: theme.palette.primary.main,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#fff',
+                  fontWeight: 800,
+                  fontSize: '1.25rem',
+                }}
+              >
+                A
+              </Box>
+            )}
           </Box>
-          <AdminSidebar activeSection={activeSection} onSectionChange={handleSectionChange} />
+          <AdminSidebar onExpandedChange={setSidebarExpanded} />
         </Box>
       )}
 
@@ -185,11 +228,7 @@ const AdminDashboard: React.FC = () => {
               Spentiva
             </Typography>
           </Box>
-          <AdminSidebar
-            activeSection={activeSection}
-            onSectionChange={handleSectionChange}
-            isMobile
-          />
+          <AdminSidebar isMobile onMobileClose={() => setMobileDrawerOpen(false)} />
         </Box>
       </Drawer>
 
@@ -226,42 +265,59 @@ const AdminDashboard: React.FC = () => {
             </Alert>
           )}
 
-          {/* Dashboard Section */}
-          {activeSection === 'dashboard' && (
-            <Stack spacing={3}>
-              {!statsLoading && statsData && <AdminGreeting stats={statsData} />}
-              <DateFilterBar onFilterChange={handleDateFilter} currentFilter={dateFilter} />
-              <StatsCards data={statsData} loading={statsLoading} />
-            </Stack>
-          )}
+          <Routes>
+            {/* Dashboard Section */}
+            <Route
+              path="dashboard"
+              element={
+                <Stack spacing={3}>
+                  {!statsLoading && statsData && <AdminGreeting stats={statsData} />}
+                  <DateFilterBar onFilterChange={handleDateFilter} currentFilter={dateFilter} />
+                  <StatsCards data={statsData} loading={statsLoading} />
+                </Stack>
+              }
+            />
 
-          {/* User Management Section */}
-          {activeSection === 'users' && (
-            <Stack spacing={2}>
-              <UserFilters filters={filters} onFilterChange={setFilters} />
-              <UsersTable
-                users={users}
-                loading={usersLoading}
-                page={page}
-                rowsPerPage={rowsPerPage}
-                totalCount={totalCount}
-                onPageChange={setPage}
-                onRowsPerPageChange={setRowsPerPage}
-                onView={user => {
-                  setSelectedUser(user);
-                  setViewDialogOpen(true);
-                }}
-                onEdit={user => {
-                  setSelectedUser(user);
-                  setEditDialogOpen(true);
-                }}
-                onDelete={user => {
-                  setSelectedUser(user);
-                  setDeleteDialogOpen(true);
-                }}
-              />
-            </Stack>
-          )}
+            {/* User Management Section */}
+            <Route
+              path="users"
+              element={
+                <Stack spacing={2}>
+                  <UserFilters filters={filters} onFilterChange={setFilters} />
+                  <UsersTable
+                    users={users}
+                    loading={usersLoading}
+                    page={page}
+                    rowsPerPage={rowsPerPage}
+                    totalCount={totalCount}
+                    onPageChange={setPage}
+                    onRowsPerPageChange={setRowsPerPage}
+                    onView={user => {
+                      setSelectedUser(user);
+                      setViewDialogOpen(true);
+                    }}
+                    onEdit={user => {
+                      setSelectedUser(user);
+                      setEditDialogOpen(true);
+                    }}
+                    onDelete={user => {
+                      setSelectedUser(user);
+                      setDeleteDialogOpen(true);
+                    }}
+                  />
+                </Stack>
+              }
+            />
+
+            {/* Support Section */}
+            <Route path="support" element={<AdminSupport />} />
+
+            {/* Payment Logs Section */}
+            <Route path="payments" element={<AdminPayments />} />
+
+            {/* Default redirect */}
+            <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
+          </Routes>
         </Box>
 
         <UserDetailDialog
