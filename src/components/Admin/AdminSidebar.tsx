@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  useTheme
-} from '@mui/material';
+import { Box, List, ListItemButton, ListItemIcon, ListItemText, useTheme } from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PeopleIcon from '@mui/icons-material/People';
 
@@ -40,19 +33,19 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
               mx: 1,
               mb: 0.5,
               borderRadius: 2,
-              '&.Mui-selected': {
-                bgcolor: theme.palette.primary.main,
-                color: '#fff',
-                '&:hover': {
-                  bgcolor: theme.palette.primary.dark,
-                },
-                '& .MuiListItemIcon-root': {
-                  color: '#fff',
-                },
-              },
               '&:hover': {
                 bgcolor:
                   theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
+              },
+              '&.Mui-selected': {
+                bgcolor: theme.palette.primary.main,
+                color: '#fff',
+                '& .MuiListItemIcon-root': {
+                  color: '#fff',
+                },
+                '&:hover': {
+                  bgcolor: theme.palette.primary.main,
+                },
               },
             }}
           >
