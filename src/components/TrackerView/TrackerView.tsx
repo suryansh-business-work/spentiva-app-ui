@@ -183,9 +183,10 @@ const TrackerView: React.FC = () => {
                   width: { xs: 32, sm: 36 },
                   height: { xs: 32, sm: 36 },
                   borderRadius: 1,
-                  background: tracker.type === 'business'
-                    ? `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`
-                    : `linear-gradient(135deg, ${theme.palette.success.main} 0%, ${theme.palette.success.dark} 100%)`,
+                  background:
+                    tracker.type === 'business'
+                      ? `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`
+                      : `linear-gradient(135deg, ${theme.palette.success.main} 0%, ${theme.palette.success.dark} 100%)`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -236,12 +237,14 @@ const TrackerView: React.FC = () => {
                 label={tracker.type}
                 size="small"
                 sx={{
-                  backgroundColor: tracker.type === 'business'
-                    ? `${theme.palette.primary.main}15`
-                    : `${theme.palette.success.main}15`,
-                  color: tracker.type === 'business'
-                    ? theme.palette.primary.main
-                    : theme.palette.success.main,
+                  backgroundColor:
+                    tracker.type === 'business'
+                      ? `${theme.palette.primary.main}15`
+                      : `${theme.palette.success.main}15`,
+                  color:
+                    tracker.type === 'business'
+                      ? theme.palette.primary.main
+                      : theme.palette.success.main,
                   fontWeight: 600,
                   height: { xs: 20, sm: 22 },
                   fontSize: { xs: '0.65rem', sm: '0.7rem' },
@@ -285,9 +288,10 @@ const TrackerView: React.FC = () => {
                 textTransform: 'none',
                 transition: 'all 0.2s',
                 '&.Mui-selected': {
-                  color: tracker.type === 'business'
-                    ? theme.palette.primary.main
-                    : theme.palette.success.main,
+                  color:
+                    tracker.type === 'business'
+                      ? theme.palette.primary.main
+                      : theme.palette.success.main,
                   fontWeight: 600,
                 },
                 '&:hover': {
@@ -296,9 +300,10 @@ const TrackerView: React.FC = () => {
                 },
               },
               '& .MuiTabs-indicator': {
-                backgroundColor: tracker.type === 'business'
-                  ? theme.palette.primary.main
-                  : theme.palette.success.main,
+                backgroundColor:
+                  tracker.type === 'business'
+                    ? theme.palette.primary.main
+                    : theme.palette.success.main,
                 height: 3,
                 borderRadius: '3px 3px 0 0',
               },

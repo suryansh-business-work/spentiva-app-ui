@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, useTheme } from '@mui/material';
+import Lottie from 'lottie-react';
 import TypingAnimation from '../../common/TypingAnimation';
+import hiAnimation from '../../../../public/animations/hi.json';
 
 /**
  * GreetingHeader Component
- * Displays personalized greeting with typing animation
+ * Displays personalized greeting with typing animation and gradient username
  */
 const GreetingHeader: React.FC = () => {
+  const theme = useTheme();
   const [greeting, setGreeting] = useState('');
   const [userName, setUserName] = useState('User');
   const [showTyping, setShowTyping] = useState(false);
@@ -18,9 +21,7 @@ const GreetingHeader: React.FC = () => {
     'Managing money made simple',
   ];
 
-  const [currentMessage] = useState(
-    messages[Math.floor(Math.random() * messages.length)]
-  );
+  const [currentMessage] = useState(messages[Math.floor(Math.random() * messages.length)]);
 
   useEffect(() => {
     // Get user from localStorage
@@ -51,17 +52,49 @@ const GreetingHeader: React.FC = () => {
 
   return (
     <Box sx={{ mb: 3 }}>
-      <Typography
-        variant="h4"
-        sx={{
-          fontWeight: 700,
-          color: 'text.primary',
-          fontSize: { xs: '1.5rem', md: '1.75rem' },
-          mb: 0.5,
-        }}
-      >
-        {greeting}, {userName}! 👋
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 700,
+            color: 'text.primary',
+            fontSize: { xs: '1.5rem', md: '1.75rem' },
+          }}
+        >
+          {greeting},
+        </Typography>
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 700,
+            fontSize: { xs: '1.5rem', md: '1.75rem' },
+            background:
+              theme.palette.mode === 'dark'
+                ? `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.success.light} 50%, ${theme.palette.primary.main} 100%)`
+                : `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.success.main} 50%, ${theme.palette.primary.dark} 100%)`,
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            display: 'inline',
+          }}
+        >
+          {userName}!
+        </Typography>
+        <Box
+          sx={{
+            width: { xs: 28, md: 32 },
+            height: { xs: 28, md: 32 },
+            display: 'inline-block',
+          }}
+        >
+          <Lottie
+            animationData={hiAnimation}
+            loop={true}
+            autoplay={true}
+            style={{ width: '100%', height: '100%' }}
+          />
+        </Box>
+      </Box>
       <Box sx={{ minHeight: 24 }}>
         {showTyping && (
           <TypingAnimation

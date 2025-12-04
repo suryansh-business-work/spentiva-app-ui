@@ -102,7 +102,10 @@ const CreateEditDialog: React.FC<CreateEditDialogProps> = ({
                   p: 2.5,
                   borderRadius: 2,
                   border: `2px solid ${formData.type === 'business' ? paletteSource.trackerTypes.business.primary : theme.palette.divider}`,
-                  bgcolor: formData.type === 'business' ? paletteSource.trackerTypes.business.bg : theme.palette.background.paper,
+                  bgcolor:
+                    formData.type === 'business'
+                      ? paletteSource.trackerTypes.business.bg
+                      : theme.palette.background.paper,
                   cursor: disabled ? 'not-allowed' : 'pointer',
                   transition: 'all 0.2s ease',
                   display: 'flex',
@@ -110,11 +113,13 @@ const CreateEditDialog: React.FC<CreateEditDialogProps> = ({
                   alignItems: 'center',
                   gap: 1,
                   opacity: disabled ? 0.6 : 1,
-                  '&:hover': disabled ? {} : {
-                    borderColor: paletteSource.trackerTypes.business.primary,
-                    bgcolor: paletteSource.trackerTypes.business.bg,
-                    transform: 'translateY(-2px)',
-                  },
+                  '&:hover': disabled
+                    ? {}
+                    : {
+                        borderColor: paletteSource.trackerTypes.business.primary,
+                        bgcolor: paletteSource.trackerTypes.business.bg,
+                        transform: 'translateY(-2px)',
+                      },
                 }}
               >
                 <Box
@@ -125,9 +130,10 @@ const CreateEditDialog: React.FC<CreateEditDialogProps> = ({
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    background: formData.type === 'business'
-                      ? paletteSource.trackerTypes.business.gradient
-                      : theme.palette.action.hover,
+                    background:
+                      formData.type === 'business'
+                        ? paletteSource.trackerTypes.business.gradient
+                        : theme.palette.action.hover,
                     transition: 'all 0.2s ease',
                   }}
                 >
@@ -142,7 +148,10 @@ const CreateEditDialog: React.FC<CreateEditDialogProps> = ({
                   variant="body2"
                   fontWeight={formData.type === 'business' ? 700 : 500}
                   sx={{
-                    color: formData.type === 'business' ? paletteSource.trackerTypes.business.primary : theme.palette.text.primary,
+                    color:
+                      formData.type === 'business'
+                        ? paletteSource.trackerTypes.business.primary
+                        : theme.palette.text.primary,
                   }}
                 >
                   Business
@@ -157,7 +166,10 @@ const CreateEditDialog: React.FC<CreateEditDialogProps> = ({
                   p: 2.5,
                   borderRadius: 2,
                   border: `2px solid ${formData.type === 'personal' ? paletteSource.trackerTypes.personal.primary : theme.palette.divider}`,
-                  bgcolor: formData.type === 'personal' ? paletteSource.trackerTypes.personal.bg : theme.palette.background.paper,
+                  bgcolor:
+                    formData.type === 'personal'
+                      ? paletteSource.trackerTypes.personal.bg
+                      : theme.palette.background.paper,
                   cursor: disabled ? 'not-allowed' : 'pointer',
                   transition: 'all 0.2s ease',
                   display: 'flex',
@@ -165,11 +177,13 @@ const CreateEditDialog: React.FC<CreateEditDialogProps> = ({
                   alignItems: 'center',
                   gap: 1,
                   opacity: disabled ? 0.6 : 1,
-                  '&:hover': disabled ? {} : {
-                    borderColor: paletteSource.trackerTypes.personal.primary,
-                    bgcolor: paletteSource.trackerTypes.personal.bg,
-                    transform: 'translateY(-2px)',
-                  },
+                  '&:hover': disabled
+                    ? {}
+                    : {
+                        borderColor: paletteSource.trackerTypes.personal.primary,
+                        bgcolor: paletteSource.trackerTypes.personal.bg,
+                        transform: 'translateY(-2px)',
+                      },
                 }}
               >
                 <Box
@@ -180,9 +194,10 @@ const CreateEditDialog: React.FC<CreateEditDialogProps> = ({
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    background: formData.type === 'personal'
-                      ? paletteSource.trackerTypes.personal.gradient
-                      : theme.palette.action.hover,
+                    background:
+                      formData.type === 'personal'
+                        ? paletteSource.trackerTypes.personal.gradient
+                        : theme.palette.action.hover,
                     transition: 'all 0.2s ease',
                   }}
                 >
@@ -197,7 +212,10 @@ const CreateEditDialog: React.FC<CreateEditDialogProps> = ({
                   variant="body2"
                   fontWeight={formData.type === 'personal' ? 700 : 500}
                   sx={{
-                    color: formData.type === 'personal' ? paletteSource.trackerTypes.personal.primary : theme.palette.text.primary,
+                    color:
+                      formData.type === 'personal'
+                        ? paletteSource.trackerTypes.personal.primary
+                        : theme.palette.text.primary,
                   }}
                 >
                   Personal

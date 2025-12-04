@@ -58,9 +58,10 @@ const Trackers: React.FC = () => {
   };
 
   const handleSave = async () => {
-    const success = editMode && selectedTracker
-      ? await updateTracker(selectedTracker.id, formData)
-      : await createTracker(formData);
+    const success =
+      editMode && selectedTracker
+        ? await updateTracker(selectedTracker.id, formData)
+        : await createTracker(formData);
     if (success) {
       setDialogOpen(false);
       setEditMode(false);

@@ -86,10 +86,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
         const expense = await createExpense(parsed);
 
         // Add success message with expense details
-        addAssistantMessage(
-          `✅ Expense logged successfully!`,
-          expense
-        );
+        addAssistantMessage(`✅ Expense logged successfully!`, expense);
 
         // Notify parent component
         if (onExpenseAdded) {

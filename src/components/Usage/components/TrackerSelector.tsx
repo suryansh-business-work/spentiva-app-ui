@@ -63,9 +63,10 @@ const TrackerSelector: React.FC<TrackerSelectorProps> = ({
                     tracker.type === 'business'
                       ? paletteSource.trackerTypes.business.bg
                       : paletteSource.trackerTypes.personal.bg,
-                  color: tracker.type === 'business'
-                    ? paletteSource.trackerTypes.business.primary
-                    : paletteSource.trackerTypes.personal.primary,
+                  color:
+                    tracker.type === 'business'
+                      ? paletteSource.trackerTypes.business.primary
+                      : paletteSource.trackerTypes.personal.primary,
                 }}
               />
             </Box>

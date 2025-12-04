@@ -6,25 +6,23 @@ import {
   Box,
   IconButton,
   Avatar,
-  Menu,
-  MenuItem,
   ListItemIcon,
   ListItemText,
-  useMediaQuery,
   useTheme,
   Drawer,
   List,
   ListItemButton,
+  Typography,
   Divider,
 } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import MenuIcon from '@mui/icons-material/Menu';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LogoutIcon from '@mui/icons-material/Logout';
 import FolderIcon from '@mui/icons-material/Folder';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
+import ShieldIcon from '@mui/icons-material/Shield';
 import { useThemeMode } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import Logo from '../Logo';
@@ -33,15 +31,14 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [profileMenuAnchor, setProfileMenuAnchor] = useState<null | HTMLElement>(null);
   const { isDarkMode, toggleTheme } = useThemeMode();
   const { logout, user } = useAuth();
 
-  const menuItems = [
-    { text: 'Trackers', icon: <FolderIcon />, path: '/trackers' },
+  const drawerItems = [
     { text: 'Usage', icon: <ShowChartIcon />, path: '/usage' },
+    { text: 'Billing & Subscription', icon: <CreditCardIcon />, path: '/billing' },
+    { text: 'Privacy & Policy', icon: <ShieldIcon />, path: '/policy' },
   ];
 
   const handleNavigate = (path: string) => {
@@ -53,7 +50,6 @@ const Header: React.FC = () => {
     logout();
     navigate('/login');
     setDrawerOpen(false);
-    setProfileMenuAnchor(null);
   };
 
   return (
@@ -71,103 +67,164 @@ const Header: React.FC = () => {
             <Logo width={100} height={28} />
           </Box>
 
+          {/* Dark/Light Mode Toggle */}
           <IconButton
             onClick={toggleTheme}
-            size="small"
             sx={{
-              color: theme.palette.text.secondary,
-              borderRadius: 1,
-              p: 0.5,
-              '&:hover': { color: theme.palette.text.primary },
+              bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+              borderRadius: 2,
+              px: 1.5,
+              py: 0.75,
+              '&:hover': {
+                bgcolor:
+                  theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)',
+              },
             }}
           >
-            {isDarkMode ? <Brightness7Icon fontSize="small" /> : <Brightness4Icon fontSize="small" />}
+            {isDarkMode ? (
+              <LightModeIcon sx={{ fontSize: 20, color: theme.palette.warning.main }} />
+            ) : (
+              <DarkModeIcon sx={{ fontSize: 20, color: theme.palette.primary.main }} />
+            )}
           </IconButton>
 
-          {!isMobile && (
-            <>
-              {menuItems.map((item) => (
-                <Button
-                  key={item.path}
-                  startIcon={item.icon}
-                  size="small"
-                  onClick={() => navigate(item.path)}
-                  sx={{
-                    color: location.pathname === item.path
-                      ? theme.palette.primary.contrastText
-                      : theme.palette.text.primary,
-                    textTransform: 'none',
-                    fontWeight: 600,
-                    px: 1.5,
-                    py: 0.5,
-                    minHeight: 32,
-                    borderRadius: 1,
-                    fontSize: '0.875rem',
-                    background: location.pathname === item.path
-                      ? theme.palette.primary.main
-                      : 'transparent',
-                    '&:hover': {
-                      background: location.pathname === item.path
-                        ? theme.palette.primary.main
-                        : theme.palette.action.hover,
-                    },
-                  }}
-                >
-                  {item.text}
-                </Button>
-              ))}
-              <IconButton
-                onClick={(e) => setProfileMenuAnchor(e.currentTarget)}
-                size="small"
-                sx={{ p: 0.25, border: `1.5px solid ${theme.palette.divider}` }}
-              >
-                <Avatar
-                  sx={{
-                    width: 28,
-                    height: 28,
-                    background: theme.palette.primary.main,
-                    fontSize: '0.8rem',
-                  }}
-                >
-                  {user?.name?.charAt(0).toUpperCase()}
-                </Avatar>
-              </IconButton>
-            </>
-          )}
+          {/* Trackers Button */}
+          <Button
+            startIcon={<FolderIcon />}
+            size="small"
+            onClick={() => navigate('/trackers')}
+            sx={{
+              color:
+                location.pathname === '/trackers'
+                  ? theme.palette.primary.contrastText
+                  : theme.palette.text.primary,
+              textTransform: 'none',
+              fontWeight: 600,
+              px: 1.5,
+              py: 0.5,
+              minHeight: 32,
+              borderRadius: 1,
+              fontSize: '0.875rem',
+              background:
+                location.pathname === '/trackers' ? theme.palette.primary.main : 'transparent',
+              '&:hover': {
+                background:
+                  location.pathname === '/trackers'
+                    ? theme.palette.primary.main
+                    : theme.palette.action.hover,
+              },
+            }}
+          >
+            Trackers
+          </Button>
 
-          {isMobile && (
-            <IconButton
-              onClick={() => setDrawerOpen(true)}
-              sx={{ color: theme.palette.text.secondary }}
+          {/* User Avatar - Opens Drawer */}
+          <IconButton
+            onClick={() => setDrawerOpen(true)}
+            size="small"
+            sx={{ p: 0.25, border: `1.5px solid ${theme.palette.divider}` }}
+          >
+            <Avatar
+              sx={{
+                width: 28,
+                height: 28,
+                background: theme.palette.primary.main,
+                fontSize: '0.8rem',
+              }}
             >
-              <MenuIcon />
-            </IconButton>
-          )}
+              {user?.name?.charAt(0).toUpperCase()}
+            </Avatar>
+          </IconButton>
         </Toolbar>
       </AppBar>
 
+      {/* Unified Drawer */}
       <Drawer
         anchor="right"
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         PaperProps={{
           sx: {
-            width: 260,
+            width: { xs: 280, sm: 320 },
             background: theme.palette.background.paper,
-            color: theme.palette.text.primary,
           },
         }}
       >
-        <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 2 }}>
-          <List sx={{ flexGrow: 1 }}>
-            {menuItems.map((item) => (
+        <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+          {/* Profile Section */}
+          <Box
+            onClick={() => {
+              navigate('/profile');
+              setDrawerOpen(false);
+            }}
+            sx={{
+              p: 2,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2,
+              cursor: 'pointer',
+              borderBottom: `1px solid ${theme.palette.divider}`,
+              '&:hover': {
+                background: theme.palette.action.hover,
+              },
+            }}
+          >
+            <Avatar
+              sx={{
+                width: 56,
+                height: 56,
+                background: theme.palette.primary.main,
+                fontSize: '1.5rem',
+                border: `2px solid ${theme.palette.divider}`,
+              }}
+            >
+              {user?.name?.charAt(0).toUpperCase()}
+            </Avatar>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 600,
+                  fontSize: '1rem',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {user?.name}
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: theme.palette.text.secondary,
+                  fontSize: '0.875rem',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {user?.email}
+              </Typography>
+              <Typography
+                variant="caption"
+                sx={{ color: theme.palette.primary.main, fontWeight: 500, fontSize: '0.75rem' }}
+              >
+                View Profile
+              </Typography>
+            </Box>
+          </Box>
+
+          {/* Menu Items */}
+          <List sx={{ flexGrow: 1, py: 1 }}>
+            {drawerItems.map(item => (
               <ListItemButton
                 key={item.path}
                 onClick={() => handleNavigate(item.path)}
                 selected={location.pathname === item.path}
                 sx={{
                   borderRadius: 1,
-                  mb: 1,
+                  mx: 1,
+                  mb: 0.5,
                   '&.Mui-selected': {
                     background: theme.palette.primary.main,
                     color: theme.palette.primary.contrastText,
@@ -185,46 +242,30 @@ const Header: React.FC = () => {
             ))}
           </List>
 
-          <Divider sx={{ my: 2 }} />
+          <Divider />
 
-          <ListItemButton
-            onClick={handleLogout}
-            sx={{
-              borderRadius: 1,
-              border: `1px solid ${theme.palette.divider}`,
-              color: theme.palette.error.main,
-            }}
-          >
-            <ListItemIcon sx={{ color: theme.palette.error.main, minWidth: 40 }}>
-              <LogoutIcon />
-            </ListItemIcon>
-            <ListItemText primary="Logout" />
-          </ListItemButton>
+          {/* Logout Button */}
+          <Box sx={{ p: 2 }}>
+            <ListItemButton
+              onClick={handleLogout}
+              sx={{
+                borderRadius: 1,
+                border: `1px solid ${theme.palette.error.main}`,
+                color: theme.palette.error.main,
+                py: 1.25,
+                '&:hover': {
+                  background: `${theme.palette.error.main}10`,
+                },
+              }}
+            >
+              <ListItemIcon sx={{ color: theme.palette.error.main, minWidth: 40 }}>
+                <LogoutIcon />
+              </ListItemIcon>
+              <ListItemText primary="Logout" />
+            </ListItemButton>
+          </Box>
         </Box>
       </Drawer>
-
-      <Menu
-        anchorEl={profileMenuAnchor}
-        open={Boolean(profileMenuAnchor)}
-        onClose={() => setProfileMenuAnchor(null)}
-        PaperProps={{
-          sx: {
-            minWidth: 160,
-            borderRadius: 1,
-            mt: 1,
-            border: `1px solid ${theme.palette.divider}`,
-          },
-        }}
-      >
-        <MenuItem onClick={() => { navigate('/profile'); setProfileMenuAnchor(null); }}>
-          <ListItemIcon><AccountCircleIcon fontSize="small" /></ListItemIcon>
-          <ListItemText>Profile</ListItemText>
-        </MenuItem>
-        <MenuItem onClick={handleLogout}>
-          <ListItemIcon><LogoutIcon fontSize="small" sx={{ color: theme.palette.error.main }} /></ListItemIcon>
-          <ListItemText sx={{ color: theme.palette.error.main }}>Logout</ListItemText>
-        </MenuItem>
-      </Menu>
     </>
   );
 };

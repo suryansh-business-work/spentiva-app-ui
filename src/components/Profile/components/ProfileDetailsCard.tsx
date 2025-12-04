@@ -88,7 +88,9 @@ const ProfileDetailsCard: React.FC<ProfileDetailsCardProps> = ({
       >
         <CardContent sx={{ p: 4 }}>
           {/* Header */}
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+          <Box
+            sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}
+          >
             <Typography variant="h6" sx={{ fontWeight: 700, color: theme.palette.text.primary }}>
               Profile Information
             </Typography>
@@ -123,19 +125,31 @@ const ProfileDetailsCard: React.FC<ProfileDetailsCardProps> = ({
 
           {/* Verification Messages */}
           {verificationSuccess && (
-            <Alert severity="success" sx={{ mb: 3, borderRadius: 2 }} onClose={onClearVerificationMessages}>
+            <Alert
+              severity="success"
+              sx={{ mb: 3, borderRadius: 2 }}
+              onClose={onClearVerificationMessages}
+            >
               {verificationSuccess}
             </Alert>
           )}
 
           {verificationError && (
-            <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }} onClose={onClearVerificationMessages}>
+            <Alert
+              severity="error"
+              sx={{ mb: 3, borderRadius: 2 }}
+              onClose={onClearVerificationMessages}
+            >
               {verificationError}
             </Alert>
           )}
 
           {/* Form */}
-          <Box component="form" onSubmit={formik.handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <Box
+            component="form"
+            onSubmit={formik.handleSubmit}
+            sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}
+          >
             {/* Name Field */}
             <Box>
               <Typography
@@ -161,7 +175,9 @@ const ProfileDetailsCard: React.FC<ProfileDetailsCardProps> = ({
                 error={formik.touched.name && Boolean(formik.errors.name)}
                 disabled={!isEditing || loading}
                 InputProps={{
-                  startAdornment: <PersonIcon sx={{ color: theme.palette.text.disabled, mr: 1.5 }} />,
+                  startAdornment: (
+                    <PersonIcon sx={{ color: theme.palette.text.disabled, mr: 1.5 }} />
+                  ),
                 }}
                 sx={{
                   '& .MuiOutlinedInput-root': {
@@ -206,7 +222,9 @@ const ProfileDetailsCard: React.FC<ProfileDetailsCardProps> = ({
                 onBlur={formik.handleBlur}
                 disabled={true}
                 InputProps={{
-                  startAdornment: <EmailIcon sx={{ color: theme.palette.text.disabled, mr: 1.5 }} />,
+                  startAdornment: (
+                    <EmailIcon sx={{ color: theme.palette.text.disabled, mr: 1.5 }} />
+                  ),
                   endAdornment: user?.emailVerified ? (
                     <Chip
                       icon={<CheckCircleIcon style={{ color: '#10b981' }} />}
@@ -246,7 +264,14 @@ const ProfileDetailsCard: React.FC<ProfileDetailsCardProps> = ({
               {/* Verification Info/Button */}
               {!user?.emailVerified ? (
                 <Box sx={{ mt: 1 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      mb: 0.5,
+                    }}
+                  >
                     <Typography variant="caption" sx={{ color: theme.palette.text.disabled }}>
                       Please verify your email address
                     </Typography>
@@ -273,7 +298,7 @@ const ProfileDetailsCard: React.FC<ProfileDetailsCardProps> = ({
                     variant="caption"
                     sx={{
                       color: theme.palette.text.secondary,
-                      display: 'block'
+                      display: 'block',
                     }}
                   >
                     Didn't receive the email?{' '}
@@ -287,12 +312,16 @@ const ProfileDetailsCard: React.FC<ProfileDetailsCardProps> = ({
                         minWidth: 'auto',
                         p: 0,
                         verticalAlign: 'baseline',
-                        color: verificationLoading ? theme.palette.text.disabled : theme.palette.primary.main,
+                        color: verificationLoading
+                          ? theme.palette.text.disabled
+                          : theme.palette.primary.main,
                         textDecoration: 'underline',
                         '&:hover': {
                           background: 'transparent',
                           textDecoration: 'underline',
-                          color: verificationLoading ? theme.palette.text.disabled : theme.palette.primary.dark,
+                          color: verificationLoading
+                            ? theme.palette.text.disabled
+                            : theme.palette.primary.dark,
                         },
                       }}
                     >
@@ -308,7 +337,10 @@ const ProfileDetailsCard: React.FC<ProfileDetailsCardProps> = ({
                   </Typography>
                 </Box>
               ) : (
-                <Typography variant="caption" sx={{ color: theme.palette.text.disabled, mt: 0.5, display: 'block' }}>
+                <Typography
+                  variant="caption"
+                  sx={{ color: theme.palette.text.disabled, mt: 0.5, display: 'block' }}
+                >
                   Email cannot be changed directly. Contact support for assistance.
                 </Typography>
               )}

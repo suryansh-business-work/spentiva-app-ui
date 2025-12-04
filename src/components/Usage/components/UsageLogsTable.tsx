@@ -63,7 +63,16 @@ const UsageLogsTable: React.FC<UsageLogsTableProps> = ({
   };
 
   return (
-    <Paper sx={{ width: '100%', overflow: 'hidden', borderRadius: 2, bgcolor: theme.palette.background.paper, border: 'none', boxShadow: 'none' }}>
+    <Paper
+      sx={{
+        width: '100%',
+        overflow: 'hidden',
+        borderRadius: 2,
+        bgcolor: theme.palette.background.paper,
+        border: 'none',
+        boxShadow: 'none',
+      }}
+    >
       <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
           Usage Logs

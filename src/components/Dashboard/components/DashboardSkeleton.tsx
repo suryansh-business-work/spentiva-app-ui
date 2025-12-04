@@ -4,7 +4,14 @@ import { Box, Card, CardContent, Skeleton, Paper } from '@mui/material';
 const DashboardSkeleton: React.FC = () => {
   return (
     <>
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 3, mb: 3 }}>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
+          gap: 3,
+          mb: 3,
+        }}
+      >
         {[1, 2, 3].map(i => (
           <Card key={i}>
             <CardContent>
@@ -15,7 +22,14 @@ const DashboardSkeleton: React.FC = () => {
         ))}
       </Box>
 
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 3, mb: 3 }}>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
+          gap: 3,
+          mb: 3,
+        }}
+      >
         {[1, 2].map(i => (
           <Paper key={i} sx={{ p: 3 }}>
             <Skeleton variant="text" width="40%" height={30} />

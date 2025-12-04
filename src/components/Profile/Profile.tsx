@@ -50,19 +50,25 @@ const Profile: React.FC = () => {
   /**
    * Handle photo change
    */
-  const handlePhotoChange = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      await uploadPhoto(file);
-    }
-  }, [uploadPhoto]);
+  const handlePhotoChange = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (file) {
+        await uploadPhoto(file);
+      }
+    },
+    [uploadPhoto]
+  );
 
   /**
    * Handle profile update
    */
-  const handleUpdateProfile = useCallback(async (name: string) => {
-    return await updateProfile(name);
-  }, [updateProfile]);
+  const handleUpdateProfile = useCallback(
+    async (name: string) => {
+      return await updateProfile(name);
+    },
+    [updateProfile]
+  );
 
   /**
    * Handle verification button click
@@ -81,9 +87,12 @@ const Profile: React.FC = () => {
   /**
    * Handle verify OTP
    */
-  const handleVerifyOtp = useCallback(async (otp: string) => {
-    await verifyEmail(otp);
-  }, [verifyEmail]);
+  const handleVerifyOtp = useCallback(
+    async (otp: string) => {
+      await verifyEmail(otp);
+    },
+    [verifyEmail]
+  );
 
   /**
    * Handle resend OTP

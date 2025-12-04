@@ -19,7 +19,13 @@ interface DeleteDialogProps {
   deleting?: boolean;
 }
 
-const DeleteDialog: React.FC<DeleteDialogProps> = ({ open, tracker, onClose, onConfirm, deleting = false }) => {
+const DeleteDialog: React.FC<DeleteDialogProps> = ({
+  open,
+  tracker,
+  onClose,
+  onConfirm,
+  deleting = false,
+}) => {
   const theme = useTheme();
 
   return (

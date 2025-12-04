@@ -38,58 +38,66 @@ export const useProfileUpdate = (
   /**
    * Update user profile (name)
    */
-  const updateProfile = useCallback(async (name: string) => {
-    setState({ loading: true, error: '', message: '' });
+  const updateProfile = useCallback(
+    async (name: string) => {
+      setState({ loading: true, error: '', message: '' });
 
-    try {
-      const response = await putRequest(endpoints.auth.profile, { name });
-      const updatedUser = response.data?.user || response.data?.data?.user;
+      try {
+        const response = await putRequest(endpoints.auth.profile, { name });
+        const updatedUser = response.data?.user || response.data?.data?.user;
 
-      if (updatedUser) {
-        updateUser(updatedUser);
-        setState({ loading: false, error: '', message: 'Profile updated successfully' });
-        return true;
-      } else {
-        setState({ loading: false, error: '', message: 'Profile updated successfully' });
-        return true;
+        if (updatedUser) {
+          updateUser(updatedUser);
+          setState({ loading: false, error: '', message: 'Profile updated successfully' });
+          return true;
+        } else {
+          setState({ loading: false, error: '', message: 'Profile updated successfully' });
+          return true;
+        }
+      } catch (err: any) {
+        const errorMessage =
+          err.response?.data?.message || err.message || 'Failed to update profile';
+        setState({ loading: false, error: errorMessage, message: '' });
+        return false;
       }
-    } catch (err: any) {
-      const errorMessage = err.response?.data?.message || err.message || 'Failed to update profile';
-      setState({ loading: false, error: errorMessage, message: '' });
-      return false;
-    }
-  }, [updateUser]);
+    },
+    [updateUser]
+  );
 
   /**
    * Upload profile photo
    */
-  const uploadPhoto = useCallback(async (file: File) => {
-    setState({ loading: true, error: '', message: '' });
+  const uploadPhoto = useCallback(
+    async (file: File) => {
+      setState({ loading: true, error: '', message: '' });
 
-    const formData = new FormData();
-    formData.append('photo', file);
+      const formData = new FormData();
+      formData.append('photo', file);
 
-    try {
-      const response = await postRequest(endpoints.auth.profilePhoto, formData);
-      const updatedUser = response.data?.user || response.data?.data?.user;
+      try {
+        const response = await postRequest(endpoints.auth.profilePhoto, formData);
+        const updatedUser = response.data?.user || response.data?.data?.user;
 
-      if (updatedUser) {
-        updateUser(updatedUser);
-        setState({ loading: false, error: '', message: 'Profile photo updated successfully' });
+        if (updatedUser) {
+          updateUser(updatedUser);
+          setState({ loading: false, error: '', message: 'Profile photo updated successfully' });
+        }
+
+        // Update preview
+        const reader = new FileReader();
+        reader.onloadend = () => setPhotoPreview(reader.result as string);
+        reader.readAsDataURL(file);
+
+        return true;
+      } catch (error: any) {
+        const errorMessage =
+          error.response?.data?.message || error.message || 'Failed to upload photo';
+        setState({ loading: false, error: errorMessage, message: '' });
+        return false;
       }
-
-      // Update preview
-      const reader = new FileReader();
-      reader.onloadend = () => setPhotoPreview(reader.result as string);
-      reader.readAsDataURL(file);
-
-      return true;
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message || 'Failed to upload photo';
-      setState({ loading: false, error: errorMessage, message: '' });
-      return false;
-    }
-  }, [updateUser]);
+    },
+    [updateUser]
+  );
 
   /**
    * Clear messages
@@ -98,12 +106,15 @@ export const useProfileUpdate = (
     setState(prev => ({ ...prev, error: '', message: '' }));
   }, []);
 
-  return useMemo(() => ({
-    ...state,
-    photoPreview,
-    getPhotoUrl,
-    updateProfile,
-    uploadPhoto,
-    clearMessages,
-  }), [state, photoPreview, getPhotoUrl, updateProfile, uploadPhoto, clearMessages]);
+  return useMemo(
+    () => ({
+      ...state,
+      photoPreview,
+      getPhotoUrl,
+      updateProfile,
+      uploadPhoto,
+      clearMessages,
+    }),
+    [state, photoPreview, getPhotoUrl, updateProfile, uploadPhoto, clearMessages]
+  );
 };

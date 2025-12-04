@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Paper } from '@mui/material';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, ArcElement, LineElement, PointElement, Title, Tooltip, Legend } from 'chart.js';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 import { endpoints } from '../../config/api';
 import { getRequest } from '../../utils/http';
 import FilterBar from './components/FilterBar';
@@ -13,7 +24,17 @@ interface DashboardProps {
   trackerId?: string;
 }
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, LineElement, PointElement, Title, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
   const [filter, setFilter] = useState('thisMonth');
@@ -37,12 +58,18 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
     setLoading(true);
     try {
       const [summaryRes, categoryRes, monthlyRes] = await Promise.all([
-        getRequest(endpoints.analytics.summary, { params: { filter, startDate: customStartDate, endDate: customEndDate, trackerId } }),
-        getRequest(endpoints.analytics.byCategory, { params: { filter, startDate: customStartDate, endDate: customEndDate, trackerId } }),
+        getRequest(endpoints.analytics.summary, {
+          params: { filter, startDate: customStartDate, endDate: customEndDate, trackerId },
+        }),
+        getRequest(endpoints.analytics.byCategory, {
+          params: { filter, startDate: customStartDate, endDate: customEndDate, trackerId },
+        }),
         getRequest(endpoints.analytics.byMonth, { params: { year: selectedYear, trackerId } }),
       ]);
 
-      setSummary(summaryRes.data?.stats || summaryRes.data?.data?.stats || { total: 0, average: 0, count: 0 });
+      setSummary(
+        summaryRes.data?.stats || summaryRes.data?.data?.stats || { total: 0, average: 0, count: 0 }
+      );
       setCategoryData(categoryRes.data?.data || categoryRes.data || []);
       setMonthlyData(monthlyRes.data?.data || monthlyRes.data || []);
     } catch (error) {

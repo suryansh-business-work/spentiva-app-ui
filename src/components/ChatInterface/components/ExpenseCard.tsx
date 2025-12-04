@@ -21,12 +21,11 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({ expense }) => {
       elevation={0}
       sx={{
         mt: 1.5,
-        backgroundColor: theme.palette.mode === 'dark'
-          ? 'rgba(255,255,255,0.05)'
-          : 'rgba(0,0,0,0.04)',
-        border: `1px solid ${theme.palette.mode === 'dark'
-          ? 'rgba(255,255,255,0.1)'
-          : 'rgba(0,0,0,0.08)'}`,
+        backgroundColor:
+          theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
+        border: `1px solid ${
+          theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'
+        }`,
         borderRadius: 2,
       }}
     >
@@ -65,7 +64,11 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({ expense }) => {
           {/* Description (if available) */}
           {expense.description && (
             <Box sx={{ mt: 0.5, pt: 0.75, borderTop: `1px solid ${theme.palette.divider}` }}>
-              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.25, fontSize: '0.7rem' }}>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ display: 'block', mb: 0.25, fontSize: '0.7rem' }}
+              >
                 Description:
               </Typography>
               <Typography variant="caption" sx={{ fontSize: '0.75rem', lineHeight: 1.4 }}>

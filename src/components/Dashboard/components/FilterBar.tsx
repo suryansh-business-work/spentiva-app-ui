@@ -24,7 +24,16 @@ const FilterBar: React.FC<FilterBarProps> = ({
   onDownload,
   onEmail,
 }) => {
-  const filters = ['today', 'yesterday', 'last7days', 'lastMonth', 'thisMonth', 'indiaFY', 'thisYear', 'custom'];
+  const filters = [
+    'today',
+    'yesterday',
+    'last7days',
+    'lastMonth',
+    'thisMonth',
+    'indiaFY',
+    'thisYear',
+    'custom',
+  ];
 
   const getFilterLabel = (f: string) => {
     const labels: Record<string, string> = {
@@ -39,15 +48,39 @@ const FilterBar: React.FC<FilterBarProps> = ({
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'stretch', md: 'center' }, mb: 2, gap: 2 }}>
-        <Box sx={{ display: 'flex', flexWrap: 'nowrap', gap: 1, width: { xs: '100%', md: 'auto' }, overflowX: 'auto' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          justifyContent: 'space-between',
+          alignItems: { xs: 'stretch', md: 'center' },
+          mb: 2,
+          gap: 2,
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexWrap: 'nowrap',
+            gap: 1,
+            width: { xs: '100%', md: 'auto' },
+            overflowX: 'auto',
+          }}
+        >
           {filters.map(filterOption => (
             <Button
               key={filterOption}
               variant={filter === filterOption ? 'contained' : 'outlined'}
               onClick={() => onFilterChange(filterOption)}
               size="small"
-              sx={{ textTransform: 'none', fontSize: { xs: '0.75rem', sm: '0.875rem' }, px: { xs: 1, sm: 1.5 }, minWidth: 'auto', whiteSpace: 'nowrap', flexShrink: 0 }}
+              sx={{
+                textTransform: 'none',
+                fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                px: { xs: 1, sm: 1.5 },
+                minWidth: 'auto',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+              }}
             >
               {getFilterLabel(filterOption)}
             </Button>
@@ -61,10 +94,19 @@ const FilterBar: React.FC<FilterBarProps> = ({
             onClick={onDownload}
             size="small"
             fullWidth
-            sx={{ textTransform: 'none', fontSize: { xs: '0.8rem', sm: '0.875rem' }, flex: 1, whiteSpace: 'nowrap' }}
+            sx={{
+              textTransform: 'none',
+              fontSize: { xs: '0.8rem', sm: '0.875rem' },
+              flex: 1,
+              whiteSpace: 'nowrap',
+            }}
           >
-            <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>Download Report</Box>
-            <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>Download</Box>
+            <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
+              Download Report
+            </Box>
+            <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>
+              Download
+            </Box>
           </Button>
           <Button
             variant="contained"
@@ -73,12 +115,23 @@ const FilterBar: React.FC<FilterBarProps> = ({
             disabled={emailLoading}
             size="small"
             fullWidth
-            sx={{ textTransform: 'none', fontSize: { xs: '0.8rem', sm: '0.875rem' }, flex: 1, whiteSpace: 'nowrap' }}
+            sx={{
+              textTransform: 'none',
+              fontSize: { xs: '0.8rem', sm: '0.875rem' },
+              flex: 1,
+              whiteSpace: 'nowrap',
+            }}
           >
-            {emailLoading ? 'Sending...' : (
+            {emailLoading ? (
+              'Sending...'
+            ) : (
               <>
-                <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>Email Report</Box>
-                <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>Email</Box>
+                <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
+                  Email Report
+                </Box>
+                <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>
+                  Email
+                </Box>
               </>
             )}
           </Button>

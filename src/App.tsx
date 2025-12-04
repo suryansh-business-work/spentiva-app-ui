@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline, Box, CircularProgress } from '@mui/material';
 import Header from './components/Header/Header';
+import VerificationBanner from './components/VerificationBanner/VerificationBanner';
 import Trackers from './components/Trackers/Trackers';
 import TrackerView from './components/TrackerView/TrackerView';
 import TrackerCategorySettings from './components/TrackerCategorySettings/TrackerCategorySettings';
@@ -9,9 +10,11 @@ import Login from './components/Auth/Login';
 import Signup from './components/Auth/Signup';
 import ForgotPassword from './components/Auth/ForgotPassword';
 import ResetPassword from './components/Auth/ResetPassword';
-import VerifyEmail from './components/Auth/VerifyEmail';
 import Profile from './components/Profile/Profile';
 import Usage from './components/Usage/Usage';
+import Billing from './pages/Billing';
+import Policy from './pages/Policy';
+import NotFound from './pages/NotFound';
 import { ThemeModeProvider, useThemeMode } from './contexts/ThemeContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { requestNotificationPermission } from './services/notificationService';
@@ -19,7 +22,7 @@ import { themeConfig, getDarkModeConfig } from './theme/palette';
 
 const AppContent = () => {
   const { isDarkMode } = useThemeMode();
-  const { isAuthenticated, loading: authLoading } = useAuth();
+  const { isAuthenticated, loading: authLoading, user } = useAuth();
 
   const theme = useMemo(
     () =>
@@ -48,6 +51,7 @@ const AppContent = () => {
       <CssBaseline />
       <Router>
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+          {isAuthenticated && user && !user.emailVerified && <VerificationBanner />}
           {isAuthenticated && <Header />}
           <Box sx={{ flexGrow: 1 }}>
             <Routes>
@@ -69,7 +73,7 @@ const AppContent = () => {
                 path="/reset-password"
                 element={!isAuthenticated ? <ResetPassword /> : <Navigate to="/trackers" replace />}
               />
-              <Route path="/verify-email" element={<VerifyEmail />} />
+
               <Route
                 path="/"
                 element={
@@ -141,6 +145,13 @@ const AppContent = () => {
                 path="/usage"
                 element={isAuthenticated ? <Usage /> : <Navigate to="/login" replace />}
               />
+              <Route
+                path="/billing"
+                element={isAuthenticated ? <Billing /> : <Navigate to="/login" replace />}
+              />
+              <Route path="/policy" element={<Policy />} />
+              {/* 404 Catch-all Route */}
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </Box>
         </Box>

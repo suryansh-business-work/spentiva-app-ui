@@ -38,7 +38,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, userPhotoUrl, userNa
 
   // Check if message contains HTML (for category error links)
   const hasHtmlLink = message.content.includes('<a href=');
-  const displayContent = hasHtmlLink ? message.content.replace('CATEGORY_ERROR::', '') : message.content;
+  const displayContent = hasHtmlLink
+    ? message.content.replace('CATEGORY_ERROR::', '')
+    : message.content;
 
   return (
     <Box
@@ -100,9 +102,10 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, userPhotoUrl, userNa
               : theme.palette.text.primary,
             borderRadius: isUser ? '12px 12px 2px 12px' : '12px 12px 12px 2px',
             border: isUser ? 'none' : `1px solid ${theme.palette.divider}`,
-            boxShadow: theme.palette.mode === 'dark'
-              ? '0 1px 3px rgba(0,0,0,0.3)'
-              : '0 1px 2px rgba(0,0,0,0.1)',
+            boxShadow:
+              theme.palette.mode === 'dark'
+                ? '0 1px 3px rgba(0,0,0,0.3)'
+                : '0 1px 2px rgba(0,0,0,0.1)',
           }}
         >
           {hasHtmlLink ? (
@@ -150,9 +153,10 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, userPhotoUrl, userNa
               <DoneAllIcon
                 sx={{
                   fontSize: 14,
-                  color: theme.palette.mode === 'dark'
-                    ? 'rgba(255,255,255,0.7)'
-                    : 'rgba(255,255,255,0.9)',
+                  color:
+                    theme.palette.mode === 'dark'
+                      ? 'rgba(255,255,255,0.7)'
+                      : 'rgba(255,255,255,0.9)',
                   opacity: 0.9,
                 }}
               />

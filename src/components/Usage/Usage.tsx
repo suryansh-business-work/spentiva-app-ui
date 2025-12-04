@@ -236,7 +236,10 @@ const Usage: React.FC = () => {
 
             {/* Tracker Graphs */}
             <Box sx={{ mb: 4 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: theme.palette.text.primary }}>
+              <Typography
+                variant="h6"
+                sx={{ fontWeight: 600, mb: 2, color: theme.palette.text.primary }}
+              >
                 Tracker Usage Graphs
               </Typography>
               <UsageGraphsPanel

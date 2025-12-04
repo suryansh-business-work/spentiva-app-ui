@@ -54,7 +54,10 @@ export const useExpenseActions = (trackerId?: string) => {
         const apiError = error.response?.data?.data?.error || error.response?.data?.error || '';
         const errorMessage = error.response?.data?.message || error.message || '';
 
-        if (apiError.toLowerCase().includes('category') || errorMessage.toLowerCase().includes('category')) {
+        if (
+          apiError.toLowerCase().includes('category') ||
+          errorMessage.toLowerCase().includes('category')
+        ) {
           throw new Error(
             `CATEGORY_ERROR:: Please ensure the payment method (cash, card, etc.) is included in the user message. Use only existing categories. To add a new one, <a href="/tracker/${trackerId}/settings" style="color: #14B8A6; text-decoration: underline; cursor: pointer;">click here</a>.`
           );

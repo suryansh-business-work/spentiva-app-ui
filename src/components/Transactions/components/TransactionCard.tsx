@@ -30,7 +30,7 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ expense, onEdit, onDe
       elevation={3}
       sx={{
         transition: 'all 0.2s',
-        borderColor: '#ddd'
+        borderColor: '#ddd',
       }}
     >
       <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, py: 2, border: 0 }}>

@@ -130,7 +130,16 @@ const UsageGraphsPanel: React.FC<UsageGraphsPanelProps> = ({ data, loading, pieC
     <Grid container spacing={3}>
       {data!.dailyUsage.length > 0 && (
         <Grid size={{ xs: 12, md: 6 }}>
-          <Paper sx={{ p: 3, borderRadius: 2, height: '100%', bgcolor: theme.palette.background.paper, border: 'none', boxShadow: 'none' }}>
+          <Paper
+            sx={{
+              p: 3,
+              borderRadius: 2,
+              height: '100%',
+              bgcolor: theme.palette.background.paper,
+              border: 'none',
+              boxShadow: 'none',
+            }}
+          >
             <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
               Daily Usage Trend
             </Typography>
@@ -143,7 +152,16 @@ const UsageGraphsPanel: React.FC<UsageGraphsPanelProps> = ({ data, loading, pieC
 
       {pieData.length > 0 && (
         <Grid size={{ xs: 12, md: 6 }}>
-          <Paper sx={{ p: 3, borderRadius: 2, height: '100%', bgcolor: theme.palette.background.paper, border: 'none', boxShadow: 'none' }}>
+          <Paper
+            sx={{
+              p: 3,
+              borderRadius: 2,
+              height: '100%',
+              bgcolor: theme.palette.background.paper,
+              border: 'none',
+              boxShadow: 'none',
+            }}
+          >
             <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
               {pieChartTitle || 'Tracker Type Distribution'}
             </Typography>

@@ -63,9 +63,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: 3,
-                bgcolor: theme.palette.mode === 'dark'
-                  ? 'rgba(255,255,255,0.05)'
-                  : 'rgba(0,0,0,0.02)',
+                bgcolor:
+                  theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
               },
             }}
           />
@@ -75,16 +74,18 @@ const ChatInput: React.FC<ChatInputProps> = ({
             type="submit"
             disabled={disabled || !value.trim()}
             sx={{
-              background: disabled || !value.trim()
-                ? theme.palette.action.disabledBackground
-                : `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+              background:
+                disabled || !value.trim()
+                  ? theme.palette.action.disabledBackground
+                  : `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
               color: '#fff',
               width: 42,
               height: 42,
               '&:hover': {
-                background: disabled || !value.trim()
-                  ? theme.palette.action.disabledBackground
-                  : `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
+                background:
+                  disabled || !value.trim()
+                    ? theme.palette.action.disabledBackground
+                    : `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
                 transform: 'scale(1.05)',
               },
               transition: 'all 0.2s ease',

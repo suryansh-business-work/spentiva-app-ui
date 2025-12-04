@@ -32,53 +32,62 @@ export const useTrackers = () => {
     }
   }, []);
 
-  const createTracker = useCallback(async (formData: TrackerFormData) => {
-    setSaving(true);
-    try {
-      await postRequest(endpoints.trackers.create, formData);
-      setSnackbar({ open: true, message: 'Tracker created successfully', severity: 'success' });
-      await loadTrackers();
-      return true;
-    } catch (error) {
-      console.error('Error creating tracker:', error);
-      setSnackbar({ open: true, message: 'Failed to create tracker', severity: 'error' });
-      return false;
-    } finally {
-      setSaving(false);
-    }
-  }, [loadTrackers]);
+  const createTracker = useCallback(
+    async (formData: TrackerFormData) => {
+      setSaving(true);
+      try {
+        await postRequest(endpoints.trackers.create, formData);
+        setSnackbar({ open: true, message: 'Tracker created successfully', severity: 'success' });
+        await loadTrackers();
+        return true;
+      } catch (error) {
+        console.error('Error creating tracker:', error);
+        setSnackbar({ open: true, message: 'Failed to create tracker', severity: 'error' });
+        return false;
+      } finally {
+        setSaving(false);
+      }
+    },
+    [loadTrackers]
+  );
 
-  const updateTracker = useCallback(async (id: string, formData: TrackerFormData) => {
-    setSaving(true);
-    try {
-      await putRequest(endpoints.trackers.update(id), formData);
-      setSnackbar({ open: true, message: 'Tracker updated successfully', severity: 'success' });
-      await loadTrackers();
-      return true;
-    } catch (error) {
-      console.error('Error updating tracker:', error);
-      setSnackbar({ open: true, message: 'Failed to update tracker', severity: 'error' });
-      return false;
-    } finally {
-      setSaving(false);
-    }
-  }, [loadTrackers]);
+  const updateTracker = useCallback(
+    async (id: string, formData: TrackerFormData) => {
+      setSaving(true);
+      try {
+        await putRequest(endpoints.trackers.update(id), formData);
+        setSnackbar({ open: true, message: 'Tracker updated successfully', severity: 'success' });
+        await loadTrackers();
+        return true;
+      } catch (error) {
+        console.error('Error updating tracker:', error);
+        setSnackbar({ open: true, message: 'Failed to update tracker', severity: 'error' });
+        return false;
+      } finally {
+        setSaving(false);
+      }
+    },
+    [loadTrackers]
+  );
 
-  const deleteTracker = useCallback(async (id: string) => {
-    setDeleting(true);
-    try {
-      await deleteRequest(endpoints.trackers.delete(id));
-      setSnackbar({ open: true, message: 'Tracker deleted successfully', severity: 'success' });
-      await loadTrackers();
-      return true;
-    } catch (error) {
-      console.error('Error deleting tracker:', error);
-      setSnackbar({ open: true, message: 'Failed to delete tracker', severity: 'error' });
-      return false;
-    } finally {
-      setDeleting(false);
-    }
-  }, [loadTrackers]);
+  const deleteTracker = useCallback(
+    async (id: string) => {
+      setDeleting(true);
+      try {
+        await deleteRequest(endpoints.trackers.delete(id));
+        setSnackbar({ open: true, message: 'Tracker deleted successfully', severity: 'success' });
+        await loadTrackers();
+        return true;
+      } catch (error) {
+        console.error('Error deleting tracker:', error);
+        setSnackbar({ open: true, message: 'Failed to delete tracker', severity: 'error' });
+        return false;
+      } finally {
+        setDeleting(false);
+      }
+    },
+    [loadTrackers]
+  );
 
   const closeSnackbar = useCallback(() => {
     setSnackbar(prev => ({ ...prev, open: false }));

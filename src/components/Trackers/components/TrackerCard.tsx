@@ -37,9 +37,10 @@ const TrackerCard: React.FC<TrackerCardProps> = ({
 
   // Use colors from palette based on theme mode
   const paletteSource = theme.palette.mode === 'dark' ? darkPalette : palette;
-  const colorScheme = tracker.type === 'business'
-    ? paletteSource.trackerTypes.business
-    : paletteSource.trackerTypes.personal;
+  const colorScheme =
+    tracker.type === 'business'
+      ? paletteSource.trackerTypes.business
+      : paletteSource.trackerTypes.personal;
 
   const formatDate = (dateString: string | Date) => {
     const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
@@ -68,7 +69,6 @@ const TrackerCard: React.FC<TrackerCardProps> = ({
           '&:hover': {
             transform: 'translateY(-4px)',
             borderColor: colorScheme.primary,
-
           },
           '&::before': {
             content: '""',
@@ -84,7 +84,14 @@ const TrackerCard: React.FC<TrackerCardProps> = ({
       >
         <CardContent sx={{ flexGrow: 1, p: { xs: 1.75, sm: 2 } }}>
           {/* Header Row */}
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+              mb: 1.5,
+            }}
+          >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Box
                 className="tracker-icon-box"

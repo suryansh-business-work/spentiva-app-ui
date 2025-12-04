@@ -47,7 +47,8 @@ export const useEmailVerification = (userEmail: string, onVerificationSuccess: (
 
       return true;
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message || 'Failed to send verification code';
+      const errorMessage =
+        error.response?.data?.message || error.message || 'Failed to send verification code';
       setState(prev => ({ ...prev, loading: false, error: errorMessage }));
       return false;
     }
@@ -56,26 +57,30 @@ export const useEmailVerification = (userEmail: string, onVerificationSuccess: (
   /**
    * Verify email with OTP
    */
-  const verifyEmail = useCallback(async (otp: string) => {
-    setState(prev => ({ ...prev, loading: true, error: '', success: '' }));
+  const verifyEmail = useCallback(
+    async (otp: string) => {
+      setState(prev => ({ ...prev, loading: true, error: '', success: '' }));
 
-    try {
-      const response = await postRequest(endpoints.auth.verifyEmail, { email: userEmail, otp });
-      const message = response.data?.message || 'Email verified successfully';
+      try {
+        const response = await postRequest(endpoints.auth.verifyEmail, { email: userEmail, otp });
+        const message = response.data?.message || 'Email verified successfully';
 
-      setState(prev => ({ ...prev, loading: false, success: message, isDialogOpen: false }));
-      setOtpSent(false);
+        setState(prev => ({ ...prev, loading: false, success: message, isDialogOpen: false }));
+        setOtpSent(false);
 
-      // Call success callback
-      onVerificationSuccess();
+        // Call success callback
+        onVerificationSuccess();
 
-      return true;
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message || 'Invalid or expired OTP';
-      setState(prev => ({ ...prev, loading: false, error: errorMessage }));
-      return false;
-    }
-  }, [userEmail, onVerificationSuccess]);
+        return true;
+      } catch (error: any) {
+        const errorMessage =
+          error.response?.data?.message || error.message || 'Invalid or expired OTP';
+        setState(prev => ({ ...prev, loading: false, error: errorMessage }));
+        return false;
+      }
+    },
+    [userEmail, onVerificationSuccess]
+  );
 
   /**
    * Open verification dialog

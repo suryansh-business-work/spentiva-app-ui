@@ -88,9 +88,20 @@ const ChartSection: React.FC<ChartSectionProps> = ({
 
   return (
     <>
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: { xs: 2, md: 3 }, mb: 3 }}>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
+          gap: { xs: 2, md: 3 },
+          mb: 3,
+        }}
+      >
         <Paper sx={{ p: { xs: 2, md: 3 } }}>
-          <Typography variant="h6" gutterBottom sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' }, color: theme.palette.text.primary }}>
+          <Typography
+            variant="h6"
+            gutterBottom
+            sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' }, color: theme.palette.text.primary }}
+          >
             Expenses by Category
           </Typography>
           <Box sx={{ height: { xs: 250, md: 300 }, mt: 2 }}>
@@ -98,24 +109,50 @@ const ChartSection: React.FC<ChartSectionProps> = ({
           </Box>
         </Paper>
         <Paper sx={{ p: { xs: 2, md: 3 } }}>
-          <Typography variant="h6" gutterBottom sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' }, color: theme.palette.text.primary }}>
+          <Typography
+            variant="h6"
+            gutterBottom
+            sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' }, color: theme.palette.text.primary }}
+          >
             Category Distribution
           </Typography>
-          <Box sx={{ height: { xs: 250, md: 300 }, mt: 2, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Box
+            sx={{
+              height: { xs: 250, md: 300 },
+              mt: 2,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
             <Pie data={categoryChartData} options={chartOptions} />
           </Box>
         </Paper>
       </Box>
 
       <Paper sx={{ p: { xs: 2, md: 3 }, mb: 3 }}>
-        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, mb: 2, gap: 2 }}>
-          <Typography variant="h6" sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' }, color: theme.palette.text.primary }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            justifyContent: 'space-between',
+            alignItems: { xs: 'flex-start', sm: 'center' },
+            mb: 2,
+            gap: 2,
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' }, color: theme.palette.text.primary }}
+          >
             Monthly Expenses Trend
           </Typography>
           <FormControl size="small" sx={{ minWidth: 120 }}>
             <Select value={selectedYear} onChange={e => onYearChange(Number(e.target.value))}>
               {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map(year => (
-                <MenuItem key={year} value={year}>{year}</MenuItem>
+                <MenuItem key={year} value={year}>
+                  {year}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>

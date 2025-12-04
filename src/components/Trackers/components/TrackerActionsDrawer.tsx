@@ -53,7 +53,7 @@ const TrackerActionsDrawer: React.FC<TrackerActionsDrawerProps> = ({
         anchor="bottom"
         open={open && Boolean(tracker)}
         onClose={onClose}
-        onOpen={() => { }}
+        onOpen={() => {}}
         sx={{
           '& .MuiDrawer-paper': {
             borderTopLeftRadius: 16,

@@ -33,7 +33,14 @@ const LoadingState: React.FC<LoadingStateProps> = ({ count = 4 }) => {
           >
             <CardContent sx={{ p: 2.5 }}>
               {/* Header with icon and type */}
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  mb: 2,
+                }}
+              >
                 <Skeleton variant="circular" width={48} height={48} />
                 <Skeleton variant="rounded" width={70} height={24} sx={{ borderRadius: 2 }} />
               </Box>

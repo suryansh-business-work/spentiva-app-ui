@@ -79,7 +79,9 @@ const EmailVerificationDialog: React.FC<EmailVerificationDialogProps> = ({
         },
       }}
     >
-      <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pb: 1 }}>
+      <DialogTitle
+        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pb: 1 }}
+      >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <Box
             sx={{
@@ -105,11 +107,18 @@ const EmailVerificationDialog: React.FC<EmailVerificationDialogProps> = ({
 
       <DialogContent sx={{ pt: 2 }}>
         <Box>
-          <Typography variant="body2" sx={{ color: theme.palette.text.secondary, mb: 3, lineHeight: 1.6 }}>
-            A verification code was sent to <strong>{email}</strong> when you signed up. Please enter the 6-digit code below.
+          <Typography
+            variant="body2"
+            sx={{ color: theme.palette.text.secondary, mb: 3, lineHeight: 1.6 }}
+          >
+            A verification code was sent to <strong>{email}</strong> when you signed up. Please
+            enter the 6-digit code below.
           </Typography>
 
-          <Typography variant="caption" sx={{ color: theme.palette.text.secondary, mb: 1, display: 'block' }}>
+          <Typography
+            variant="caption"
+            sx={{ color: theme.palette.text.secondary, mb: 1, display: 'block' }}
+          >
             Enter 6-digit verification code
           </Typography>
 
@@ -121,7 +130,12 @@ const EmailVerificationDialog: React.FC<EmailVerificationDialogProps> = ({
             disabled={loading}
             inputProps={{
               maxLength: 6,
-              style: { textAlign: 'center', fontSize: '1.5rem', letterSpacing: '0.5rem', fontWeight: 600 },
+              style: {
+                textAlign: 'center',
+                fontSize: '1.5rem',
+                letterSpacing: '0.5rem',
+                fontWeight: 600,
+              },
             }}
             sx={{
               mb: 2,

@@ -58,12 +58,7 @@ export const TableSkeleton: React.FC<TableSkeletonProps> = ({ rows = 5, columns 
           }}
         >
           {Array.from({ length: columns }).map((_, colIndex) => (
-            <Skeleton
-              key={colIndex}
-              variant="text"
-              width={`${100 / columns}%`}
-              height={20}
-            />
+            <Skeleton key={colIndex} variant="text" width={`${100 / columns}%`} height={20} />
           ))}
         </Box>
       ))}
