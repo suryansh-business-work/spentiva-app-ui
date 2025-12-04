@@ -73,4 +73,11 @@ export const endpoints = {
     deleteByTracker: (trackerId: string) => `${getApiUrl()}/usage-logs/tracker/${trackerId}`,
     deleteAllUser: `${getApiUrl()}/usage-logs/user`,
   },
+  admin: {
+    stats: `${getApiUrl()}/admin/stats`,
+    users: `${getApiUrl()}/admin/users`,
+    userById: (userId: string) => `${getApiUrl()}/admin/users/${userId}`,
+    updateUser: (userId: string) => `${getApiUrl()}/admin/users/${userId}`,
+    deleteUser: (userId: string) => `${getApiUrl()}/admin/users/${userId}`,
+  },
 };

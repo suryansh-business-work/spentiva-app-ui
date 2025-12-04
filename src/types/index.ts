@@ -33,6 +33,7 @@ export interface User {
   name: string;
   email: string;
   profilePhoto?: string;
+  role?: string;
   accountType?: string;
   emailVerified?: boolean;
   createdAt?: string;

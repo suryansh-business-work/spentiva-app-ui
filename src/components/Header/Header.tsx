@@ -23,6 +23,7 @@ import FolderIcon from '@mui/icons-material/Folder';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import ShieldIcon from '@mui/icons-material/Shield';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { useThemeMode } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import Logo from '../Logo';
@@ -40,6 +41,15 @@ const Header: React.FC = () => {
     { text: 'Billing & Subscription', icon: <CreditCardIcon />, path: '/billing' },
     { text: 'Privacy & Policy', icon: <ShieldIcon />, path: '/policy' },
   ];
+
+  // Add admin panel for admin users
+  if (user?.role === 'admin') {
+    drawerItems.unshift({
+      text: 'Admin Panel',
+      icon: <AdminPanelSettingsIcon />,
+      path: '/admin',
+    });
+  }
 
   const handleNavigate = (path: string) => {
     navigate(path);
@@ -62,7 +72,7 @@ const Header: React.FC = () => {
           borderBottom: `1px solid ${theme.palette.divider}`,
         }}
       >
-        <Toolbar sx={{ minHeight: 48, px: { xs: 1.5, sm: 2 }, gap: 1.5 }}>
+        <Toolbar sx={{ minHeight: '64px !important', height: 64, px: 2, gap: 1.5 }}>
           <Box sx={{ flexGrow: 1, cursor: 'pointer' }} onClick={() => navigate('/trackers')}>
             <Logo width={100} height={28} />
           </Box>

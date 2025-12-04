@@ -14,7 +14,6 @@ import {
   Skeleton,
   InputAdornment,
   IconButton,
-  MenuItem,
 } from '@mui/material';
 import {
   Email as EmailIcon,
@@ -22,7 +21,6 @@ import {
   Person as PersonIcon,
   Visibility,
   VisibilityOff,
-  Business as BusinessIcon,
   ArrowForward as ArrowForwardIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
@@ -36,9 +34,6 @@ const validationSchema = Yup.object({
   password: Yup.string()
     .min(8, 'Password must be at least 8 characters')
     .required('Password is required'),
-  role: Yup.string()
-    .oneOf(['trial', 'business', 'personal'], 'Invalid account type')
-    .required('Account type is required'),
 });
 
 const Signup: React.FC = () => {
@@ -53,7 +48,6 @@ const Signup: React.FC = () => {
       name: '',
       email: '',
       password: '',
-      role: 'trial',
     },
     validationSchema: validationSchema,
     onSubmit: async values => {
@@ -65,7 +59,6 @@ const Signup: React.FC = () => {
           name: values.name,
           email: values.email,
           password: values.password,
-          role: values.role as 'user' | 'business' | 'individual',
         });
 
         const data = response.data;
@@ -315,79 +308,6 @@ const Signup: React.FC = () => {
                         },
                       }}
                     />
-                  </Box>
-                )}
-
-                {/* Account Type Field */}
-                {loading ? (
-                  <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 2 }} />
-                ) : (
-                  <Box>
-                    <Typography
-                      component="label"
-                      htmlFor="role"
-                      variant="caption"
-                      sx={{
-                        display: 'block',
-                        mb: 0.75,
-                        fontWeight: 600,
-                        color: '#111827',
-                        fontFamily: 'inherit',
-                        fontSize: '0.875rem',
-                      }}
-                    >
-                      Account Type
-                    </Typography>
-                    <TextField
-                      fullWidth
-                      select
-                      id="role"
-                      name="role"
-                      value={formik.values.role}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      error={formik.touched.role && Boolean(formik.errors.role)}
-                      helperText={formik.touched.role && formik.errors.role}
-                      disabled={loading}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <BusinessIcon sx={{ color: '#9CA3AF', fontSize: 20 }} />
-                          </InputAdornment>
-                        ),
-                      }}
-                      sx={{
-                        '& .MuiOutlinedInput-root': {
-                          borderRadius: 2,
-                          backgroundColor: '#ffffff',
-                          '& fieldset': {
-                            borderColor: '#D1D5DB',
-                            borderWidth: '1.5px',
-                          },
-                          '&:hover fieldset': {
-                            borderColor: '#9CA3AF',
-                          },
-                          '&.Mui-focused fieldset': {
-                            borderColor: '#16a34a',
-                            borderWidth: '2px',
-                          },
-                        },
-                        '& .MuiInputBase-input': {
-                          py: 1.75,
-                          fontSize: '0.95rem',
-                          fontFamily: 'inherit',
-                          color: '#111827',
-                        },
-                        '& .MuiFormHelperText-root': {
-                          mx: 0,
-                          mt: 0.75,
-                        },
-                      }}
-                    >
-                      <MenuItem value="trial">Trial (Free)</MenuItem>
-                      <MenuItem value="personal">Personal</MenuItem>
-                      <MenuItem value="business">Business</MenuItem>
-                    </TextField>
                   </Box>
                 )}
 

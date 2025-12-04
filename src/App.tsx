@@ -14,6 +14,7 @@ import Profile from './components/Profile/Profile';
 import Usage from './components/Usage/Usage';
 import Billing from './pages/Billing';
 import Policy from './pages/Policy';
+import AdminDashboard from './pages/Admin/AdminDashboard';
 import NotFound from './pages/NotFound';
 import { ThemeModeProvider, useThemeMode } from './contexts/ThemeContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
@@ -150,6 +151,16 @@ const AppContent = () => {
                 element={isAuthenticated ? <Billing /> : <Navigate to="/login" replace />}
               />
               <Route path="/policy" element={<Policy />} />
+              <Route
+                path="/admin"
+                element={
+                  isAuthenticated && user?.role === 'admin' ? (
+                    <AdminDashboard />
+                  ) : (
+                    <Navigate to="/trackers" replace />
+                  )
+                }
+              />
               {/* 404 Catch-all Route */}
               <Route path="*" element={<NotFound />} />
             </Routes>

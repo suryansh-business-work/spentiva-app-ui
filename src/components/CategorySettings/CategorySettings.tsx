@@ -4,29 +4,19 @@ import {
   Paper,
   Typography,
   Button,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
   List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
   Collapse,
   Divider,
   Alert,
   Snackbar,
   CircularProgress,
+  useTheme,
+  Stack,
 } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import FolderIcon from '@mui/icons-material/Folder';
-import SubdirectoryArrowRightIcon from '@mui/icons-material/SubdirectoryArrowRight';
+import CategoryItem from './CategoryItem';
+import SubcategoryList from './SubcategoryList';
+import CategoryDialog from './CategoryDialog';
 import { endpoints } from '../../config/api';
 import { getRequest, postRequest, putRequest, deleteRequest } from '../../utils/http';
 
@@ -47,6 +37,7 @@ interface CategorySettingsProps {
 }
 
 const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
+  const theme = useTheme();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
@@ -74,7 +65,6 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
       const data = response.data?.data?.categories || [];
       setCategories(data);
     } catch (error) {
-      console.error('Error loading categories:', error);
       setSnackbar({ open: true, message: 'Failed to load categories', severity: 'error' });
     } finally {
       setLoading(false);
@@ -83,11 +73,7 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
 
   const toggleCategory = (categoryId: string) => {
     const newExpanded = new Set(expandedCategories);
-    if (newExpanded.has(categoryId)) {
-      newExpanded.delete(categoryId);
-    } else {
-      newExpanded.add(categoryId);
-    }
+    newExpanded.has(categoryId) ? newExpanded.delete(categoryId) : newExpanded.add(categoryId);
     setExpandedCategories(newExpanded);
   };
 
@@ -108,18 +94,13 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
   };
 
   const handleDeleteCategory = async (category: Category) => {
-    if (
-      window.confirm(
-        `Are you sure you want to delete "${category.name}" and all its subcategories?`
-      )
-    ) {
+    if (window.confirm(`Delete "${category.name}" and all its subcategories?`)) {
       try {
         await deleteRequest(endpoints.categories.delete(category._id));
-        setSnackbar({ open: true, message: 'Category deleted successfully', severity: 'success' });
+        setSnackbar({ open: true, message: 'Category deleted', severity: 'success' });
         loadCategories();
       } catch (error) {
-        console.error('Error deleting category:', error);
-        setSnackbar({ open: true, message: 'Failed to delete category', severity: 'error' });
+        setSnackbar({ open: true, message: 'Failed to delete', severity: 'error' });
       }
     }
   };
@@ -143,7 +124,7 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
   };
 
   const handleDeleteSubcategory = async (category: Category, subcategory: SubCategory) => {
-    if (window.confirm(`Are you sure you want to delete "${subcategory.name}"?`)) {
+    if (window.confirm(`Delete "${subcategory.name}"?`)) {
       try {
         const updatedSubcategories = category.subcategories.filter(
           sub => sub.id !== subcategory.id
@@ -152,93 +133,49 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
           name: category.name,
           subcategories: updatedSubcategories,
         });
-        setSnackbar({
-          open: true,
-          message: 'Subcategory deleted successfully',
-          severity: 'success',
-        });
+        setSnackbar({ open: true, message: 'Subcategory deleted', severity: 'success' });
         loadCategories();
       } catch (error) {
-        console.error('Error deleting subcategory:', error);
-        setSnackbar({ open: true, message: 'Failed to delete subcategory', severity: 'error' });
+        setSnackbar({ open: true, message: 'Failed to delete', severity: 'error' });
       }
     }
   };
 
   const handleSaveDialog = async () => {
-    if (dialogType === 'category') {
-      if (!categoryName.trim()) {
-        setSnackbar({ open: true, message: 'Category name is required', severity: 'error' });
-        return;
-      }
+    const name = dialogType === 'category' ? categoryName : subcategoryName;
+    if (!name.trim()) {
+      setSnackbar({ open: true, message: 'Name is required', severity: 'error' });
+      return;
+    }
 
-      try {
+    try {
+      if (dialogType === 'category') {
         if (dialogMode === 'add') {
-          await postRequest(endpoints.categories.create, {
-            trackerId,
-            name: categoryName,
-            subcategories: [],
-          });
-          setSnackbar({ open: true, message: 'Category added successfully', severity: 'success' });
+          await postRequest(endpoints.categories.create, { trackerId, name, subcategories: [] });
         } else if (selectedCategory) {
           await putRequest(endpoints.categories.update(selectedCategory._id), {
-            name: categoryName,
+            name,
             subcategories: selectedCategory.subcategories,
           });
-          setSnackbar({
-            open: true,
-            message: 'Category updated successfully',
-            severity: 'success',
-          });
         }
-        loadCategories();
-      } catch (error) {
-        console.error('Error saving category:', error);
-        setSnackbar({ open: true, message: 'Failed to save category', severity: 'error' });
-      }
-    } else {
-      if (!subcategoryName.trim()) {
-        setSnackbar({ open: true, message: 'Subcategory name is required', severity: 'error' });
-        return;
-      }
-
-      if (!selectedCategory) return;
-
-      try {
+      } else if (selectedCategory) {
+        let updatedSubcategories = [...selectedCategory.subcategories];
         if (dialogMode === 'add') {
-          const newSubcategory: SubCategory = {
-            id: `${Date.now()}`,
-            name: subcategoryName,
-          };
-          const updatedSubcategories = [...selectedCategory.subcategories, newSubcategory];
-          await putRequest(endpoints.categories.update(selectedCategory._id), {
-            name: selectedCategory.name,
-            subcategories: updatedSubcategories,
-          });
-          setSnackbar({
-            open: true,
-            message: 'Subcategory added successfully',
-            severity: 'success',
-          });
+          updatedSubcategories.push({ id: `${Date.now()}`, name });
         } else if (selectedSubcategory) {
-          const updatedSubcategories = selectedCategory.subcategories.map(sub =>
-            sub.id === selectedSubcategory.id ? { ...sub, name: subcategoryName } : sub
+          updatedSubcategories = updatedSubcategories.map(sub =>
+            sub.id === selectedSubcategory.id ? { ...sub, name } : sub
           );
-          await putRequest(endpoints.categories.update(selectedCategory._id), {
-            name: selectedCategory.name,
-            subcategories: updatedSubcategories,
-          });
-          setSnackbar({
-            open: true,
-            message: 'Subcategory updated successfully',
-            severity: 'success',
-          });
         }
-        loadCategories();
-      } catch (error) {
-        console.error('Error saving subcategory:', error);
-        setSnackbar({ open: true, message: 'Failed to save subcategory', severity: 'error' });
+        await putRequest(endpoints.categories.update(selectedCategory._id), {
+          name: selectedCategory.name,
+          subcategories: updatedSubcategories,
+        });
       }
+      setSnackbar({ open: true, message: 'Saved successfully', severity: 'success' });
+      loadCategories();
+    } catch (error) {
+      setSnackbar({ open: true, message: 'Failed to save', severity: 'error' });
     }
 
     setOpenDialog(false);
@@ -248,31 +185,57 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
 
   return (
     <Box>
-      <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#10b981' }}>
+      <Paper
+        elevation={0}
+        sx={{
+          p: { xs: 2, sm: 3 },
+          mb: 2,
+          borderRadius: 3,
+          boxShadow:
+            theme.palette.mode === 'dark'
+              ? '0 4px 20px rgba(0,0,0,0.3)'
+              : '0 4px 20px rgba(0,0,0,0.08)',
+        }}
+      >
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={2}
+          justifyContent="space-between"
+          alignItems={{ xs: 'stretch', sm: 'center' }}
+          mb={1}
+        >
+          <Typography variant="h5" fontWeight={700} color="success.main">
             Manage Categories
           </Typography>
           <Button
             variant="contained"
             startIcon={<AddIcon />}
             onClick={handleAddCategory}
-            sx={{
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-            }}
+            color="success"
+            sx={{ width: { xs: '100%', sm: 'auto' } }}
           >
             Add Category
           </Button>
-        </Box>
+        </Stack>
         <Typography variant="body2" color="text.secondary">
-          Manage your expense categories and subcategories. Categories help organize your spending.
+          Manage expense categories and subcategories. Categories help organize your spending.
         </Typography>
       </Paper>
 
-      <Paper elevation={3} sx={{ p: 2 }}>
+      <Paper
+        elevation={0}
+        sx={{
+          p: { xs: 1.5, sm: 2 },
+          borderRadius: 3,
+          boxShadow:
+            theme.palette.mode === 'dark'
+              ? '0 4px 20px rgba(0,0,0,0.3)'
+              : '0 4px 20px rgba(0,0,0,0.08)',
+        }}
+      >
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-            <CircularProgress sx={{ color: '#10b981' }} />
+            <CircularProgress color="success" />
           </Box>
         ) : categories.length === 0 ? (
           <Alert severity="info">
@@ -282,102 +245,21 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
           <List>
             {categories.map((category, index) => (
               <React.Fragment key={category._id}>
-                <ListItem
-                  sx={{
-                    borderRadius: 1,
-                    mb: 1,
-                    backgroundColor: 'rgba(16, 185, 129, 0.05)',
-                    '&:hover': { backgroundColor: 'rgba(16, 185, 129, 0.1)' },
-                  }}
-                >
-                  <IconButton
-                    size="small"
-                    onClick={() => toggleCategory(category._id)}
-                    sx={{ mr: 1 }}
-                  >
-                    {expandedCategories.has(category._id) ? (
-                      <ExpandMoreIcon />
-                    ) : (
-                      <ChevronRightIcon />
-                    )}
-                  </IconButton>
-                  <FolderIcon sx={{ mr: 2, color: '#10b981' }} />
-                  <ListItemText
-                    primary={
-                      <Typography variant="h6" sx={{ fontSize: '1em', fontWeight: 600 }}>
-                        {category.name}
-                      </Typography>
-                    }
-                    secondary={`${category.subcategories.length} subcategories`}
-                  />
-                  <ListItemSecondaryAction>
-                    <IconButton
-                      size="small"
-                      onClick={() => handleAddSubcategory(category)}
-                      sx={{ mr: 0.5, color: '#10b981' }}
-                    >
-                      <AddIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      onClick={() => handleEditCategory(category)}
-                      sx={{ mr: 0.5 }}
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      color="error"
-                      onClick={() => handleDeleteCategory(category)}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                </ListItem>
-
+                <CategoryItem
+                  category={category}
+                  isExpanded={expandedCategories.has(category._id)}
+                  onToggle={() => toggleCategory(category._id)}
+                  onAdd={() => handleAddSubcategory(category)}
+                  onEdit={() => handleEditCategory(category)}
+                  onDelete={() => handleDeleteCategory(category)}
+                />
                 <Collapse in={expandedCategories.has(category._id)} timeout="auto" unmountOnExit>
-                  <List component="div" disablePadding sx={{ ml: 4 }}>
-                    {category.subcategories.map(subcategory => (
-                      <ListItem
-                        key={subcategory.id}
-                        sx={{
-                          borderRadius: 1,
-                          mb: 0.5,
-                          backgroundColor: 'rgba(16, 185, 129, 0.02)',
-                          '&:hover': { backgroundColor: 'rgba(16, 185, 129, 0.05)' },
-                        }}
-                      >
-                        <SubdirectoryArrowRightIcon
-                          sx={{ mr: 1, fontSize: 20, color: 'text.secondary' }}
-                        />
-                        <ListItemText
-                          primary={
-                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                              {subcategory.name}
-                            </Typography>
-                          }
-                        />
-                        <ListItemSecondaryAction>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleEditSubcategory(category, subcategory)}
-                            sx={{ mr: 0.5 }}
-                          >
-                            <EditIcon fontSize="small" />
-                          </IconButton>
-                          <IconButton
-                            size="small"
-                            color="error"
-                            onClick={() => handleDeleteSubcategory(category, subcategory)}
-                          >
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
-                        </ListItemSecondaryAction>
-                      </ListItem>
-                    ))}
-                  </List>
+                  <SubcategoryList
+                    subcategories={category.subcategories}
+                    onEdit={sub => handleEditSubcategory(category, sub)}
+                    onDelete={sub => handleDeleteSubcategory(category, sub)}
+                  />
                 </Collapse>
-
                 {index < categories.length - 1 && <Divider sx={{ my: 1 }} />}
               </React.Fragment>
             ))}
@@ -385,40 +267,16 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
         )}
       </Paper>
 
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          {dialogMode === 'add' ? 'Add' : 'Edit'}{' '}
-          {dialogType === 'category' ? 'Category' : 'Subcategory'}
-        </DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label={dialogType === 'category' ? 'Category Name' : 'Subcategory Name'}
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={dialogType === 'category' ? categoryName : subcategoryName}
-            onChange={e =>
-              dialogType === 'category'
-                ? setCategoryName(e.target.value)
-                : setSubcategoryName(e.target.value)
-            }
-            sx={{ mt: 2 }}
-          />
-          {dialogType === 'subcategory' && selectedCategory && (
-            <Alert severity="info" sx={{ mt: 2 }}>
-              Adding subcategory to: <strong>{selectedCategory.name}</strong>
-            </Alert>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
-          <Button onClick={handleSaveDialog} variant="contained" color="primary">
-            {dialogMode === 'add' ? 'Add' : 'Save'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <CategoryDialog
+        open={openDialog}
+        type={dialogType}
+        mode={dialogMode}
+        value={dialogType === 'category' ? categoryName : subcategoryName}
+        parentCategoryName={dialogType === 'subcategory' ? selectedCategory?.name : undefined}
+        onChange={dialogType === 'category' ? setCategoryName : setSubcategoryName}
+        onSave={handleSaveDialog}
+        onClose={() => setOpenDialog(false)}
+      />
 
       <Snackbar
         open={snackbar.open}
