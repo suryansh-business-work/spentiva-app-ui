@@ -32,11 +32,11 @@ export const endpoints = {
     resetPassword: `${getApiUrl()}/auth/reset-password`,
   },
   trackers: {
-    getAll: `${getApiUrl()}/trackers`,
-    create: `${getApiUrl()}/create/tracker`,
-    update: (id: string) => `${getApiUrl()}/update/tracker/${id}`,
-    delete: (id: string) => `${getApiUrl()}/delete/tracker/${id}`,
-    byId: (id: string) => `${getApiUrl()}/get/tracker/${id}`,
+    getAll: `${getApiUrl()}/tracker/all`,
+    create: `${getApiUrl()}/tracker/create`,
+    update: (id: string) => `${getApiUrl()}/tracker/update/${id}`,
+    delete: (id: string) => `${getApiUrl()}/tracker/delete/${id}`,
+    byId: (id: string) => `${getApiUrl()}/tracker/get/${id}`,
   },
   categories: {
     getAll: (trackerId: string) => `${getApiUrl()}/category/all?trackerId=${trackerId}`,
