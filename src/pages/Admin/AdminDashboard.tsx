@@ -21,6 +21,8 @@ import UserDetailDialog from '../../components/Admin/UserDetailDialog';
 import UserEditDialog from '../../components/Admin/UserEditDialog';
 import DeleteConfirmDialog from '../../components/Admin/DeleteConfirmDialog';
 import AdminSupport from '../../components/Admin/AdminSupport';
+import AdminSupportCreate from './AdminSupportCreate';
+import AdminSupportEdit from './AdminSupportEdit';
 import AdminPayments from '../../components/Admin/AdminPayments';
 import { endpoints } from '../../config/api';
 import { getRequest, putRequest, deleteRequest } from '../../utils/http';
@@ -311,6 +313,8 @@ const AdminDashboard: React.FC = () => {
 
             {/* Support Section */}
             <Route path="support" element={<AdminSupport />} />
+            <Route path="support/create" element={<AdminSupportCreate />} />
+            <Route path="support/edit/:ticketId" element={<AdminSupportEdit />} />
 
             {/* Payment Logs Section */}
             <Route path="payments" element={<AdminPayments />} />

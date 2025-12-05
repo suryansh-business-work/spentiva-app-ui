@@ -14,12 +14,12 @@ import {
   Stack,
   Divider,
   IconButton,
-  Link,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import AttachFileIcon from '@mui/icons-material/AttachFile';
-import { SupportTicket, TicketStatus, TicketUpdate } from '../../types/support';
+import { SupportTicket, TicketStatus, TicketUpdate, AttachmentMetadata } from '../../types/support';
 import { updateTicketStatus, addUpdateToTicket } from '../../services/supportService';
+import AttachmentPreviewCard from './AttachmentPreviewCard';
+import AttachmentPreviewDialog from './AttachmentPreviewDialog';
 
 interface AdminSupportDialogProps {
   open: boolean;
@@ -49,6 +49,8 @@ const AdminSupportDialog: React.FC<AdminSupportDialogProps> = ({
   const [loading, setLoading] = useState(false);
   const [updateMessage, setUpdateMessage] = useState('');
   const [updates, setUpdates] = useState<TicketUpdate[]>([]);
+  const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
+  const [selectedAttachment, setSelectedAttachment] = useState<AttachmentMetadata | null>(null);
 
   useEffect(() => {
     if (ticket) {
@@ -149,22 +151,26 @@ const AdminSupportDialog: React.FC<AdminSupportDialogProps> = ({
         {ticket.attachments && ticket.attachments.length > 0 && (
           <Box mb={2}>
             <Typography variant="caption" fontWeight={600} color="text.secondary" mb={1}>
-              Attachments
+              Attachments ({ticket.attachments.length})
             </Typography>
-            <Stack spacing={0.5}>
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
+                gap: 1.5,
+              }}
+            >
               {ticket.attachments.map((att, idx) => (
-                <Link
+                <AttachmentPreviewCard
                   key={idx}
-                  href={att.fileUrl}
-                  target="_blank"
-                  rel="noopener"
-                  sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
-                >
-                  <AttachFileIcon fontSize="small" />
-                  <Typography variant="body2">{att.fileName}</Typography>
-                </Link>
+                  attachment={att}
+                  onClick={() => {
+                    setSelectedAttachment(att);
+                    setPreviewDialogOpen(true);
+                  }}
+                />
               ))}
-            </Stack>
+            </Box>
           </Box>
         )}
 
@@ -221,6 +227,16 @@ const AdminSupportDialog: React.FC<AdminSupportDialogProps> = ({
           Add Response
         </Button>
       </DialogActions>
+
+      {/* Attachment Preview Dialog */}
+      <AttachmentPreviewDialog
+        open={previewDialogOpen}
+        onClose={() => {
+          setPreviewDialogOpen(false);
+          setSelectedAttachment(null);
+        }}
+        attachment={selectedAttachment}
+      />
     </Dialog>
   );
 };

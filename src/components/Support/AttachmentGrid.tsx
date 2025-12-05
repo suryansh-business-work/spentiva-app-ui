@@ -14,6 +14,7 @@ export interface Attachment {
   type: 'image' | 'video' | 'screenshot';
   preview?: string;
   uploadStatus: FileUploadStatus;
+  uploadProgress?: number;
   uploadedData?: UploadedFileData;
   uploadError?: string;
 }
@@ -61,22 +62,66 @@ const AttachmentGrid: React.FC<AttachmentGridProps> = ({
         );
       case 'uploading':
         return (
-          <Box
-            sx={{
-              position: 'absolute',
-              bottom: 4,
-              right: 4,
-              bgcolor: 'rgba(255,255,255,0.9)',
-              borderRadius: '50%',
-              width: 28,
-              height: 28,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <CircularProgress size={20} thickness={5} />
-          </Box>
+          <>
+            <Box
+              sx={{
+                position: 'absolute',
+                bottom: 4,
+                right: 4,
+                bgcolor: 'rgba(255,255,255,0.9)',
+                borderRadius: '50%',
+                width: 28,
+                height: 28,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <CircularProgress size={20} thickness={5} />
+            </Box>
+            <Box
+              sx={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                bgcolor: 'rgba(0,0,0,0.7)',
+                px: 0.5,
+                py: 0.3,
+              }}
+            >
+              <Box
+                sx={{
+                  height: 3,
+                  bgcolor: 'rgba(255,255,255,0.3)',
+                  borderRadius: 1,
+                  overflow: 'hidden',
+                  mb: 0.3,
+                }}
+              >
+                <Box
+                  sx={{
+                    height: '100%',
+                    bgcolor: 'primary.main',
+                    width: `${attachment.uploadProgress || 0}%`,
+                    transition: 'width 0.3s ease',
+                  }}
+                />
+              </Box>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'white',
+                  fontSize: '0.65rem',
+                  lineHeight: 1,
+                  display: 'block',
+                  textAlign: 'center',
+                }}
+              >
+                {attachment.uploadProgress || 0}%
+              </Typography>
+            </Box>
+          </>
         );
       case 'uploaded':
         return (

@@ -17,11 +17,17 @@ import {
   FormControl,
   InputLabel,
   CircularProgress,
+  Button,
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from '@mui/icons-material/Add';
 import { SupportTicket, TicketStatus, TicketType } from '../../types/support';
-import { getUserTickets } from '../../services/supportService';
+import { getUserTickets, deleteTicket } from '../../services/supportService';
 import AdminSupportDialog from './AdminSupportDialog';
+import { useNavigate } from 'react-router-dom';
+import DeleteConfirmDialog from './DeleteConfirmDialog';
 
 const getStatusColor = (status: TicketStatus): 'default' | 'warning' | 'success' | 'error' => {
   switch (status) {
@@ -50,12 +56,15 @@ const getTypeLabel = (type: string): string => {
 };
 
 const AdminSupport: React.FC = () => {
+  const navigate = useNavigate();
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState<TicketStatus | 'All'>('All');
   const [typeFilter, setTypeFilter] = useState<TicketType | 'All'>('All');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [ticketToDelete, setTicketToDelete] = useState<SupportTicket | null>(null);
 
   const fetchTickets = async () => {
     try {
@@ -91,11 +100,47 @@ const AdminSupport: React.FC = () => {
     fetchTickets();
   };
 
+  const handleDeleteClick = (ticket: SupportTicket) => {
+    setTicketToDelete(ticket);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!ticketToDelete) return;
+
+    try {
+      await deleteTicket(ticketToDelete.ticketId);
+      setDeleteDialogOpen(false);
+      setTicketToDelete(null);
+      fetchTickets();
+    } catch (error) {
+      console.error('Failed to delete ticket:', error);
+      alert('Failed to delete ticket');
+    }
+  };
+
+  const handleEditClick = (ticket: SupportTicket) => {
+    navigate(`/admin/support/edit/${ticket.ticketId}`);
+  };
+
+  const handleCreateClick = () => {
+    navigate('/admin/support/create');
+  };
+
   return (
     <Box>
-      <Typography variant="h5" fontWeight={700} mb={3}>
-        Support Tickets
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h5" fontWeight={700}>
+          Support Tickets
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={handleCreateClick}
+        >
+          Create Ticket
+        </Button>
+      </Box>
 
       {/* Filters */}
       <Stack direction="row" spacing={2} mb={3}>
@@ -147,13 +192,13 @@ const AdminSupport: React.FC = () => {
           </TableHead>
           <TableBody>
             {loading ? (
-              <TableRow>
+              <TableRow key="loading">
                 <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
                   <CircularProgress />
                 </TableCell>
               </TableRow>
             ) : tickets.length === 0 ? (
-              <TableRow>
+              <TableRow key="empty">
                 <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
                   <Typography color="text.secondary">No tickets found</Typography>
                 </TableCell>
@@ -193,9 +238,22 @@ const AdminSupport: React.FC = () => {
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <IconButton size="small" onClick={() => handleViewTicket(ticket)}>
-                      <VisibilityIcon fontSize="small" />
-                    </IconButton>
+                    <Box sx={{ display: 'flex', gap: 0.5 }}>
+                      <IconButton size="small" onClick={() => handleViewTicket(ticket)} title="View">
+                        <VisibilityIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton size="small" onClick={() => handleEditClick(ticket)} title="Edit">
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        onClick={() => handleDeleteClick(ticket)}
+                        color="error"
+                        title="Delete"
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
                   </TableCell>
                 </TableRow>
               ))
@@ -210,6 +268,18 @@ const AdminSupport: React.FC = () => {
         ticket={selectedTicket}
         onClose={handleCloseDialog}
         onUpdate={handleUpdate}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onClose={() => {
+          setDeleteDialogOpen(false);
+          setTicketToDelete(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        userName={ticketToDelete?.ticketId || ''}
+        userEmail={`Subject: ${ticketToDelete?.subject || ''}`}
       />
     </Box>
   );

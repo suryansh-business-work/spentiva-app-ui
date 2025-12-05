@@ -4,7 +4,7 @@ import { endpoints } from '../../../config/api';
 import axios from 'axios';
 
 interface UseFileUploadResult {
-  uploadFile: (file: File) => Promise<UploadedFileData | null>;
+  uploadFile: (file: File, onProgress?: (progress: number) => void) => Promise<UploadedFileData | null>;
   uploading: boolean;
   error: string | null;
 }
@@ -13,7 +13,7 @@ export const useFileUpload = (): UseFileUploadResult => {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const uploadFile = async (file: File): Promise<UploadedFileData | null> => {
+  const uploadFile = async (file: File, onProgress?: (progress: number) => void): Promise<UploadedFileData | null> => {
     try {
       setUploading(true);
       setError(null);
@@ -27,6 +27,22 @@ export const useFileUpload = (): UseFileUploadResult => {
         headers: {
           'Content-Type': 'multipart/form-data',
           ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        onUploadProgress: (progressEvent) => {
+          console.log('Progress Event:', {
+            loaded: progressEvent.loaded,
+            total: progressEvent.total,
+            lengthComputable: progressEvent.lengthComputable
+          });
+
+          if (progressEvent.total && progressEvent.total > 0) {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            console.log('Percentage:', percentCompleted);
+            onProgress?.(percentCompleted);
+          } else {
+            // If total is unknown, estimate based on loaded bytes
+            console.log('Total unknown, loaded:', progressEvent.loaded);
+          }
         },
       });
 

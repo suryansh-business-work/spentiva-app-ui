@@ -1,12 +1,13 @@
 import React from 'react';
 import { Formik, Form } from 'formik';
-import { Button, TextField, MenuItem, Box, Stack } from '@mui/material';
+import { Button, TextField, MenuItem, Box, Stack, Typography } from '@mui/material';
 import { supportFormSchema, initialFormValues, SupportFormValues } from './validationSchema';
 import AttachmentGrid, { Attachment } from './AttachmentGrid';
 import RecordingControls from './RecordingControls';
 import UploadInstructions from './UploadInstructions';
 import UploadedPathsDisplay from './UploadedPathsDisplay';
 import { useAuth } from '../../contexts/AuthContext';
+import { SupportTicket } from '../../types/support';
 
 interface SupportFormProps {
   recording: boolean;
@@ -18,6 +19,8 @@ interface SupportFormProps {
   onDeleteAttachment: (id: string) => void;
   onPreviewAttachment: (attachment: Attachment) => void;
   onUploadAttachment: (id: string) => void;
+  mode?: 'create' | 'view' | 'update';
+  ticket?: SupportTicket | null;
 }
 
 const supportTypes = {
@@ -37,8 +40,29 @@ const SupportForm: React.FC<SupportFormProps> = ({
   onDeleteAttachment,
   onPreviewAttachment,
   onUploadAttachment,
+  mode = 'create',
+  ticket = null,
 }) => {
   const { user, isAuthenticated, token } = useAuth();
+
+  // Pre-populate form if viewing/editing ticket
+  const getInitialValues = () => {
+    if ((mode === 'view' || mode === 'update') && ticket) {
+      const typeReverseMap: Record<string, string> = {
+        PaymentRelated: 'payment',
+        BugInApp: 'bug',
+        DataLoss: 'dataloss',
+        Other: 'other',
+      };
+
+      return {
+        supportType: typeReverseMap[ticket.type] || 'other',
+        subject: ticket.subject,
+        message: ticket.description,
+      };
+    }
+    return initialFormValues;
+  };
 
   const allFilesUploaded = () => {
     if (attachments.length === 0) return true;
@@ -50,6 +74,28 @@ const SupportForm: React.FC<SupportFormProps> = ({
     screenshots: attachments.filter(a => a.type === 'screenshot').length,
     videos: attachments.filter(a => a.type === 'video').length,
   });
+
+  const handleDelete = async () => {
+    if (!ticket) return;
+
+    const confirmed = window.confirm(
+      `Are you sure you want to delete ticket ${ticket.ticketId}? This action cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      console.log(`support:delete:${ticket.ticketId}`);
+      const { deleteTicket } = await import('../../services/supportService');
+      await deleteTicket(ticket.ticketId);
+      alert('✅ Ticket deleted successfully!');
+      onClose();
+    } catch (error: any) {
+      console.error('Failed to delete ticket:', error);
+      const errorMessage = error?.response?.data?.message || 'Failed to delete ticket';
+      alert(`❌ ${errorMessage}`);
+    }
+  };
 
   const handleSubmit = async (values: SupportFormValues, { resetForm, setSubmitting }: any) => {
     try {
@@ -131,16 +177,28 @@ const SupportForm: React.FC<SupportFormProps> = ({
 
   return (
     <Formik
-      initialValues={initialFormValues}
+      initialValues={getInitialValues()}
       validationSchema={supportFormSchema}
       onSubmit={handleSubmit}
       validateOnChange={true}
       validateOnBlur={true}
+      enableReinitialize={true}
     >
       {({ values, errors, touched, handleChange, handleBlur, isValid, dirty, isSubmitting }) => (
         <Form style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', flex: 1 }}>
           <Box sx={{ pt: 2.5, px: 2.5, pb: 2.5, overflowY: 'auto', flex: 1 }}>
             <Stack spacing={2.5}>
+              {(mode === 'view' || mode === 'update') && ticket && (
+                <Box sx={{ p: 1.5, bgcolor: 'action.hover', borderRadius: 1 }}>
+                  <Typography variant="caption" color="text.secondary">
+                    Ticket ID
+                  </Typography>
+                  <Typography variant="body2" fontWeight={600}>
+                    {ticket.ticketId}
+                  </Typography>
+                </Box>
+              )}
+
               <TextField
                 select
                 name="supportType"
@@ -152,6 +210,7 @@ const SupportForm: React.FC<SupportFormProps> = ({
                 helperText={touched.supportType && errors.supportType}
                 fullWidth
                 size="small"
+                disabled={mode === 'view'}
               >
                 {Object.entries(supportTypes).map(([key, label]) => (
                   <MenuItem key={key} value={key}>
@@ -171,6 +230,7 @@ const SupportForm: React.FC<SupportFormProps> = ({
                 fullWidth
                 size="small"
                 placeholder="Brief description of the issue"
+                disabled={mode === 'view'}
               />
 
               <TextField
@@ -186,6 +246,7 @@ const SupportForm: React.FC<SupportFormProps> = ({
                 fullWidth
                 size="small"
                 placeholder="Detailed explanation with steps to reproduce..."
+                disabled={mode === 'view'}
               />
 
               <UploadInstructions
@@ -226,16 +287,26 @@ const SupportForm: React.FC<SupportFormProps> = ({
               recordingTime={0}
             />
             <Box sx={{ flex: 1 }} />
+
+            {(mode === 'view' || mode === 'update') && (
+              <Button onClick={handleDelete} variant="outlined" color="error">
+                Delete Ticket
+              </Button>
+            )}
+
             <Button onClick={onClose} variant="outlined">
-              Cancel
+              {mode === 'view' ? 'Close' : 'Cancel'}
             </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={!isValid || !dirty || isSubmitting || !allFilesUploaded()}
-            >
-              {isSubmitting ? 'Submitting...' : 'Submit Ticket'}
-            </Button>
+
+            {mode !== 'view' && (
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={!isValid || !dirty || isSubmitting || !allFilesUploaded()}
+              >
+                {isSubmitting ? 'Submitting...' : 'Submit Ticket'}
+              </Button>
+            )}
           </Box>
         </Form>
       )}

@@ -45,7 +45,7 @@ export const getUserTickets = async (
 // Get ticket by ID
 export const getTicketById = async (ticketId: string): Promise<SupportTicket> => {
   const response = await getRequest(endpoints.support.getTicketById(ticketId));
-  return response.data.data.ticket;
+  return response.data.data;
 };
 
 // Update ticket status
