@@ -5,6 +5,7 @@ import { Message } from '../../../types';
  * Usage data structure stored in localStorage
  */
 interface UsageData {
+  userId: string;
   totalMessages: number;
   trackerUsage: Record<string, number>;
   currentMonth: string;
@@ -14,9 +15,9 @@ interface UsageData {
  * Subscription plans and their limits
  */
 const SUBSCRIPTION_LIMITS: Record<string, number> = {
-  Free: 50,
-  Pro: 500,
-  Business: 2000,
+  free: 50,
+  pro: 500,
+  businesspro: 2000,
 };
 
 /**
@@ -38,19 +39,33 @@ export const useChatMessages = (_trackerId: string | undefined) => {
    */
   const trackMessageUsage = useCallback((trackerId?: string): UsageData => {
     const storedUsage = localStorage.getItem('usage_data');
+    const storedUser = localStorage.getItem('user');
     const currentMonth = new Date().toISOString().slice(0, 7);
+
+    // Get current user ID
+    let currentUserId = '';
+    if (storedUser) {
+      try {
+        const user = JSON.parse(storedUser);
+        currentUserId = user._id || user.id || '';
+      } catch (error) {
+        console.error('Error parsing user from localStorage:', error);
+      }
+    }
 
     let usageData: UsageData = storedUsage
       ? JSON.parse(storedUsage)
       : {
-          totalMessages: 0,
-          trackerUsage: {},
-          currentMonth,
-        };
+        userId: currentUserId,
+        totalMessages: 0,
+        trackerUsage: {},
+        currentMonth,
+      };
 
-    // Reset if new month
-    if (usageData.currentMonth !== currentMonth) {
+    // Reset if new month OR different user
+    if (usageData.currentMonth !== currentMonth || usageData.userId !== currentUserId) {
       usageData = {
+        userId: currentUserId,
         totalMessages: 0,
         trackerUsage: {},
         currentMonth,
@@ -76,17 +91,32 @@ export const useChatMessages = (_trackerId: string | undefined) => {
    */
   const checkUsageLimit = useCallback((): boolean => {
     const storedUsage = localStorage.getItem('usage_data');
-    const storedPlan = localStorage.getItem('subscription_plan') || 'Free';
+    const storedUser = localStorage.getItem('user');
 
-    const currentLimit = SUBSCRIPTION_LIMITS[storedPlan] || SUBSCRIPTION_LIMITS.Free;
+    let accountType = 'free'; // Default to free plan
+    let currentUserId = '';
+
+    if (storedUser) {
+      try {
+        const user = JSON.parse(storedUser);
+        accountType = (user.accountType || 'free').toLowerCase();
+        currentUserId = user._id || user.id || '';
+      } catch (error) {
+        console.error('Error parsing user from localStorage:', error);
+      }
+    }
+
+    const currentLimit = SUBSCRIPTION_LIMITS[accountType] || SUBSCRIPTION_LIMITS.free;
 
     if (storedUsage) {
       const usageData: UsageData = JSON.parse(storedUsage);
       const currentMonth = new Date().toISOString().slice(0, 7);
 
-      // Reset if new month
-      if (usageData.currentMonth !== currentMonth) {
-        return true; // Allow message in new month
+      // Reset if new month OR different user
+      if (usageData.currentMonth !== currentMonth || usageData.userId !== currentUserId) {
+        // Clear old usage data for new month or new user
+        localStorage.removeItem('usage_data');
+        return true; // Allow message
       }
 
       return usageData.totalMessages < currentLimit;

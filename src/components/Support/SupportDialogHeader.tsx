@@ -5,7 +5,6 @@ import MinimizeIcon from '@mui/icons-material/Minimize';
 import MaximizeIcon from '@mui/icons-material/Maximize';
 import StopCircleIcon from '@mui/icons-material/StopCircle';
 import Lottie from 'lottie-react';
-import recordingAnimation from '../../../public/animations/recording.json';
 
 interface SupportDialogHeaderProps {
   recording: boolean;
@@ -30,6 +29,16 @@ const SupportDialogHeader: React.FC<SupportDialogHeaderProps> = ({
   onStopRecording,
   onClose,
 }) => {
+  const [recordingAnimation, setRecordingAnimation] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    // Load animation data from public directory
+    fetch('/animations/recording.json')
+      .then((response) => response.json())
+      .then((data) => setRecordingAnimation(data))
+      .catch((error) => console.error('Error loading recording animation:', error));
+  }, []);
+
   return (
     <Box
       id={minimized ? undefined : 'draggable-dialog-title'}
@@ -55,11 +64,13 @@ const SupportDialogHeader: React.FC<SupportDialogHeaderProps> = ({
               justifyContent: 'center',
             }}
           >
-            <Lottie
-              animationData={recordingAnimation}
-              loop={true}
-              style={{ width: 32, height: 32 }}
-            />
+            {recordingAnimation && (
+              <Lottie
+                animationData={recordingAnimation}
+                loop={true}
+                style={{ width: 32, height: 32 }}
+              />
+            )}
           </Box>
           <Typography variant="subtitle2" fontWeight={600}>
             Recording... {formatRecordingTime(recordingTime)}

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Box, Typography, useTheme } from '@mui/material';
 import Lottie from 'lottie-react';
 import TypingAnimation from '../../common/TypingAnimation';
-import hiAnimation from '../../../../public/animations/hi.json';
 
 /**
  * GreetingHeader Component
@@ -13,6 +12,7 @@ const GreetingHeader: React.FC = () => {
   const [greeting, setGreeting] = useState('');
   const [userName, setUserName] = useState('User');
   const [showTyping, setShowTyping] = useState(false);
+  const [hiAnimation, setHiAnimation] = useState<any>(null);
 
   const messages = [
     'How are you? Hope you are great!',
@@ -24,6 +24,12 @@ const GreetingHeader: React.FC = () => {
   const [currentMessage] = useState(messages[Math.floor(Math.random() * messages.length)]);
 
   useEffect(() => {
+    // Load animation data from public directory
+    fetch('/animations/hi.json')
+      .then((response) => response.json())
+      .then((data) => setHiAnimation(data))
+      .catch((error) => console.error('Error loading animation:', error));
+
     // Get user from localStorage
     try {
       const userStr = localStorage.getItem('user');
@@ -87,12 +93,14 @@ const GreetingHeader: React.FC = () => {
             display: 'inline-block',
           }}
         >
-          <Lottie
-            animationData={hiAnimation}
-            loop={true}
-            autoplay={true}
-            style={{ width: '100%', height: '100%' }}
-          />
+          {hiAnimation && (
+            <Lottie
+              animationData={hiAnimation}
+              loop={true}
+              autoplay={true}
+              style={{ width: '100%', height: '100%' }}
+            />
+          )}
         </Box>
       </Box>
       <Box sx={{ minHeight: 24 }}>

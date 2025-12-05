@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Typography, useTheme } from '@mui/material';
 import Lottie from 'lottie-react';
-import botAnimation from '../../../../public/animations/bot.json';
 
 interface WelcomeAnimationProps {
   userName: string;
@@ -13,6 +12,15 @@ interface WelcomeAnimationProps {
  */
 const WelcomeAnimation: React.FC<WelcomeAnimationProps> = ({ userName }) => {
   const theme = useTheme();
+  const [botAnimation, setBotAnimation] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    // Load animation data from public directory
+    fetch('/animations/bot.json')
+      .then((response) => response.json())
+      .then((data) => setBotAnimation(data))
+      .catch((error) => console.error('Error loading bot animation:', error));
+  }, []);
 
   return (
     <Box
@@ -31,12 +39,14 @@ const WelcomeAnimation: React.FC<WelcomeAnimationProps> = ({ userName }) => {
           height: { xs: 80, sm: 100 },
         }}
       >
-        <Lottie
-          animationData={botAnimation}
-          loop={true}
-          autoplay={true}
-          style={{ width: '100%', height: '100%' }}
-        />
+        {botAnimation && (
+          <Lottie
+            animationData={botAnimation}
+            loop={true}
+            autoplay={true}
+            style={{ width: '100%', height: '100%' }}
+          />
+        )}
       </Box>
 
       {/* Welcome Text with Animation */}
