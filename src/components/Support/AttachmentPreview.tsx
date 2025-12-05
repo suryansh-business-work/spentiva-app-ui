@@ -10,25 +10,16 @@ import {
   Box,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import EditIcon from '@mui/icons-material/Edit';
 import { Attachment } from './AttachmentGrid';
 
 interface AttachmentPreviewProps {
   open: boolean;
   attachment: Attachment | null;
   onClose: () => void;
-  onEdit?: (attachment: Attachment) => void;
 }
 
-const AttachmentPreview: React.FC<AttachmentPreviewProps> = ({
-  open,
-  attachment,
-  onClose,
-  onEdit,
-}) => {
+const AttachmentPreview: React.FC<AttachmentPreviewProps> = ({ open, attachment, onClose }) => {
   if (!attachment) return null;
-
-  const canEdit = attachment.type !== 'video' && onEdit;
 
   return (
     <Dialog
@@ -61,28 +52,11 @@ const AttachmentPreview: React.FC<AttachmentPreviewProps> = ({
           )}
         </Box>
       </DialogContent>
-      {canEdit && (
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={onClose}>Close</Button>
-          <Button
-            variant="contained"
-            startIcon={<EditIcon />}
-            onClick={() => {
-              onEdit(attachment);
-              onClose();
-            }}
-          >
-            Edit & Annotate
-          </Button>
-        </DialogActions>
-      )}
-      {!canEdit && (
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={onClose} variant="contained">
-            Close
-          </Button>
-        </DialogActions>
-      )}
+      <DialogActions sx={{ px: 3, pb: 2 }}>
+        <Button onClick={onClose} variant="contained">
+          Close
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };

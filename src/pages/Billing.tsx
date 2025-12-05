@@ -7,7 +7,7 @@ import ActivePlanDisplay from '../components/Billing/ActivePlanDisplay';
 import PlanBox from '../components/Billing/PlanBox';
 import DowngradeWarningDialog from '../components/Billing/DowngradeWarningDialog';
 import PaymentDialog from '../components/Billing/PaymentDialog';
-import SupportDialog from '../components/Billing/SupportDialog';
+import SupportDialog from '../components/Support/SupportDialog';
 import { endpoints } from '../config/api';
 import { getRequest } from '../utils/http';
 import { type PlanType } from '../config/planConfig';
