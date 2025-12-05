@@ -363,10 +363,6 @@ const SupportDialog: React.FC<SupportDialogProps> = ({
                               borderColor: att.type === 'video' ? 'error.main' : 'divider',
                               transition: 'all 0.2s',
                               boxShadow: 2,
-                              '&:hover': {
-                                transform: 'scale(1.05)',
-                                boxShadow: 8,
-                              },
                             }}
                           >
                             {att.type === 'video' ? (
@@ -425,7 +421,6 @@ const SupportDialog: React.FC<SupportDialogProps> = ({
                                 color: 'white',
                                 width: 24,
                                 height: 24,
-                                '&:hover': { bgcolor: 'rgba(0,0,0,0.8)' },
                               }}
                               size="small"
                             >

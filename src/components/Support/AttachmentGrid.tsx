@@ -46,10 +46,6 @@ const AttachmentGrid: React.FC<AttachmentGridProps> = ({ attachments, onPreview,
               borderColor: att.type === 'video' ? 'error.main' : 'divider',
               transition: 'all 0.2s',
               boxShadow: 2,
-              '&:hover': {
-                transform: 'scale(1.05)',
-                boxShadow: 8,
-              },
             }}
           >
             {att.type === 'video' ? (

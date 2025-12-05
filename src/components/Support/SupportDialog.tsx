@@ -1,9 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Button,
   TextField,
   MenuItem,
@@ -13,15 +9,19 @@ import {
   Typography,
   Paper,
   Fade,
+  Tooltip,
 } from '@mui/material';
 import Draggable from 'react-draggable';
 import CloseIcon from '@mui/icons-material/Close';
 import MinimizeIcon from '@mui/icons-material/Minimize';
 import MaximizeIcon from '@mui/icons-material/Maximize';
+import StopCircleIcon from '@mui/icons-material/StopCircle';
+import Lottie from 'lottie-react';
 import AttachmentGrid, { Attachment } from './AttachmentGrid';
 import RecordingControls from './RecordingControls';
 import AttachmentPreview from './AttachmentPreview';
 import ImageEditor from './ImageEditor';
+import recordingAnimation from '../../../public/animations/recording.json';
 
 interface SupportDialogProps {
   open: boolean;
@@ -30,20 +30,6 @@ interface SupportDialogProps {
   userEmail: string;
   currentPlan: 'free' | 'pro' | 'businesspro';
 }
-
-const PaperComponent = (props: any) => {
-  const nodeRef = React.useRef(null);
-  return (
-    <Draggable
-      nodeRef={nodeRef}
-      handle="#draggable-dialog-title"
-      cancel={'[class*="MuiDialogContent-root"]'}
-      bounds="parent"
-    >
-      <Paper {...props} ref={nodeRef} />
-    </Draggable>
-  );
-};
 
 const SupportDialog: React.FC<SupportDialogProps> = ({
   open,
@@ -60,6 +46,12 @@ const SupportDialog: React.FC<SupportDialogProps> = ({
   const [previewAttachment, setPreviewAttachment] = useState<Attachment | null>(null);
   const [editingAttachment, setEditingAttachment] = useState<Attachment | null>(null);
   const [recording, setRecording] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+
+  // Recording management refs
+  const mediaRecorderRef = React.useRef<MediaRecorder | null>(null);
+  const chunksRef = React.useRef<Blob[]>([]);
+  const timerRef = React.useRef<number | null>(null);
 
   const supportTypes = {
     payment: 'Payment Related',
@@ -124,144 +116,285 @@ const SupportDialog: React.FC<SupportDialogProps> = ({
     setSupportType('');
     setAttachments([]);
     setMinimized(false);
+    setRecording(false);
+    setRecordingTime(0);
     onClose();
   };
 
+  const startRecording = async () => {
+    const counts = getCounts();
+    if (counts.videos >= 5) return;
+
+    setMinimized(true);
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    try {
+      const stream = await navigator.mediaDevices.getDisplayMedia({
+        video: { displaySurface: 'window' } as any,
+        audio: true,
+        preferCurrentTab: true,
+      } as any);
+
+      mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: 'video/webm' });
+      chunksRef.current = [];
+      setRecordingTime(0);
+
+      timerRef.current = window.setInterval(() => {
+        setRecordingTime(prev => prev + 1);
+      }, 1000);
+
+      mediaRecorderRef.current.ondataavailable = e => {
+        if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
+
+      mediaRecorderRef.current.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: 'video/webm' });
+        const file = new File([blob], `recording-${Date.now()}.webm`, { type: 'video/webm' });
+        handleAddAttachment(file, 'video', URL.createObjectURL(blob));
+        stream.getTracks().forEach(track => track.stop());
+        if (timerRef.current) clearInterval(timerRef.current);
+        setRecording(false);
+        setRecordingTime(0);
+        setMinimized(false);
+      };
+
+      mediaRecorderRef.current.start();
+      setRecording(true);
+    } catch (err) {
+      console.error('Recording failed:', err);
+      setRecording(false);
+      setMinimized(false);
+    }
+  };
+
+  const handleStopRecording = () => {
+    mediaRecorderRef.current?.stop();
+  };
+
+  const formatRecordingTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  if (!open) return null;
+
   return (
     <>
-      <Dialog
-        open={open && !recording}
-        onClose={() => {}}
-        PaperComponent={PaperComponent}
-        hideBackdrop
-        disableEscapeKeyDown
-        maxWidth="md"
-        fullWidth
-        sx={{
-          '& .MuiDialog-paper': {
+      <Draggable handle="#draggable-dialog-title" disabled={minimized} bounds="parent">
+        <Paper
+          elevation={0}
+          sx={{
             position: 'fixed',
-            boxShadow: minimized ? 4 : 24,
+            zIndex: 1300,
+            boxShadow: minimized
+              ? '0px 4px 12px rgba(0, 0, 0, 0.15)'
+              : '0px 24px 48px rgba(0, 0, 0, 0.2)',
             ...(minimized
               ? {
                   bottom: 16,
                   right: 16,
-                  top: 'auto',
-                  left: 'auto',
+                  width: recording ? 400 : 320,
                   height: 56,
-                  width: 320,
                   overflow: 'hidden',
-                  m: 0,
                 }
               : {
                   top: '50%',
                   left: '50%',
                   transform: 'translate(-50%, -50%)',
+                  width: '90%',
+                  maxWidth: 900,
+                  maxHeight: '90vh',
+                  display: 'flex',
+                  flexDirection: 'column',
                 }),
-          },
-        }}
-      >
-        <DialogTitle
-          style={{ cursor: 'move' }}
-          id="draggable-dialog-title"
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            py: 1.5,
-            px: 2,
-            bgcolor: 'primary.main',
-            color: 'primary.contrastText',
           }}
         >
-          <Typography variant="subtitle1" fontWeight={700}>
-            Contact Support
-          </Typography>
-          <Stack direction="row" spacing={0.5}>
-            <IconButton
-              size="small"
-              onClick={() => setMinimized(!minimized)}
-              sx={{ color: 'inherit' }}
-            >
-              {minimized ? <MaximizeIcon fontSize="small" /> : <MinimizeIcon fontSize="small" />}
-            </IconButton>
-            <IconButton size="small" onClick={onClose} sx={{ color: 'inherit' }}>
-              <CloseIcon fontSize="small" />
-            </IconButton>
-          </Stack>
-        </DialogTitle>
-
-        {!minimized && (
-          <Fade in={!minimized}>
-            <Box>
-              <DialogContent sx={{ pt: 2.5 }}>
-                <Stack spacing={2.5}>
-                  <TextField
-                    select
-                    label="Issue Type *"
-                    value={supportType}
-                    onChange={e => setSupportType(e.target.value)}
-                    fullWidth
-                    size="small"
-                  >
-                    {Object.entries(supportTypes).map(([key, label]) => (
-                      <MenuItem key={key} value={key}>
-                        {label}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-
-                  <TextField
-                    label="Subject *"
-                    value={subject}
-                    onChange={e => setSubject(e.target.value)}
-                    fullWidth
-                    size="small"
-                    placeholder="Brief description of the issue"
-                  />
-
-                  <TextField
-                    label="Message *"
-                    value={message}
-                    onChange={e => setMessage(e.target.value)}
-                    multiline
-                    rows={4}
-                    fullWidth
-                    size="small"
-                    placeholder="Detailed explanation with steps to reproduce..."
-                  />
-
-                  <AttachmentGrid
-                    attachments={attachments}
-                    onPreview={setPreviewAttachment}
-                    onDelete={handleDeleteAttachment}
-                  />
-                </Stack>
-              </DialogContent>
-
-              <DialogActions sx={{ px: 2.5, pb: 2, gap: 1, flexWrap: 'wrap' }}>
-                <RecordingControls
-                  onAddAttachment={handleAddAttachment}
-                  counts={getCounts()}
-                  maxPerType={5}
-                  onMinimize={() => setMinimized(true)}
-                  onRecordingChange={setRecording}
-                />
-                <Box sx={{ flex: 1 }} />
-                <Button onClick={handleReset} variant="outlined">
-                  Cancel
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={handleSubmit}
-                  disabled={!supportType || !subject || !message}
+          {/* Title Bar */}
+          <Box
+            id={minimized ? undefined : 'draggable-dialog-title'}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              py: 1.5,
+              px: 2,
+              bgcolor: recording ? '#000' : 'primary.main',
+              color: 'primary.contrastText',
+              cursor: minimized ? 'default' : 'move',
+            }}
+          >
+            {recording ? (
+              <Stack direction="row" spacing={1.5} alignItems="center" sx={{ flex: 1 }}>
+                <Box
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
                 >
-                  Submit Ticket
-                </Button>
-              </DialogActions>
-            </Box>
-          </Fade>
-        )}
-      </Dialog>
+                  <Lottie
+                    animationData={recordingAnimation}
+                    loop={true}
+                    style={{ width: 32, height: 32 }}
+                  />
+                </Box>
+                <Typography variant="subtitle2" fontWeight={600}>
+                  Recording... {formatRecordingTime(recordingTime)}
+                </Typography>
+              </Stack>
+            ) : minimized ? (
+              <Typography variant="subtitle2" fontWeight={600}>
+                Support Dialog
+              </Typography>
+            ) : (
+              <Typography variant="subtitle1" fontWeight={700}>
+                Contact Support
+              </Typography>
+            )}
+            <Stack direction="row" spacing={0.5}>
+              {recording ? (
+                <>
+                  <Tooltip title={minimized ? 'Expand dialog' : 'Minimize dialog'} arrow>
+                    <IconButton
+                      size="small"
+                      onClick={() => setMinimized(!minimized)}
+                      sx={{ color: 'inherit' }}
+                    >
+                      {minimized ? (
+                        <MaximizeIcon fontSize="small" />
+                      ) : (
+                        <MinimizeIcon fontSize="small" />
+                      )}
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Stop recording" arrow>
+                    <IconButton
+                      size="small"
+                      onClick={handleStopRecording}
+                      sx={{
+                        color: 'inherit',
+                        '&:hover': {
+                          bgcolor: 'rgba(255, 255, 255, 0.1)',
+                        },
+                      }}
+                    >
+                      <StopCircleIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </>
+              ) : (
+                <Tooltip title={minimized ? 'Expand dialog' : 'Minimize dialog'} arrow>
+                  <IconButton
+                    size="small"
+                    onClick={() => setMinimized(!minimized)}
+                    sx={{ color: 'inherit' }}
+                  >
+                    {minimized ? (
+                      <MaximizeIcon fontSize="small" />
+                    ) : (
+                      <MinimizeIcon fontSize="small" />
+                    )}
+                  </IconButton>
+                </Tooltip>
+              )}
+              <Tooltip title="Close" arrow>
+                <IconButton size="small" onClick={onClose} sx={{ color: 'inherit' }}>
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Stack>
+          </Box>
+
+          {/* Dialog Content */}
+          {!minimized && (
+            <Fade in={!minimized}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', flex: 1 }}>
+                <Box sx={{ pt: 2.5, px: 2.5, pb: 2.5, overflowY: 'auto', flex: 1 }}>
+                  <Stack spacing={2.5}>
+                    <TextField
+                      select
+                      label="Issue Type *"
+                      value={supportType}
+                      onChange={e => setSupportType(e.target.value)}
+                      fullWidth
+                      size="small"
+                    >
+                      {Object.entries(supportTypes).map(([key, label]) => (
+                        <MenuItem key={key} value={key}>
+                          {label}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+
+                    <TextField
+                      label="Subject *"
+                      value={subject}
+                      onChange={e => setSubject(e.target.value)}
+                      fullWidth
+                      size="small"
+                      placeholder="Brief description of the issue"
+                    />
+
+                    <TextField
+                      label="Message *"
+                      value={message}
+                      onChange={e => setMessage(e.target.value)}
+                      multiline
+                      rows={4}
+                      fullWidth
+                      size="small"
+                      placeholder="Detailed explanation with steps to reproduce..."
+                    />
+
+                    <AttachmentGrid
+                      attachments={attachments}
+                      onPreview={setPreviewAttachment}
+                      onDelete={handleDeleteAttachment}
+                    />
+                  </Stack>
+                </Box>
+
+                <Box
+                  sx={{
+                    px: 2.5,
+                    pb: 2,
+                    pt: 1.5,
+                    display: 'flex',
+                    gap: 1,
+                    flexWrap: 'wrap',
+                    borderTop: 1,
+                    borderColor: 'divider',
+                  }}
+                >
+                  <RecordingControls
+                    onAddAttachment={handleAddAttachment}
+                    counts={getCounts()}
+                    maxPerType={5}
+                    onMinimize={() => setMinimized(true)}
+                    onStartRecording={startRecording}
+                    recording={recording}
+                    recordingTime={0}
+                  />
+                  <Box sx={{ flex: 1 }} />
+                  <Button onClick={handleReset} variant="outlined">
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={handleSubmit}
+                    disabled={!supportType || !subject || !message}
+                  >
+                    Submit Ticket
+                  </Button>
+                </Box>
+              </Box>
+            </Fade>
+          )}
+        </Paper>
+      </Draggable>
 
       <AttachmentPreview
         open={!!previewAttachment}
