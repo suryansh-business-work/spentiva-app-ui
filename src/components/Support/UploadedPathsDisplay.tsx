@@ -9,7 +9,9 @@ interface UploadedPathsDisplayProps {
 }
 
 const UploadedPathsDisplay: React.FC<UploadedPathsDisplayProps> = ({ attachments }) => {
-  const uploadedAttachments = attachments.filter(a => a.uploadStatus === 'uploaded' && a.uploadedData);
+  const uploadedAttachments = attachments.filter(
+    a => a.uploadStatus === 'uploaded' && a.uploadedData
+  );
 
   if (uploadedAttachments.length === 0) return null;
 
@@ -31,7 +33,13 @@ const UploadedPathsDisplay: React.FC<UploadedPathsDisplayProps> = ({ attachments
 
   return (
     <Box sx={{ mt: 2, p: 2, bgcolor: 'action.hover', borderRadius: 2 }}>
-      <Typography variant="caption" color="text.secondary" fontWeight={600} display="block" mb={1.5}>
+      <Typography
+        variant="caption"
+        color="text.secondary"
+        fontWeight={600}
+        display="block"
+        mb={1.5}
+      >
         Uploaded Files ({uploadedAttachments.length})
       </Typography>
       <Stack spacing={1.5} divider={<Divider />}>

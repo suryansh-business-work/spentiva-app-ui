@@ -23,16 +23,12 @@ export const useFileUpload = (): UseFileUploadResult => {
 
       const token = localStorage.getItem('authToken');
 
-      const response = await axios.post<FileUploadResponse>(
-        endpoints.imagekit.upload,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            ...(token && { Authorization: `Bearer ${token}` }),
-          },
-        }
-      );
+      const response = await axios.post<FileUploadResponse>(endpoints.imagekit.upload, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      });
 
       if (response.data.status === 'success' && response.data.data.length > 0) {
         return response.data.data[0];

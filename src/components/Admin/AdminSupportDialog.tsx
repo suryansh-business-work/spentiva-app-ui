@@ -95,7 +95,9 @@ const AdminSupportDialog: React.FC<AdminSupportDialogProps> = ({
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pb: 1 }}>
+      <DialogTitle
+        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pb: 1 }}
+      >
         <Box>
           <Typography variant="h6" fontWeight={700}>
             {ticket.ticketId}
@@ -219,7 +221,7 @@ const AdminSupportDialog: React.FC<AdminSupportDialogProps> = ({
           Add Response
         </Button>
       </DialogActions>
-    </Dialog >
+    </Dialog>
   );
 };
 

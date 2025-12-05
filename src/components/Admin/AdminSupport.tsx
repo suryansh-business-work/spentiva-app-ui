@@ -181,7 +181,11 @@ const AdminSupport: React.FC = () => {
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Chip label={ticket.status} size="small" color={getStatusColor(ticket.status)} />
+                    <Chip
+                      label={ticket.status}
+                      size="small"
+                      color={getStatusColor(ticket.status)}
+                    />
                   </TableCell>
                   <TableCell>
                     <Typography variant="caption">

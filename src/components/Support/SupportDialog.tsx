@@ -31,6 +31,9 @@ const SupportDialog: React.FC<SupportDialogProps> = ({ open, onClose }) => {
       uploadStatus: 'pending',
     };
     setAttachments(prev => [...prev, newAttachment]);
+
+    // Auto-expand dialog after adding screenshot/recording
+    setMinimized(false);
   };
 
   const handleUploadAttachment = async (id: string) => {
@@ -49,18 +52,14 @@ const SupportDialog: React.FC<SupportDialogProps> = ({ open, onClose }) => {
         // Set uploaded status with complete data
         setAttachments(prev =>
           prev.map(a =>
-            a.id === id
-              ? { ...a, uploadStatus: 'uploaded' as const, uploadedData }
-              : a
+            a.id === id ? { ...a, uploadStatus: 'uploaded' as const, uploadedData } : a
           )
         );
       } else {
         // Set error status
         setAttachments(prev =>
           prev.map(a =>
-            a.id === id
-              ? { ...a, uploadStatus: 'error' as const, uploadError: 'Upload failed' }
-              : a
+            a.id === id ? { ...a, uploadStatus: 'error' as const, uploadError: 'Upload failed' } : a
           )
         );
       }
@@ -68,9 +67,7 @@ const SupportDialog: React.FC<SupportDialogProps> = ({ open, onClose }) => {
       // Set error status
       setAttachments(prev =>
         prev.map(a =>
-          a.id === id
-            ? { ...a, uploadStatus: 'error' as const, uploadError: 'Upload failed' }
-            : a
+          a.id === id ? { ...a, uploadStatus: 'error' as const, uploadError: 'Upload failed' } : a
         )
       );
     }
@@ -84,12 +81,7 @@ const SupportDialog: React.FC<SupportDialogProps> = ({ open, onClose }) => {
 
   return (
     <>
-      <Draggable
-        nodeRef={draggableRef}
-        handle="#draggable-dialog-title"
-        disabled={minimized}
-        bounds="parent"
-      >
+      <Draggable nodeRef={draggableRef} handle="#draggable-dialog-title" disabled={minimized}>
         <Paper
           ref={draggableRef}
           elevation={0}
@@ -101,22 +93,22 @@ const SupportDialog: React.FC<SupportDialogProps> = ({ open, onClose }) => {
               : '0px 24px 48px rgba(0, 0, 0, 0.2)',
             ...(minimized
               ? {
-                bottom: 16,
-                right: 16,
-                width: recording ? 400 : 320,
-                height: 56,
-                overflow: 'hidden',
-              }
+                  bottom: 16,
+                  right: 16,
+                  width: recording ? 400 : 320,
+                  height: 56,
+                  overflow: 'hidden',
+                }
               : {
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: '90%',
-                maxWidth: 900,
-                maxHeight: '90vh',
-                display: 'flex',
-                flexDirection: 'column',
-              }),
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: '90%',
+                  maxWidth: 900,
+                  maxHeight: '90vh',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }),
           }}
         >
           <SupportDialogHeader
@@ -134,7 +126,7 @@ const SupportDialog: React.FC<SupportDialogProps> = ({ open, onClose }) => {
                 display: minimized ? 'none' : 'flex',
                 flexDirection: 'column',
                 overflow: 'hidden',
-                flex: 1
+                flex: 1,
               }}
             >
               <SupportForm

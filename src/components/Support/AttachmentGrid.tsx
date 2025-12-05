@@ -29,7 +29,7 @@ const AttachmentGrid: React.FC<AttachmentGridProps> = ({
   attachments,
   onPreview,
   onDelete,
-  onUpload
+  onUpload,
 }) => {
   if (attachments.length === 0) return null;
 
@@ -39,7 +39,7 @@ const AttachmentGrid: React.FC<AttachmentGridProps> = ({
         return (
           <Tooltip title="Click to upload">
             <IconButton
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 onUpload(attachment.id);
               }}
@@ -102,7 +102,7 @@ const AttachmentGrid: React.FC<AttachmentGridProps> = ({
         return (
           <Tooltip title={attachment.uploadError || 'Upload failed'}>
             <IconButton
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 onUpload(attachment.id);
               }}

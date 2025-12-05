@@ -72,7 +72,7 @@ const SupportForm: React.FC<SupportFormProps> = ({
         isAuthenticated,
         hasToken: !!token,
         hasLocalToken: !!authToken,
-        user: user?.email
+        user: user?.email,
       });
 
       // Map frontend type to backend type
@@ -121,7 +121,8 @@ const SupportForm: React.FC<SupportFormProps> = ({
       onClose();
     } catch (error: any) {
       console.error('Failed to submit ticket:', error);
-      const errorMessage = error?.response?.data?.message || 'Failed to submit ticket. Please try again.';
+      const errorMessage =
+        error?.response?.data?.message || 'Failed to submit ticket. Please try again.';
       alert(`❌ ${errorMessage}`);
     } finally {
       setSubmitting(false);
