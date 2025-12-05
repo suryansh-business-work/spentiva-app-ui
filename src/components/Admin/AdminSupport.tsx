@@ -1,280 +1,211 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Paper,
+  Typography,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  TablePagination,
   Chip,
-  useTheme,
-  Typography,
-  Button,
+  IconButton,
+  Stack,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  CircularProgress,
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import SupportDetailDialog from './SupportDetailDialog';
+import { SupportTicket, TicketStatus, TicketType } from '../../types/support';
+import { getUserTickets } from '../../services/supportService';
+import AdminSupportDialog from './AdminSupportDialog';
 
-export interface SupportTicket {
-  id: string;
-  userId: string;
-  userName: string;
-  userEmail: string;
-  type: 'payment' | 'bug' | 'dataloss' | 'other';
-  subject: string;
-  message: string;
-  status: 'open' | 'in-progress' | 'closed' | 'escalated';
-  createdAt: string;
-}
+const getStatusColor = (status: TicketStatus): 'default' | 'warning' | 'success' | 'error' => {
+  switch (status) {
+    case 'Open':
+      return 'warning';
+    case 'InProgress':
+      return 'default';
+    case 'Closed':
+      return 'success';
+    case 'Escalated':
+      return 'error';
+    default:
+      return 'default';
+  }
+};
 
-// Dummy support ticket data
-const DUMMY_TICKETS: SupportTicket[] = [
-  {
-    id: 'TICKET-001',
-    userId: 'USER-101',
-    userName: 'John Doe',
-    userEmail: 'john@example.com',
-    type: 'payment',
-    subject: 'Payment not processed',
-    message: 'I tried to upgrade to Pro plan but my payment failed...',
-    status: 'open',
-    createdAt: '2024-12-04T09:30:00Z',
-  },
-  {
-    id: 'TICKET-002',
-    userId: 'USER-102',
-    userName: 'Jane Smith',
-    userEmail: 'jane@example.com',
-    type: 'bug',
-    subject: 'Dashboard not loading',
-    message: 'When I click on the dashboard, it shows a blank screen...',
-    status: 'in-progress',
-    createdAt: '2024-12-03T14:20:00Z',
-  },
-  {
-    id: 'TICKET-003',
-    userId: 'USER-103',
-    userName: 'Bob Johnson',
-    userEmail: 'bob@example.com',
-    type: 'dataloss',
-    subject: 'Lost all my expense data',
-    message: 'All my expense tracking data disappeared after login...',
-    status: 'open',
-    createdAt: '2024-12-02T11:45:00Z',
-  },
-  {
-    id: 'TICKET-004',
-    userId: 'USER-104',
-    userName: 'Alice Williams',
-    userEmail: 'alice@example.com',
-    type: 'other',
-    subject: 'Feature request: Export to CSV',
-    message: 'It would be great to export my expenses to CSV format...',
-    status: 'closed',
-    createdAt: '2024-11-30T16:00:00Z',
-  },
-  {
-    id: 'TICKET-005',
-    userId: 'USER-105',
-    userName: 'Charlie Brown',
-    userEmail: 'charlie@example.com',
-    type: 'payment',
-    subject: 'Refund request',
-    message: 'I would like to request a refund for my annual subscription...',
-    status: 'escalated',
-    createdAt: '2024-11-28T10:15:00Z',
-  },
-];
+const getTypeLabel = (type: string): string => {
+  const labels: Record<string, string> = {
+    PaymentRelated: 'Payment',
+    BugInApp: 'Bug',
+    DataLoss: 'Data Loss',
+    FeatureRequest: 'Feature',
+    Other: 'Other',
+  };
+  return labels[type] || type;
+};
 
 const AdminSupport: React.FC = () => {
-  const theme = useTheme();
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+  const [tickets, setTickets] = useState<SupportTicket[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
-  const [tickets, setTickets] = useState<SupportTicket[]>(DUMMY_TICKETS);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<TicketStatus | 'All'>('All');
+  const [typeFilter, setTypeFilter] = useState<TicketType | 'All'>('All');
 
-  const handleChangePage = (_: unknown, newPage: number) => {
-    setPage(newPage);
-  };
+  const fetchTickets = async () => {
+    try {
+      setLoading(true);
+      const filters: any = {};
+      if (statusFilter !== 'All') filters.status = statusFilter;
+      if (typeFilter !== 'All') filters.type = typeFilter;
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const getStatusColor = (status: SupportTicket['status']) => {
-    switch (status) {
-      case 'open':
-        return 'error';
-      case 'in-progress':
-        return 'warning';
-      case 'closed':
-        return 'success';
-      case 'escalated':
-        return 'error'; // Dark red for urgent attention
-      default:
-        return 'default';
+      const response = await getUserTickets(filters);
+      setTickets(response.tickets);
+    } catch (error) {
+      console.error('Failed to fetch tickets:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getTypeLabel = (type: SupportTicket['type']) => {
-    switch (type) {
-      case 'payment':
-        return 'Payment Related';
-      case 'bug':
-        return 'Bug In App';
-      case 'dataloss':
-        return 'Data Loss';
-      case 'other':
-        return 'Other';
-      default:
-        return type;
-    }
-  };
-
-  const paginatedTickets = tickets.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  useEffect(() => {
+    fetchTickets();
+  }, [statusFilter, typeFilter]);
 
   const handleViewTicket = (ticket: SupportTicket) => {
     setSelectedTicket(ticket);
-    setDetailDialogOpen(true);
+    setDialogOpen(true);
   };
 
-  const handleStatusUpdate = (ticketId: string, newStatus: SupportTicket['status']) => {
-    setTickets(prevTickets =>
-      prevTickets.map(ticket =>
-        ticket.id === ticketId ? { ...ticket, status: newStatus } : ticket
-      )
-    );
-    console.log('Status updated:', { ticketId, newStatus });
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+    setSelectedTicket(null);
+  };
+
+  const handleUpdate = () => {
+    fetchTickets();
   };
 
   return (
     <Box>
-      <TableContainer
-        component={Paper}
-        elevation={0}
-        sx={{ border: `1px solid ${theme.palette.divider}` }}
-      >
-        <Table>
-          <TableHead
-            sx={{
-              bgcolor:
-                theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
-            }}
+      <Typography variant="h5" fontWeight={700} mb={3}>
+        Support Tickets
+      </Typography>
+
+      {/* Filters */}
+      <Stack direction="row" spacing={2} mb={3}>
+        <FormControl size="small" sx={{ minWidth: 150 }}>
+          <InputLabel>Status</InputLabel>
+          <Select
+            value={statusFilter}
+            label="Status"
+            onChange={e => setStatusFilter(e.target.value as TicketStatus | 'All')}
           >
+            <MenuItem value="All">All Statuses</MenuItem>
+            <MenuItem value="Open">Open</MenuItem>
+            <MenuItem value="InProgress">In Progress</MenuItem>
+            <MenuItem value="Closed">Closed</MenuItem>
+            <MenuItem value="Escalated">Escalated</MenuItem>
+          </Select>
+        </FormControl>
+
+        <FormControl size="small" sx={{ minWidth: 150 }}>
+          <InputLabel>Type</InputLabel>
+          <Select
+            value={typeFilter}
+            label="Type"
+            onChange={e => setTypeFilter(e.target.value as TicketType | 'All')}
+          >
+            <MenuItem value="All">All Types</MenuItem>
+            <MenuItem value="PaymentRelated">Payment</MenuItem>
+            <MenuItem value="BugInApp">Bug</MenuItem>
+            <MenuItem value="DataLoss">Data Loss</MenuItem>
+            <MenuItem value="FeatureRequest">Feature</MenuItem>
+            <MenuItem value="Other">Other</MenuItem>
+          </Select>
+        </FormControl>
+      </Stack>
+
+      {/* Tickets Table */}
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
             <TableRow>
-              <TableCell>
-                <strong>Ticket ID</strong>
-              </TableCell>
-              <TableCell>
-                <strong>User</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Type</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Subject</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Status</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Date</strong>
-              </TableCell>
-              <TableCell align="center">
-                <strong>Actions</strong>
-              </TableCell>
+              <TableCell>Ticket ID</TableCell>
+              <TableCell>User</TableCell>
+              <TableCell>Type</TableCell>
+              <TableCell>Subject</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Created</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedTickets.map(ticket => (
-              <TableRow
-                key={ticket.id}
-                hover
-                sx={{
-                  ...(ticket.status === 'escalated' && {
-                    animation: 'pulse 2s ease-in-out infinite',
-                    '@keyframes pulse': {
-                      '0%, 100%': {
-                        bgcolor:
-                          theme.palette.mode === 'dark'
-                            ? 'rgba(211, 47, 47, 0.15)'
-                            : 'rgba(211, 47, 47, 0.08)',
-                      },
-                      '50%': {
-                        bgcolor:
-                          theme.palette.mode === 'dark'
-                            ? 'rgba(211, 47, 47, 0.25)'
-                            : 'rgba(211, 47, 47, 0.15)',
-                      },
-                    },
-                  }),
-                }}
-              >
-                <TableCell>{ticket.id}</TableCell>
-                <TableCell>
-                  {ticket.userName}
-                  <Typography variant="caption" display="block" color="text.secondary">
-                    {ticket.userEmail}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Chip label={getTypeLabel(ticket.type)} size="small" variant="outlined" />
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body2" fontWeight={600}>
-                    {ticket.subject}
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    noWrap
-                    sx={{ maxWidth: 250, display: 'block' }}
-                  >
-                    {ticket.message}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    label={ticket.status.replace('-', ' ')}
-                    color={getStatusColor(ticket.status)}
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell>{new Date(ticket.createdAt).toLocaleDateString()}</TableCell>
-                <TableCell align="center">
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    startIcon={<VisibilityIcon />}
-                    onClick={() => handleViewTicket(ticket)}
-                  >
-                    View
-                  </Button>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
+                  <CircularProgress />
                 </TableCell>
               </TableRow>
-            ))}
+            ) : tickets.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
+                  <Typography color="text.secondary">No tickets found</Typography>
+                </TableCell>
+              </TableRow>
+            ) : (
+              tickets.map(ticket => (
+                <TableRow key={ticket._id} hover>
+                  <TableCell>
+                    <Typography variant="body2" fontWeight={600}>
+                      {ticket.ticketId}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2">{ticket.user?.name || 'Unknown'}</Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {ticket.user?.email}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Chip label={getTypeLabel(ticket.type)} size="small" variant="outlined" />
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" noWrap sx={{ maxWidth: 300 }}>
+                      {ticket.subject}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Chip label={ticket.status} size="small" color={getStatusColor(ticket.status)} />
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="caption">
+                      {new Date(ticket.createdAt).toLocaleDateString()}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <IconButton size="small" onClick={() => handleViewTicket(ticket)}>
+                      <VisibilityIcon fontSize="small" />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
-        <TablePagination
-          component="div"
-          count={tickets.length}
-          page={page}
-          onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          rowsPerPageOptions={[5, 10, 25]}
-        />
       </TableContainer>
 
-      <SupportDetailDialog
-        open={detailDialogOpen}
-        onClose={() => setDetailDialogOpen(false)}
+      {/* Detail Dialog */}
+      <AdminSupportDialog
+        open={dialogOpen}
         ticket={selectedTicket}
-        onStatusUpdate={handleStatusUpdate}
+        onClose={handleCloseDialog}
+        onUpdate={handleUpdate}
       />
     </Box>
   );

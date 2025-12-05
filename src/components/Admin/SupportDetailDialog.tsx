@@ -19,7 +19,7 @@ import {
   SelectChangeEvent,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { type SupportTicket } from './AdminSupport';
+import { type SupportTicket } from '../../types/support';
 
 interface SupportDetailDialogProps {
   open: boolean;
@@ -35,7 +35,7 @@ const SupportDetailDialog: React.FC<SupportDetailDialogProps> = ({
   onStatusUpdate,
 }) => {
   const theme = useTheme();
-  const [status, setStatus] = useState<SupportTicket['status']>('open');
+  const [status, setStatus] = useState<SupportTicket['status']>('Open');
 
   // Update status when ticket changes
   React.useEffect(() => {
@@ -48,13 +48,15 @@ const SupportDetailDialog: React.FC<SupportDetailDialogProps> = ({
 
   const getTypeLabel = (type: SupportTicket['type']) => {
     switch (type) {
-      case 'payment':
+      case 'PaymentRelated':
         return 'Payment Related';
-      case 'bug':
+      case 'BugInApp':
         return 'Bug In App';
-      case 'dataloss':
+      case 'DataLoss':
         return 'Data Loss';
-      case 'other':
+      case 'FeatureRequest':
+        return 'Feature Request';
+      case 'Other':
         return 'Other';
       default:
         return type;
@@ -68,7 +70,7 @@ const SupportDetailDialog: React.FC<SupportDetailDialogProps> = ({
 
   const handleUpdateStatus = () => {
     if (onStatusUpdate && status !== ticket.status) {
-      onStatusUpdate(ticket.id, status);
+      onStatusUpdate(ticket.ticketId, status);
     }
     onClose();
   };
@@ -95,7 +97,7 @@ const SupportDetailDialog: React.FC<SupportDetailDialogProps> = ({
         {/* Ticket ID and Type */}
         <Stack direction="row" spacing={2} alignItems="center" mb={3}>
           <Typography variant="h6" fontWeight={700}>
-            {ticket.id}
+            {ticket.ticketId}
           </Typography>
           <Chip label={getTypeLabel(ticket.type)} variant="outlined" />
         </Stack>
@@ -110,22 +112,22 @@ const SupportDetailDialog: React.FC<SupportDetailDialogProps> = ({
             label="Ticket Status"
             onChange={handleStatusChange}
           >
-            <MenuItem value="open">
+            <MenuItem value="Open">
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Chip label="Open" color="error" size="small" />
               </Box>
             </MenuItem>
-            <MenuItem value="in-progress">
+            <MenuItem value="InProgress">
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Chip label="In Progress" color="warning" size="small" />
               </Box>
             </MenuItem>
-            <MenuItem value="closed">
+            <MenuItem value="Closed">
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Chip label="Closed" color="success" size="small" />
               </Box>
             </MenuItem>
-            <MenuItem value="escalated">
+            <MenuItem value="Escalated">
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Chip label="Escalated" color="info" size="small" />
               </Box>
@@ -147,13 +149,13 @@ const SupportDetailDialog: React.FC<SupportDetailDialogProps> = ({
             User Information
           </Typography>
           <Typography variant="body2" fontWeight={600}>
-            {ticket.userName}
+            {ticket.user?.name || 'Unknown'}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {ticket.userEmail}
+            {ticket.user?.email}
           </Typography>
           <Typography variant="caption" color="text.secondary" display="block" mt={1}>
-            User ID: {ticket.userId}
+            User ID: {ticket.user?.id}
           </Typography>
         </Box>
 
@@ -182,7 +184,7 @@ const SupportDetailDialog: React.FC<SupportDetailDialogProps> = ({
             }}
           >
             <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
-              {ticket.message}
+              {ticket.description}
             </Typography>
           </Box>
         </Box>

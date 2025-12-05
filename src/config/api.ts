@@ -80,4 +80,17 @@ export const endpoints = {
     updateUser: (userId: string) => `${getApiUrl()}/admin/users/${userId}`,
     deleteUser: (userId: string) => `${getApiUrl()}/admin/users/${userId}`,
   },
+  support: {
+    createTicket: `${getApiUrl()}/support/tickets`,
+    getTickets: `${getApiUrl()}/support/tickets`,
+    getStats: `${getApiUrl()}/support/tickets/stats`,
+    getTicketById: (ticketId: string) => `${getApiUrl()}/support/tickets/${ticketId}`,
+    updateStatus: (ticketId: string) => `${getApiUrl()}/support/tickets/${ticketId}/status`,
+    addAttachment: (ticketId: string) => `${getApiUrl()}/support/tickets/${ticketId}/attachments`,
+    addUpdate: (ticketId: string) => `${getApiUrl()}/support/tickets/${ticketId}/updates`,
+    deleteTicket: (ticketId: string) => `${getApiUrl()}/support/tickets/${ticketId}`,
+  },
+  imagekit: {
+    upload: `${getApiUrl()}/imagekit/upload`,
+  },
 };

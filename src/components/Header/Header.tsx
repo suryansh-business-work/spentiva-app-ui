@@ -142,13 +142,7 @@ const Header: React.FC = () => {
       <NavigationDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
       {/* Support Dialog */}
-      <SupportDialog
-        open={supportDialogOpen}
-        onClose={() => setSupportDialogOpen(false)}
-        userName={user?.name || ''}
-        userEmail={user?.email || ''}
-        currentPlan={(user?.accountType as 'free' | 'pro' | 'businesspro') || 'free'}
-      />
+      <SupportDialog open={supportDialogOpen} onClose={() => setSupportDialogOpen(false)} />
     </>
   );
 };

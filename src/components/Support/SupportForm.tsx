@@ -4,11 +4,11 @@ import { Button, TextField, MenuItem, Box, Stack } from '@mui/material';
 import { supportFormSchema, initialFormValues, SupportFormValues } from './validationSchema';
 import AttachmentGrid, { Attachment } from './AttachmentGrid';
 import RecordingControls from './RecordingControls';
+import UploadInstructions from './UploadInstructions';
+import UploadedPathsDisplay from './UploadedPathsDisplay';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface SupportFormProps {
-  userName: string;
-  userEmail: string;
-  currentPlan: 'free' | 'pro' | 'businesspro';
   recording: boolean;
   onStartRecording: () => void;
   onMinimize: () => void;
@@ -17,6 +17,7 @@ interface SupportFormProps {
   onAddAttachment: (file: File, type: Attachment['type'], preview?: string) => void;
   onDeleteAttachment: (id: string) => void;
   onPreviewAttachment: (attachment: Attachment) => void;
+  onUploadAttachment: (id: string) => void;
 }
 
 const supportTypes = {
@@ -27,9 +28,6 @@ const supportTypes = {
 };
 
 const SupportForm: React.FC<SupportFormProps> = ({
-  userName,
-  userEmail,
-  currentPlan,
   recording,
   onStartRecording,
   onMinimize,
@@ -38,33 +36,96 @@ const SupportForm: React.FC<SupportFormProps> = ({
   onAddAttachment,
   onDeleteAttachment,
   onPreviewAttachment,
+  onUploadAttachment,
 }) => {
+  const { user, isAuthenticated, token } = useAuth();
+
+  const allFilesUploaded = () => {
+    if (attachments.length === 0) return true;
+    return attachments.every(a => a.uploadStatus === 'uploaded');
+  };
+
   const getCounts = () => ({
     images: attachments.filter(a => a.type === 'image').length,
     screenshots: attachments.filter(a => a.type === 'screenshot').length,
     videos: attachments.filter(a => a.type === 'video').length,
   });
 
-  const handleSubmit = (values: SupportFormValues, { resetForm }: any) => {
-    const formData = new FormData();
-    formData.append('name', userName);
-    formData.append('email', userEmail);
-    formData.append('plan', currentPlan);
-    formData.append('type', supportTypes[values.supportType as keyof typeof supportTypes]);
-    formData.append('subject', values.subject);
-    formData.append('message', values.message);
+  const handleSubmit = async (values: SupportFormValues, { resetForm, setSubmitting }: any) => {
+    try {
+      setSubmitting(true);
 
-    attachments.forEach((att, idx) => {
-      formData.append(`attachment_${idx}`, att.file);
-    });
+      // Check authentication
+      if (!isAuthenticated || !token) {
+        alert('❌ You must be logged in to submit a support ticket. Please log in and try again.');
+        return;
+      }
 
-    console.log('Support ticket submitted:', values);
-    console.log('Attachments:', attachments.length);
-    // TODO: API call here
+      // Verify token exists in localStorage
+      const authToken = localStorage.getItem('authToken');
+      if (!authToken) {
+        alert('❌ Authentication token not found. Please log in again.');
+        return;
+      }
 
-    // Reset form and attachments
-    resetForm();
-    onClose();
+      console.log('🔐 Auth Status:', {
+        isAuthenticated,
+        hasToken: !!token,
+        hasLocalToken: !!authToken,
+        user: user?.email
+      });
+
+      // Map frontend type to backend type
+      const typeMap: Record<string, 'PaymentRelated' | 'BugInApp' | 'DataLoss' | 'Other'> = {
+        payment: 'PaymentRelated',
+        bug: 'BugInApp',
+        dataloss: 'DataLoss',
+        other: 'Other',
+      };
+
+      // Prepare attachment paths
+      const attachmentPaths = attachments
+        .filter(a => a.uploadedData)
+        .map(a => ({
+          fileId: a.uploadedData!.fileId,
+          filePath: a.uploadedData!.filePath.filePath,
+          fileName: a.uploadedData!.fileName.uploadedName,
+          fileUrl: a.uploadedData!.filePath.fileUrl,
+        }));
+
+      // Prepare payload
+      const payload = {
+        type: typeMap[values.supportType],
+        subject: values.subject,
+        description: values.message,
+        attachments: attachmentPaths,
+      };
+
+      console.log('📤 Submitting ticket with attachments:', {
+        totalAttachments: attachments.length,
+        uploadedAttachments: attachmentPaths.length,
+        attachmentDetails: attachmentPaths,
+        payload,
+      });
+
+      // Create ticket via API
+      await import('../../services/supportService').then(service =>
+        service.createSupportTicket(payload)
+      );
+
+      // Success feedback
+      alert('✅ Support ticket submitted successfully! Our team will review it soon.');
+
+      // Reset form
+      resetForm();
+      onClose();
+    } catch (error: any) {
+      console.error('Failed to submit ticket:', error);
+      const errorMessage = error?.response?.data?.message || 'Failed to submit ticket. Please try again.';
+      alert(`❌ ${errorMessage}`);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -75,7 +136,7 @@ const SupportForm: React.FC<SupportFormProps> = ({
       validateOnChange={true}
       validateOnBlur={true}
     >
-      {({ values, errors, touched, handleChange, handleBlur, isValid, dirty }) => (
+      {({ values, errors, touched, handleChange, handleBlur, isValid, dirty, isSubmitting }) => (
         <Form style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', flex: 1 }}>
           <Box sx={{ pt: 2.5, px: 2.5, pb: 2.5, overflowY: 'auto', flex: 1 }}>
             <Stack spacing={2.5}>
@@ -126,11 +187,19 @@ const SupportForm: React.FC<SupportFormProps> = ({
                 placeholder="Detailed explanation with steps to reproduce..."
               />
 
+              <UploadInstructions
+                hasAttachments={attachments.length > 0}
+                allUploaded={allFilesUploaded()}
+              />
+
               <AttachmentGrid
                 attachments={attachments}
                 onPreview={onPreviewAttachment}
                 onDelete={onDeleteAttachment}
+                onUpload={onUploadAttachment}
               />
+
+              <UploadedPathsDisplay attachments={attachments} />
             </Stack>
           </Box>
 
@@ -159,8 +228,12 @@ const SupportForm: React.FC<SupportFormProps> = ({
             <Button onClick={onClose} variant="outlined">
               Cancel
             </Button>
-            <Button type="submit" variant="contained" disabled={!isValid || !dirty}>
-              Submit Ticket
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={!isValid || !dirty || isSubmitting || !allFilesUploaded()}
+            >
+              {isSubmitting ? 'Submitting...' : 'Submit Ticket'}
             </Button>
           </Box>
         </Form>

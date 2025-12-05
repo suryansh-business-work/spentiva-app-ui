@@ -1,24 +1,129 @@
 import React from 'react';
-import { Box, IconButton, Typography } from '@mui/material';
+import { Box, IconButton, Typography, CircularProgress, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ErrorIcon from '@mui/icons-material/Error';
+import { FileUploadStatus, UploadedFileData } from '../../types/fileUpload.types';
 
 export interface Attachment {
   id: string;
   file: File;
   type: 'image' | 'video' | 'screenshot';
   preview?: string;
+  uploadStatus: FileUploadStatus;
+  uploadedData?: UploadedFileData;
+  uploadError?: string;
 }
 
 interface AttachmentGridProps {
   attachments: Attachment[];
   onPreview: (attachment: Attachment) => void;
   onDelete: (id: string) => void;
+  onUpload: (id: string) => void;
 }
 
-const AttachmentGrid: React.FC<AttachmentGridProps> = ({ attachments, onPreview, onDelete }) => {
+const AttachmentGrid: React.FC<AttachmentGridProps> = ({
+  attachments,
+  onPreview,
+  onDelete,
+  onUpload
+}) => {
   if (attachments.length === 0) return null;
+
+  const getUploadStatusIcon = (attachment: Attachment) => {
+    switch (attachment.uploadStatus) {
+      case 'pending':
+        return (
+          <Tooltip title="Click to upload">
+            <IconButton
+              onClick={(e) => {
+                e.stopPropagation();
+                onUpload(attachment.id);
+              }}
+              sx={{
+                position: 'absolute',
+                bottom: 4,
+                right: 4,
+                bgcolor: 'primary.main',
+                color: 'white',
+                width: 28,
+                height: 28,
+                '&:hover': { bgcolor: 'primary.dark' },
+              }}
+              size="small"
+            >
+              <CloudUploadIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        );
+      case 'uploading':
+        return (
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: 4,
+              right: 4,
+              bgcolor: 'rgba(255,255,255,0.9)',
+              borderRadius: '50%',
+              width: 28,
+              height: 28,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <CircularProgress size={20} thickness={5} />
+          </Box>
+        );
+      case 'uploaded':
+        return (
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: 4,
+              right: 4,
+              bgcolor: 'success.main',
+              color: 'white',
+              borderRadius: '50%',
+              width: 28,
+              height: 28,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <CheckCircleIcon fontSize="small" />
+          </Box>
+        );
+      case 'error':
+        return (
+          <Tooltip title={attachment.uploadError || 'Upload failed'}>
+            <IconButton
+              onClick={(e) => {
+                e.stopPropagation();
+                onUpload(attachment.id);
+              }}
+              sx={{
+                position: 'absolute',
+                bottom: 4,
+                right: 4,
+                bgcolor: 'error.main',
+                color: 'white',
+                width: 28,
+                height: 28,
+                '&:hover': { bgcolor: 'error.dark' },
+              }}
+              size="small"
+            >
+              <ErrorIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        );
+    }
+  };
 
   return (
     <Box>
@@ -91,6 +196,7 @@ const AttachmentGrid: React.FC<AttachmentGridProps> = ({ attachments, onPreview,
             >
               <DeleteIcon fontSize="small" />
             </IconButton>
+            {getUploadStatusIcon(att)}
           </Box>
         ))}
       </Box>

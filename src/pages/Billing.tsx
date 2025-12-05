@@ -26,10 +26,6 @@ const Billing: React.FC = () => {
   const [supportDialogOpen, setSupportDialogOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<PlanType | null>(null);
 
-  // User data for support dialog
-  const [userName, setUserName] = useState('');
-  const [userEmail, setUserEmail] = useState('');
-
   useEffect(() => {
     fetch('/animations/payment_animation.json')
       .then(res => res.json())
@@ -48,8 +44,6 @@ const Billing: React.FC = () => {
         userResponse?.data?.data?.user || userResponse?.data?.user || userResponse?.data;
       const accountType = (userData?.accountType || 'free').toLowerCase() as PlanType;
       setCurrentPlan(accountType);
-      setUserName(userData?.name || '');
-      setUserEmail(userData?.email || '');
 
       // Fetch trackers
       try {
@@ -264,13 +258,7 @@ const Billing: React.FC = () => {
           setSelectedPlan(null);
         }}
       />
-      <SupportDialog
-        open={supportDialogOpen}
-        onClose={() => setSupportDialogOpen(false)}
-        userName={userName}
-        userEmail={userEmail}
-        currentPlan={currentPlan}
-      />
+      <SupportDialog open={supportDialogOpen} onClose={() => setSupportDialogOpen(false)} />
     </Container>
   );
 };
