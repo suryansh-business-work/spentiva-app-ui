@@ -200,8 +200,8 @@ const AdminSupport: React.FC = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              tickets.map(ticket => (
-                <TableRow key={ticket._id} hover>
+              tickets.map((ticket, index) => (
+                <TableRow key={index} hover>
                   <TableCell>
                     <Typography variant="body2" fontWeight={600}>
                       {ticket.ticketId}
