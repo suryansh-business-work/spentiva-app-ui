@@ -30,17 +30,8 @@ import RefundDialog from './RefundDialog';
 
 const AdminPayments: React.FC = () => {
   const theme = useTheme();
-  const {
-    payments,
-    total,
-    page,
-    limit,
-    loading,
-    error,
-    fetchPayments,
-    setPage,
-    setLimit
-  } = usePayments();
+  const { payments, total, page, limit, loading, error, fetchPayments, setPage, setLimit } =
+    usePayments();
 
   const { createRefund } = useRefunds();
 
@@ -122,7 +113,7 @@ const AdminPayments: React.FC = () => {
           <InputLabel>Filter by Status</InputLabel>
           <Select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as PaymentState | 'all')}
+            onChange={e => setStatusFilter(e.target.value as PaymentState | 'all')}
             label="Filter by Status"
           >
             <MenuItem value="all">All Payments</MenuItem>
@@ -138,7 +129,9 @@ const AdminPayments: React.FC = () => {
         <Button
           variant="outlined"
           startIcon={<RefreshIcon />}
-          onClick={() => fetchPayments({ state: statusFilter !== 'all' ? statusFilter : undefined })}
+          onClick={() =>
+            fetchPayments({ state: statusFilter !== 'all' ? statusFilter : undefined })
+          }
           disabled={loading}
         >
           Refresh
@@ -164,15 +157,33 @@ const AdminPayments: React.FC = () => {
             }}
           >
             <TableRow>
-              <TableCell><strong>Payment ID</strong></TableCell>
-              <TableCell><strong>User</strong></TableCell>
-              <TableCell><strong>Plan</strong></TableCell>
-              <TableCell align="right"><strong>Amount</strong></TableCell>
-              <TableCell><strong>Duration</strong></TableCell>
-              <TableCell><strong>Method</strong></TableCell>
-              <TableCell><strong>Status</strong></TableCell>
-              <TableCell><strong>Date</strong></TableCell>
-              <TableCell align="center"><strong>Actions</strong></TableCell>
+              <TableCell>
+                <strong>Payment ID</strong>
+              </TableCell>
+              <TableCell>
+                <strong>User</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Plan</strong>
+              </TableCell>
+              <TableCell align="right">
+                <strong>Amount</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Duration</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Method</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Status</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Date</strong>
+              </TableCell>
+              <TableCell align="center">
+                <strong>Actions</strong>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -189,7 +200,7 @@ const AdminPayments: React.FC = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              payments.map((payment) => (
+              payments.map(payment => (
                 <TableRow key={payment._id} hover>
                   <TableCell>
                     <Typography variant="body2" fontFamily="monospace">
@@ -197,18 +208,20 @@ const AdminPayments: React.FC = () => {
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    {typeof payment.userId === 'object' ? payment.userId.name : payment.userName || 'N/A'}
+                    {typeof payment.userId === 'object'
+                      ? payment.userId.name
+                      : payment.userName || 'N/A'}
                     <Typography variant="caption" display="block" color="text.secondary">
-                      {typeof payment.userId === 'object' ? payment.userId.email : payment.userEmail || 'N/A'}
+                      {typeof payment.userId === 'object'
+                        ? payment.userId.email
+                        : payment.userEmail || 'N/A'}
                     </Typography>
                   </TableCell>
                   <TableCell>{payment.userSelectedPlan.toUpperCase()}</TableCell>
                   <TableCell align="right">
                     {payment.currency} {payment.amount.toFixed(2)}
                   </TableCell>
-                  <TableCell>
-                    {payment.planDuration === 'yearly' ? 'Annual' : 'Monthly'}
-                  </TableCell>
+                  <TableCell>{payment.planDuration === 'yearly' ? 'Annual' : 'Monthly'}</TableCell>
                   <TableCell>{payment.paymentUsing}</TableCell>
                   <TableCell>
                     <Chip
@@ -217,9 +230,7 @@ const AdminPayments: React.FC = () => {
                       size="small"
                     />
                   </TableCell>
-                  <TableCell>
-                    {new Date(payment.createdAt).toLocaleDateString()}
-                  </TableCell>
+                  <TableCell>{new Date(payment.createdAt).toLocaleDateString()}</TableCell>
                   <TableCell align="center">
                     {payment.paymentState === PaymentState.SUCCESS && (
                       <Button

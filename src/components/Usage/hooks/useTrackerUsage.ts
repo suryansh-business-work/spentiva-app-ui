@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { endpoints } from '../../../config/api';
 import { getRequest } from '../../../utils/http';
+import { parseResponseData } from '../../../utils/response-parser';
 import { TrackerStats, TrackerGraphs } from '../../../types/usage';
 
 interface UseTrackerUsageReturn {
@@ -37,11 +38,11 @@ export const useTrackerUsage = (trackerId: string | null): UseTrackerUsageReturn
         getRequest(endpoints.usage.trackerGraphs(trackerId)),
       ]);
 
-      const statsData = statsRes.data?.data || statsRes.data;
-      const graphsData = graphsRes.data?.data || graphsRes.data;
+      const statsData = parseResponseData<TrackerStats | null>(statsRes, null);
+      const graphsData = parseResponseData<TrackerGraphs | null>(graphsRes, null);
 
-      setStats(statsData || null);
-      setGraphs(graphsData || null);
+      setStats(statsData);
+      setGraphs(graphsData);
     } catch (err: any) {
       console.error('Error fetching tracker usage:', err);
       setError(err.response?.data?.error || err.message || 'Failed to load tracker usage');

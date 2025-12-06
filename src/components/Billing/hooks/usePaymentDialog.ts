@@ -38,55 +38,53 @@ export const usePaymentDialog = (): UsePaymentDialogReturn => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const initiatePayment = useCallback(async (
-    plan: UserSelectedPlan,
-    duration: PlanDuration,
-    amount: number,
-    cardData: CardStore
-  ) => {
-    if (!user || !user.id) {
-      setError('User not authenticated');
-      return;
-    }
-
-    setProcessing(true);
-    setError(null);
-    setSuccess(false);
-
-    try {
-      const paymentData: CreatePaymentRequest = {
-        userId: user.id,
-        userSelectedPlan: plan,
-        planDuration: duration,
-        amount,
-        currency: Currency.USD,
-        paymentUsing: PaymentMethod.CREDIT_CARD,
-        paymentType: PaymentType.SUBSCRIPTION,
-        paymentId: generatePaymentId(),
-        paymentCountry: 'US', // Default to US, can be changed based on user location
-        cardData,
-      };
-
-      const response = await createPayment(paymentData);
-
-      if (response.success && response.payment.paymentState === PaymentState.SUCCESS) {
-        setSuccess(true);
-        // Optionally update user context here
-      } else if (response.payment.paymentState === PaymentState.FAILED) {
-        throw new Error(response.payment.paymentStateReason || 'Payment failed');
-      } else {
-        // Payment is processing
-        setSuccess(true);
+  const initiatePayment = useCallback(
+    async (plan: UserSelectedPlan, duration: PlanDuration, amount: number, cardData: CardStore) => {
+      if (!user || !user.id) {
+        setError('User not authenticated');
+        return;
       }
-    } catch (err: any) {
-      const errorMessage = err?.response?.data?.message || err.message || 'Payment failed';
-      setError(errorMessage);
-      console.error('Payment error:', err);
-      throw err;
-    } finally {
-      setProcessing(false);
-    }
-  }, [user]);
+
+      setProcessing(true);
+      setError(null);
+      setSuccess(false);
+
+      try {
+        const paymentData: CreatePaymentRequest = {
+          userId: user.id,
+          userSelectedPlan: plan,
+          planDuration: duration,
+          amount,
+          currency: Currency.USD,
+          paymentUsing: PaymentMethod.CREDIT_CARD,
+          paymentType: PaymentType.SUBSCRIPTION,
+          paymentId: generatePaymentId(),
+          paymentCountry: 'US', // Default to US, can be changed based on user location
+          cardData,
+        };
+
+        const response = await createPayment(paymentData);
+
+        if (response.success && response.payment.paymentState === PaymentState.SUCCESS) {
+          setSuccess(true);
+          // Optionally update user context here
+        } else if (response.payment.paymentState === PaymentState.FAILED) {
+          throw new Error(response.payment.paymentStateReason || 'Payment failed');
+        } else {
+          // Payment is processing
+          setSuccess(true);
+        }
+      } catch (err: any) {
+        const errorMessage = err?.response?.data?.message || err.message || 'Payment failed';
+        setError(errorMessage);
+        console.error('Payment error:', err);
+        throw err;
+      } finally {
+        setProcessing(false);
+      }
+    },
+    [user]
+  );
 
   const reset = useCallback(() => {
     setProcessing(false);

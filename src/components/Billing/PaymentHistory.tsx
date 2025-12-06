@@ -98,7 +98,7 @@ const PaymentHistory: React.FC<PaymentHistoryProps> = ({ userId }) => {
           <InputLabel>Filter by Status</InputLabel>
           <Select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as PaymentState | 'all')}
+            onChange={e => setStatusFilter(e.target.value as PaymentState | 'all')}
             label="Filter by Status"
           >
             <MenuItem value="all">All Payments</MenuItem>
@@ -128,12 +128,24 @@ const PaymentHistory: React.FC<PaymentHistoryProps> = ({ userId }) => {
             }}
           >
             <TableRow>
-              <TableCell><strong>Date</strong></TableCell>
-              <TableCell><strong>Plan</strong></TableCell>
-              <TableCell><strong>Duration</strong></TableCell>
-              <TableCell align="right"><strong>Amount</strong></TableCell>
-              <TableCell><strong>Method</strong></TableCell>
-              <TableCell><strong>Status</strong></TableCell>
+              <TableCell>
+                <strong>Date</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Plan</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Duration</strong>
+              </TableCell>
+              <TableCell align="right">
+                <strong>Amount</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Method</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Status</strong>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -150,15 +162,11 @@ const PaymentHistory: React.FC<PaymentHistoryProps> = ({ userId }) => {
                 </TableCell>
               </TableRow>
             ) : (
-              payments.map((payment) => (
+              payments.map(payment => (
                 <TableRow key={payment._id} hover>
-                  <TableCell>
-                    {new Date(payment.createdAt).toLocaleDateString()}
-                  </TableCell>
+                  <TableCell>{new Date(payment.createdAt).toLocaleDateString()}</TableCell>
                   <TableCell>{payment.userSelectedPlan.toUpperCase()}</TableCell>
-                  <TableCell>
-                    {payment.planDuration === 'yearly' ? 'Annual' : 'Monthly'}
-                  </TableCell>
+                  <TableCell>{payment.planDuration === 'yearly' ? 'Annual' : 'Monthly'}</TableCell>
                   <TableCell align="right">
                     {payment.currency} {payment.amount.toFixed(2)}
                   </TableCell>

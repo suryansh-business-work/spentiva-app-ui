@@ -1,6 +1,9 @@
 import { endpoints } from '../config/api';
 import { getRequest, postRequest, patchRequest, deleteRequest } from '../utils/http';
+import { parseResponseData, parsePaginatedResponse } from '../utils/response-parser';
 import {
+  Payment,
+  PaymentStatistics,
   CreatePaymentRequest,
   UpdatePaymentStateRequest,
   PaymentQueryParams,
@@ -14,7 +17,10 @@ import {
  */
 export const createPayment = async (data: CreatePaymentRequest): Promise<PaymentResponse> => {
   const response = await postRequest(endpoints.payment.create, data);
-  return response.data;
+  return {
+    success: true,
+    payment: parseResponseData(response, {}) as Payment,
+  };
 };
 
 /**
@@ -22,7 +28,10 @@ export const createPayment = async (data: CreatePaymentRequest): Promise<Payment
  */
 export const getPaymentById = async (paymentId: string): Promise<PaymentResponse> => {
   const response = await getRequest(endpoints.payment.getById(paymentId));
-  return response.data;
+  return {
+    success: true,
+    payment: parseResponseData(response, {}) as Payment,
+  };
 };
 
 /**
@@ -33,11 +42,12 @@ export const getUserPayments = async (
   params?: PaymentQueryParams
 ): Promise<PaymentsListResponse> => {
   const response = await getRequest(endpoints.payment.getUserPayments(userId), params);
-  // Backend returns { data: { payments, count } }
+  const paginatedData = parsePaginatedResponse(response, 'payments');
+
   return {
     success: true,
-    payments: response.data.data.payments,
-    total: response.data.data.count || response.data.data.payments.length,
+    payments: paginatedData.items,
+    total: paginatedData.total,
     page: params?.page || 1,
     limit: params?.limit || 10,
   };
@@ -50,11 +60,12 @@ export const getAllPayments = async (
   params?: PaymentQueryParams
 ): Promise<PaymentsListResponse> => {
   const response = await getRequest(endpoints.payment.getAll, params);
-  // Backend returns { data: { payments, total, count } }
+  const paginatedData = parsePaginatedResponse(response, 'payments');
+
   return {
     success: true,
-    payments: response.data.data.payments,
-    total: response.data.data.total,
+    payments: paginatedData.items,
+    total: paginatedData.total,
     page: params?.page || 1,
     limit: params?.limit || 10,
   };
@@ -68,7 +79,10 @@ export const updatePaymentState = async (
   data: UpdatePaymentStateRequest
 ): Promise<PaymentResponse> => {
   const response = await patchRequest(endpoints.payment.updateState(paymentId), data);
-  return response.data;
+  return {
+    success: true,
+    payment: parseResponseData(response, {}) as Payment,
+  };
 };
 
 /**
@@ -76,7 +90,9 @@ export const updatePaymentState = async (
  */
 export const deletePayment = async (paymentId: string): Promise<{ success: boolean }> => {
   const response = await deleteRequest(endpoints.payment.delete(paymentId));
-  return response.data;
+  return {
+    success: parseResponseData(response, true) ?? true,
+  };
 };
 
 /**
@@ -84,7 +100,10 @@ export const deletePayment = async (paymentId: string): Promise<{ success: boole
  */
 export const getPaymentStats = async (): Promise<PaymentStatsResponse> => {
   const response = await getRequest(endpoints.payment.stats);
-  return response.data;
+  return {
+    success: true,
+    stats: parseResponseData(response, {}) as PaymentStatistics,
+  };
 };
 
 /**
@@ -94,5 +113,9 @@ export const expirePendingPayments = async (
   expiryMinutes: number = 30
 ): Promise<{ success: boolean; expiredCount: number }> => {
   const response = await postRequest(endpoints.payment.expirePending, { expiryMinutes });
-  return response.data;
+  const data = parseResponseData(response, { expiredCount: 0 });
+  return {
+    success: true,
+    expiredCount: data?.expiredCount || 0,
+  };
 };

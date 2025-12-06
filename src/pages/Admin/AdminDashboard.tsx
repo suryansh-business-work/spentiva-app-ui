@@ -26,6 +26,7 @@ import AdminSupportEdit from './AdminSupportEdit';
 import AdminPayments from '../../components/Admin/AdminPayments';
 import { endpoints } from '../../config/api';
 import { getRequest, putRequest, deleteRequest } from '../../utils/http';
+import { parseResponseData } from '../../utils/response-parser';
 
 const AdminDashboard: React.FC = () => {
   const theme = useTheme();
@@ -85,7 +86,7 @@ const AdminDashboard: React.FC = () => {
       }
       if (params.toString()) url += `?${params.toString()}`;
       const response = await getRequest(url);
-      const data = response.data?.data || response.data;
+      const data = parseResponseData<any>(response, {});
       setStatsData({ ...data, filter: dateFilter });
       setError(null);
     } catch (err: any) {
@@ -105,7 +106,7 @@ const AdminDashboard: React.FC = () => {
       if (filters.accountType) params.append('accountType', filters.accountType);
       if (filters.emailVerified) params.append('emailVerified', filters.emailVerified);
       const response = await getRequest(`${endpoints.admin.users}?${params.toString()}`);
-      const data = response.data?.data || response.data;
+      const data = parseResponseData<any>(response, {});
       setUsers(data.users || []);
       setTotalCount(data.pagination?.total || 0);
       setError(null);

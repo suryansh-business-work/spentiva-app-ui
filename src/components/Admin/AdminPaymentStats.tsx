@@ -85,10 +85,7 @@ const AdminPaymentStats: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const [paymentRes, refundRes] = await Promise.all([
-        getPaymentStats(),
-        getRefundStats(),
-      ]);
+      const [paymentRes, refundRes] = await Promise.all([getPaymentStats(), getRefundStats()]);
       setPaymentStats(paymentRes.stats);
       setRefundStats(refundRes.stats);
     } catch (err: any) {

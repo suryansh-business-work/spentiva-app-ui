@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { endpoints, getApiUrl } from '../../../config/api';
 import { putRequest, postRequest } from '../../../utils/http';
+import { parseResponseData } from '../../../utils/response-parser';
 
 interface ProfileUpdateState {
   loading: boolean;
@@ -44,7 +45,8 @@ export const useProfileUpdate = (
 
       try {
         const response = await putRequest(endpoints.auth.profile, { name });
-        const updatedUser = response.data?.user || response.data?.data?.user;
+        const data = parseResponseData<any>(response, null);
+        const updatedUser = data?.user;
 
         if (updatedUser) {
           updateUser(updatedUser);
@@ -76,7 +78,8 @@ export const useProfileUpdate = (
 
       try {
         const response = await postRequest(endpoints.auth.profilePhoto, formData);
-        const updatedUser = response.data?.user || response.data?.data?.user;
+        const data = parseResponseData<any>(response, null);
+        const updatedUser = data?.user;
 
         if (updatedUser) {
           updateUser(updatedUser);

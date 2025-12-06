@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Button, Tooltip, Box } from '@mui/material';
+import { Button, Tooltip, Box, useTheme, useMediaQuery } from '@mui/material';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
@@ -24,6 +24,8 @@ const RecordingControls: React.FC<RecordingControlsProps> = ({
   recording,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
 
   const canAddAttachment = (type: 'image' | 'video' | 'screenshot') => {
     const typeMap = { image: counts.images, video: counts.videos, screenshot: counts.screenshots };
@@ -104,22 +106,24 @@ const RecordingControls: React.FC<RecordingControlsProps> = ({
           </span>
         </Tooltip>
 
-        <Tooltip title="Capture a screenshot - Dialog will minimize automatically" arrow>
-          <span>
-            <Button
-              startIcon={<CameraAltIcon />}
-              endIcon={<HelpOutlineIcon fontSize="small" />}
-              onClick={captureScreenshot}
-              size="small"
-              disabled={!canAddAttachment('screenshot')}
-              color="info"
-            >
-              Screenshot ({counts.screenshots}/{maxPerType})
-            </Button>
-          </span>
-        </Tooltip>
+        {isDesktop && (
+          <Tooltip title="Capture a screenshot - Dialog will minimize automatically" arrow>
+            <span>
+              <Button
+                startIcon={<CameraAltIcon />}
+                endIcon={<HelpOutlineIcon fontSize="small" />}
+                onClick={captureScreenshot}
+                size="small"
+                disabled={!canAddAttachment('screenshot')}
+                color="info"
+              >
+                Screenshot ({counts.screenshots}/{maxPerType})
+              </Button>
+            </span>
+          </Tooltip>
+        )}
 
-        {!recording ? (
+        {isDesktop && !recording ? (
           <Tooltip
             title="Record your screen - Dialog will minimize. Click Stop when done (Max 5)"
             arrow

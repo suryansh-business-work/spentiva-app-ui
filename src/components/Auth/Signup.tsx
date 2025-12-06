@@ -26,6 +26,7 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { endpoints } from '../../config/api';
 import { postRequest } from '../../utils/http';
+import { parseResponseData } from '../../utils/response-parser';
 
 // Validation schema using Yup
 const validationSchema = Yup.object({
@@ -61,9 +62,9 @@ const Signup: React.FC = () => {
           password: values.password,
         });
 
-        const data = response.data;
-        if (data.status === 'success') {
-          const { token, user } = data.data;
+        const data = parseResponseData<any>(response, null);
+        if (data && data.token && data.user) {
+          const { token, user } = data;
 
           // Save user information to localStorage
           localStorage.setItem('authToken', token);
@@ -80,7 +81,7 @@ const Signup: React.FC = () => {
           // Redirect to trackers page
           navigate('/trackers');
         } else {
-          setError(data.message || 'Failed to create account. Please try again.');
+          setError(data?.message || 'Failed to create account. Please try again.');
         }
       } catch (err: any) {
         setError(err.response?.data?.message || 'Failed to create account. Please try again.');

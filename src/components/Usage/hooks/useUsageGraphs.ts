@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { endpoints } from '../../../config/api';
 import { getRequest } from '../../../utils/http';
+import { parseResponseData } from '../../../utils/response-parser';
 import { UsageGraphs } from '../../../types/usage';
 
 interface UseUsageGraphsReturn {
@@ -24,7 +25,10 @@ export const useUsageGraphs = (): UseUsageGraphsReturn => {
 
     try {
       const response = await getRequest(endpoints.usage.graphs);
-      const graphsData = response.data?.data || response.data;
+      const graphsData = parseResponseData<UsageGraphs>(response, {
+        dailyUsage: [],
+        byTrackerType: [],
+      });
 
       setData(graphsData || { dailyUsage: [], byTrackerType: [] });
     } catch (err: any) {

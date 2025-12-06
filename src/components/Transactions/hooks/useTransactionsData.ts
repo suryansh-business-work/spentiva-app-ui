@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Expense } from '../../../types';
 import { endpoints } from '../../../config/api';
 import { getRequest, putRequest, deleteRequest } from '../../../utils/http';
+import { parseResponseData } from '../../../utils/response-parser';
 
 interface UseTransactionsDataProps {
   trackerId?: string;
@@ -57,9 +58,9 @@ export const useTransactionsData = ({
         trackerId,
         limit: limit.toString(),
       });
-      const responseData = response.data;
-      const data = responseData?.data?.expenses || responseData?.expenses || [];
-      setExpenses(data);
+      const data = parseResponseData<any>(response, {});
+      const expenses = data?.expenses || [];
+      setExpenses(expenses);
 
       // Check if there are more expenses to load
       setHasMore(data.length >= limit);
@@ -76,9 +77,9 @@ export const useTransactionsData = ({
     if (!trackerId) return;
     try {
       const response = await getRequest(endpoints.categories.getAll(trackerId));
-      const responseData = response.data;
-      const data = responseData?.data?.categories || responseData?.categories || [];
-      setCategories(data);
+      const data = parseResponseData<any>(response, {});
+      const categories = data?.categories || [];
+      setCategories(categories);
     } catch (error) {
       console.error('Error loading categories:', error);
     }

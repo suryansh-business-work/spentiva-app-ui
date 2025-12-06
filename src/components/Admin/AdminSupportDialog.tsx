@@ -160,9 +160,9 @@ const AdminSupportDialog: React.FC<AdminSupportDialogProps> = ({
                 gap: 1.5,
               }}
             >
-              {ticket.attachments.map((att, idx) => (
+              {ticket.attachments.map(att => (
                 <AttachmentPreviewCard
-                  key={idx}
+                  key={att.fileUrl}
                   attachment={att}
                   onClick={() => {
                     setSelectedAttachment(att);
@@ -181,9 +181,9 @@ const AdminSupportDialog: React.FC<AdminSupportDialogProps> = ({
           Conversation
         </Typography>
         <Stack spacing={1.5} mb={2}>
-          {updates.map((update, idx) => (
+          {updates.map(update => (
             <Box
-              key={idx}
+              key={`${update.addedAt}-${update.message.substring(0, 20)}`}
               sx={{
                 p: 1.5,
                 bgcolor: update.addedBy === 'agent' ? 'action.hover' : 'background.paper',

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { endpoints } from '../../../config/api';
 import { getRequest, postRequest, putRequest, deleteRequest } from '../../../utils/http';
+import { parseResponseData } from '../../../utils/response-parser';
 import { Tracker, TrackerFormData, SnackbarState } from '../types/tracker.types';
 
 /**
@@ -22,7 +23,8 @@ export const useTrackers = () => {
     setLoading(true);
     try {
       const response = await getRequest(endpoints.trackers.getAll);
-      const trackersData = response.data?.trackers || response.data?.data?.trackers || [];
+      const data = parseResponseData<any>(response, {});
+      const trackersData = data?.trackers || [];
       setTrackers(trackersData);
     } catch (error) {
       console.error('Error loading trackers:', error);

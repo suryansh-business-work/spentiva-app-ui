@@ -23,6 +23,7 @@ import {
 } from '@mui/icons-material';
 import { endpoints } from '../../config/api';
 import { postRequest } from '../../utils/http';
+import { parseResponseData } from '../../utils/response-parser';
 
 const ResetPassword: React.FC = () => {
   const navigate = useNavigate();
@@ -95,7 +96,8 @@ const ResetPassword: React.FC = () => {
         confirmPassword,
       });
 
-      if (response.data.success) {
+      const data = parseResponseData<any>(response, null);
+      if (data && data.success !== false) {
         setSuccess(true);
 
         // Redirect to login after 2 seconds
@@ -103,7 +105,7 @@ const ResetPassword: React.FC = () => {
           navigate('/login');
         }, 2000);
       } else {
-        setError(response.data.message || 'Failed to reset password. Please check your OTP.');
+        setError(data?.message || 'Failed to reset password. Please check your OTP.');
       }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to reset password. Please check your OTP.');

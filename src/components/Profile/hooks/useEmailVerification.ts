@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { endpoints } from '../../../config/api';
 import { postRequest } from '../../../utils/http';
+import { parseResponseMessage } from '../../../utils/response-parser';
 
 interface VerificationState {
   loading: boolean;
@@ -28,7 +29,7 @@ export const useEmailVerification = (userEmail: string, onVerificationSuccess: (
 
     try {
       const response = await postRequest(endpoints.auth.sendVerificationOtp, { email: userEmail });
-      const message = response.data?.message || 'Verification code sent to your email';
+      const message = parseResponseMessage(response, 'Verification code sent to your email');
 
       setState(prev => ({ ...prev, loading: false, success: message }));
       setOtpSent(true);
@@ -63,7 +64,7 @@ export const useEmailVerification = (userEmail: string, onVerificationSuccess: (
 
       try {
         const response = await postRequest(endpoints.auth.verifyEmail, { email: userEmail, otp });
-        const message = response.data?.message || 'Email verified successfully';
+        const message = parseResponseMessage(response, 'Email verified successfully');
 
         setState(prev => ({ ...prev, loading: false, success: message, isDialogOpen: false }));
         setOtpSent(false);

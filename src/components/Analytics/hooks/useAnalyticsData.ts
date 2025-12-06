@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { endpoints } from '../../../config/api';
 import { getRequest } from '../../../utils/http';
+import { parseResponseData } from '../../../utils/response-parser';
 import {
   AnalyticsSummary,
   CategoryExpense,
@@ -61,19 +62,24 @@ export const useAnalyticsData = ({ trackerId }: UseAnalyticsDataProps): UseAnaly
 
         // Handle different response structures
         // Summary API returns: data.data.stats with totalExpenses, transactionCount, averageExpense
-        const summaryStats = summaryRes.data?.data?.stats || summaryRes.data?.stats || {};
-        const summaryData = {
+        const summaryData = parseResponseData<any>(summaryRes, {});
+        const summaryStats = summaryData?.stats || {};
+        const summary = {
           total: summaryStats.totalExpenses || 0,
           average: summaryStats.averageExpense || 0,
           count: summaryStats.transactionCount || 0,
         };
 
         // Category, Monthly, and Payment APIs return: data.data.data (double nested)
-        const categoryList = categoryRes.data?.data?.data || categoryRes.data?.data || [];
-        const monthlyList = monthlyRes.data?.data?.data || monthlyRes.data?.data || [];
-        const paymentList = paymentRes.data?.data?.data || paymentRes.data?.data || [];
+        const categoryData = parseResponseData<any>(categoryRes, {});
+        const monthlyData = parseResponseData<any>(monthlyRes, {});
+        const paymentData = parseResponseData<any>(paymentRes, {});
 
-        setSummary(summaryData);
+        const categoryList = categoryData?.data || [];
+        const monthlyList = monthlyData?.data || [];
+        const paymentList = paymentData?.data || [];
+
+        setSummary(summary);
         setCategoryData(categoryList);
         setMonthlyData(monthlyList);
         setPaymentMethodData(paymentList);

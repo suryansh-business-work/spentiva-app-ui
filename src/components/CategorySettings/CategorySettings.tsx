@@ -19,6 +19,7 @@ import SubcategoryList from './SubcategoryList';
 import CategoryDialog from './CategoryDialog';
 import { endpoints } from '../../config/api';
 import { getRequest, postRequest, putRequest, deleteRequest } from '../../utils/http';
+import { parseResponseData } from '../../utils/response-parser';
 
 interface SubCategory {
   id: string;
@@ -62,8 +63,9 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
     setLoading(true);
     try {
       const response = await getRequest(endpoints.categories.getAll(trackerId));
-      const data = response.data?.data?.categories || [];
-      setCategories(data);
+      const data = parseResponseData<any>(response, {});
+      const categories = data?.categories || [];
+      setCategories(categories);
     } catch (error) {
       setSnackbar({ open: true, message: 'Failed to load categories', severity: 'error' });
     } finally {

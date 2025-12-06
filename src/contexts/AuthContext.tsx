@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { getRequest } from '../utils/http';
 import { endpoints } from '../config/api';
 import { User } from '../types';
+import { parseResponseData, extractNestedData } from '../utils/response-parser';
 
 interface AuthContextType {
   user: User | null;
@@ -46,18 +47,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const fetchCurrentUser = async (authToken: string) => {
     try {
       const response = await getRequest(endpoints.auth.me, {}, authToken);
-      // The API returns { data: { user: ... } } or similar.
-      // Based on previous api.ts: return response.data.data; which was { user: User }
-      // So response.data.data.user is the user object.
-      // Let's check the response structure from previous steps.
-      // api.ts was: const response = await axios.get(endpoints.auth.me...); return response.data.data;
-      // getRequest returns axios response.
-      // So we need response.data.data.user
-      if (response.data && response.data.data && response.data.data.user) {
-        setUser(response.data.data.user);
-      } else if (response.data && response.data.user) {
-        // Fallback if structure is different
-        setUser(response.data.user);
+      // Try to extract user from response.data.data.user or response.data.user
+      const user =
+        extractNestedData<User>(response, 'data.user', null) ||
+        parseResponseData<any>(response, null)?.user;
+
+      if (user) {
+        setUser(user);
+      } else {
+        logout();
       }
     } catch (error) {
       console.error('Error fetching user:', error);

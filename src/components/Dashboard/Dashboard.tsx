@@ -14,6 +14,7 @@ import {
 } from 'chart.js';
 import { endpoints } from '../../config/api';
 import { getRequest } from '../../utils/http';
+import { parseResponseData } from '../../utils/response-parser';
 import FilterBar from './components/FilterBar';
 import StatCards from './components/StatCards';
 import ChartSection from './components/ChartSection';
@@ -67,11 +68,13 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
         getRequest(endpoints.analytics.byMonth, { params: { year: selectedYear, trackerId } }),
       ]);
 
-      setSummary(
-        summaryRes.data?.stats || summaryRes.data?.data?.stats || { total: 0, average: 0, count: 0 }
-      );
-      setCategoryData(categoryRes.data?.data || categoryRes.data || []);
-      setMonthlyData(monthlyRes.data?.data || monthlyRes.data || []);
+      const summaryData = parseResponseData<any>(summaryRes, {});
+      const categoryDataRes = parseResponseData<any>(categoryRes, []);
+      const monthlyDataRes = parseResponseData<any>(monthlyRes, []);
+
+      setSummary(summaryData?.stats || { total: 0, average: 0, count: 0 });
+      setCategoryData(categoryDataRes || []);
+      setMonthlyData(monthlyDataRes || []);
     } catch (error) {
       console.error('Error loading analytics:', error);
     } finally {

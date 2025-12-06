@@ -35,24 +35,27 @@ export const useRefunds = (): UseRefundsReturn => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchRefunds = useCallback(async (params?: RefundQueryParams) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await getAllRefunds({
-        ...params,
-        page: params?.page ?? page + 1,
-        limit: params?.limit ?? limit,
-      });
-      setRefunds(response.refunds);
-      setTotal(response.total);
-    } catch (err: any) {
-      setError(err?.response?.data?.message || 'Failed to fetch refunds');
-      console.error('Error fetching refunds:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [page, limit]);
+  const fetchRefunds = useCallback(
+    async (params?: RefundQueryParams) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await getAllRefunds({
+          ...params,
+          page: params?.page ?? page + 1,
+          limit: params?.limit ?? limit,
+        });
+        setRefunds(response.refunds);
+        setTotal(response.total);
+      } catch (err: any) {
+        setError(err?.response?.data?.message || 'Failed to fetch refunds');
+        console.error('Error fetching refunds:', err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [page, limit]
+  );
 
   const fetchRefundsByPayment = useCallback(async (paymentId: string) => {
     setLoading(true);
@@ -69,41 +72,44 @@ export const useRefunds = (): UseRefundsReturn => {
     }
   }, []);
 
-  const createRefund = useCallback(async (data: CreateRefundRequest): Promise<Refund> => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await createRefundService(data);
-      // Refresh refunds after creation
-      await fetchRefunds();
-      return response.refund;
-    } catch (err: any) {
-      setError(err?.response?.data?.message || 'Failed to create refund');
-      console.error('Error creating refund:', err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchRefunds]);
+  const createRefund = useCallback(
+    async (data: CreateRefundRequest): Promise<Refund> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await createRefundService(data);
+        // Refresh refunds after creation
+        await fetchRefunds();
+        return response.refund;
+      } catch (err: any) {
+        setError(err?.response?.data?.message || 'Failed to create refund');
+        console.error('Error creating refund:', err);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [fetchRefunds]
+  );
 
-  const updateStatus = useCallback(async (
-    refundId: string,
-    data: UpdateRefundStatusRequest
-  ) => {
-    setLoading(true);
-    setError(null);
-    try {
-      await updateRefundStatus(refundId, data);
-      // Refresh refunds after update
-      await fetchRefunds();
-    } catch (err: any) {
-      setError(err?.response?.data?.message || 'Failed to update refund status');
-      console.error('Error updating refund status:', err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchRefunds]);
+  const updateStatus = useCallback(
+    async (refundId: string, data: UpdateRefundStatusRequest) => {
+      setLoading(true);
+      setError(null);
+      try {
+        await updateRefundStatus(refundId, data);
+        // Refresh refunds after update
+        await fetchRefunds();
+      } catch (err: any) {
+        setError(err?.response?.data?.message || 'Failed to update refund status');
+        console.error('Error updating refund status:', err);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [fetchRefunds]
+  );
 
   return {
     refunds,

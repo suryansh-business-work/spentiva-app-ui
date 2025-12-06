@@ -14,6 +14,7 @@ import {
 import { Email as EmailIcon, ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import { endpoints } from '../../config/api';
 import { postRequest } from '../../utils/http';
+import { parseResponseData } from '../../utils/response-parser';
 
 const ForgotPassword: React.FC = () => {
   const navigate = useNavigate();
@@ -37,7 +38,8 @@ const ForgotPassword: React.FC = () => {
     try {
       const response = await postRequest(endpoints.auth.forgotPassword, { email });
 
-      if (response.data.success) {
+      const data = parseResponseData<any>(response, null);
+      if (data && data.success !== false) {
         setSuccess(true);
 
         // Redirect to reset password after 2 seconds
@@ -45,7 +47,7 @@ const ForgotPassword: React.FC = () => {
           navigate(`/reset-password?email=${encodeURIComponent(email)}`);
         }, 2000);
       } else {
-        setError(response.data.message || 'Failed to send reset code. Please try again.');
+        setError(data?.message || 'Failed to send reset code. Please try again.');
       }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to send reset code. Please try again.');

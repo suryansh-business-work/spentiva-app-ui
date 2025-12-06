@@ -25,6 +25,7 @@ import PaymentHistory from '../components/Billing/PaymentHistory';
 import SupportDialog from '../components/Support/SupportDialog';
 import { endpoints } from '../config/api';
 import { getRequest } from '../utils/http';
+import { parseResponseData } from '../utils/response-parser';
 import { useAuth } from '../contexts/AuthContext';
 import { type PlanType } from '../config/planConfig';
 
@@ -72,16 +73,16 @@ const Billing: React.FC = () => {
 
       // Fetch user data
       const userResponse = await getRequest(endpoints.auth.me);
-      const userData =
-        userResponse?.data?.data?.user || userResponse?.data?.user || userResponse?.data;
-      const accountType = (userData?.accountType || 'free').toLowerCase() as PlanType;
+      const userData = parseResponseData<any>(userResponse, {});
+      const user = userData?.user || userData;
+      const accountType = (user?.accountType || 'free').toLowerCase() as PlanType;
       setCurrentPlan(accountType);
 
       // Fetch trackers
       try {
         const trackersResponse = await getRequest(endpoints.trackers.getAll);
-        const trackers =
-          trackersResponse?.data?.data?.trackers || trackersResponse?.data?.trackers || [];
+        const data = parseResponseData<any>(trackersResponse, {});
+        const trackers = data?.trackers || [];
         setTrackerCount(Array.isArray(trackers) ? trackers.length : 0);
       } catch (err) {
         console.error('Error fetching trackers:', err);
@@ -91,7 +92,7 @@ const Billing: React.FC = () => {
       // Fetch messages
       try {
         const usageResponse = await getRequest(endpoints.usage.overview);
-        const usageData = usageResponse?.data?.data || usageResponse?.data;
+        const usageData = parseResponseData<any>(usageResponse, {});
         const messages = usageData?.overall?.totalMessages || usageData?.totalMessages || 0;
         setMessageCount(messages);
       } catch (err) {

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { endpoints } from '../../../config/api';
 import { getRequest, deleteRequest } from '../../../utils/http';
+import { parseResponseData, parseResponseMessage } from '../../../utils/response-parser';
 import { UsageLog, UsageLogsResponse } from '../../../types/usage';
 
 interface UseUsageLogsParams {
@@ -56,11 +57,17 @@ export const useUsageLogs = (params: UseUsageLogsParams = {}): UseUsageLogsRetur
 
       try {
         const response = await getRequest(endpoints.usageLogs.getAll, queryParams);
-        const data: UsageLogsResponse = response.data?.data || response.data;
+        const data = parseResponseData<UsageLogsResponse>(response, {
+          logs: [],
+          totalCount: 0,
+          limit: finalLimit,
+          offset: finalOffset,
+          hasMore: false,
+        });
 
-        setLogs(data.logs || []);
-        setTotalCount(data.totalCount || 0);
-        setHasMore(data.hasMore || false);
+        setLogs(data?.logs ?? []);
+        setTotalCount(data?.totalCount ?? 0);
+        setHasMore(data?.hasMore ?? false);
       } catch (err: any) {
         console.error('Error fetching usage logs:', err);
         setError(err.response?.data?.error || err.message || 'Failed to load usage logs');
@@ -79,8 +86,8 @@ export const useUsageLogs = (params: UseUsageLogsParams = {}): UseUsageLogsRetur
 
       return {
         success: true,
-        data: response.data?.data,
-        message: response.data?.message || 'Tracker logs deleted successfully',
+        data: parseResponseData<any>(response, null),
+        message: parseResponseMessage(response, 'Tracker logs deleted successfully'),
       };
     } catch (err: any) {
       console.error('Error deleting tracker logs:', err);
@@ -100,8 +107,8 @@ export const useUsageLogs = (params: UseUsageLogsParams = {}): UseUsageLogsRetur
 
       return {
         success: true,
-        data: response.data?.data,
-        message: response.data?.message || 'All user logs deleted successfully',
+        data: parseResponseData<any>(response, null),
+        message: parseResponseMessage(response, 'All user logs deleted successfully'),
       };
     } catch (err: any) {
       console.error('Error deleting all user logs:', err);

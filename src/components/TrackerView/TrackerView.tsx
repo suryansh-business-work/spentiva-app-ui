@@ -23,6 +23,7 @@ import Analytics from '../Analytics/Analytics';
 import Transactions from '../Transactions/Transactions';
 import { endpoints } from '../../config/api';
 import { getRequest } from '../../utils/http';
+import { parseResponseData } from '../../utils/response-parser';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -98,7 +99,8 @@ const TrackerView: React.FC = () => {
     setLoading(true);
     try {
       const response = await getRequest(endpoints.trackers.byId(trackerId!));
-      const trackerData = response.data?.tracker || response.data?.data?.tracker || null;
+      const data = parseResponseData<any>(response, {});
+      const trackerData = data?.tracker || null;
       setTracker(trackerData);
     } catch (error) {
       console.error('Error loading tracker:', error);

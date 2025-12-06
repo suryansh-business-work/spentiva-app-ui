@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { endpoints } from '../../../config/api';
 import { getRequest, postRequest } from '../../../utils/http';
+import { parseResponseData } from '../../../utils/response-parser';
 import { ParsedExpense, CreateExpenseData, Expense } from '../../../types/expense';
 
 /**
@@ -27,8 +28,9 @@ export const useExpenseActions = (trackerId?: string) => {
 
     try {
       const response = await getRequest(endpoints.categories.getAll(trackerId));
-      const data = response.data?.data?.categories || [];
-      setCategories(data);
+      const data = parseResponseData<any>(response, {});
+      const categories = data?.categories || [];
+      setCategories(categories);
     } catch (error) {
       console.error('Error loading categories:', error);
     }
@@ -45,12 +47,14 @@ export const useExpenseActions = (trackerId?: string) => {
           trackerId,
         });
 
-        return response.data?.data || response.data;
+        const data = parseResponseData<any>(response, null);
+        return data || {};
       } catch (error: any) {
         console.error('Error parsing expense:', error);
 
-        // Extract error details from API response
-        const apiData = error.response?.data?.data || {};
+        // Extract error details from API response using parseResponseData
+        const errorResponse = error.response || {};
+        const apiData = parseResponseData<any>(errorResponse, {});
         const apiMessage =
           apiData.message ||
           error.response?.data?.message ||
@@ -87,7 +91,8 @@ export const useExpenseActions = (trackerId?: string) => {
 
       try {
         const response = await postRequest(endpoints.expenses.create, expenseData);
-        const expenses = response.data?.data?.expenses || [];
+        const data = parseResponseData<any>(response, {});
+        const expenses = data?.expenses || [];
 
         if (!expenses || expenses.length === 0) {
           throw new Error('Invalid response from server');

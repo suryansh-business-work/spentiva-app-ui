@@ -77,9 +77,10 @@ const PaymentDialog: React.FC<PaymentDialogProps> = ({ open, onClose, selectedPl
 
     const plan = selectedPlan === 'pro' ? UserSelectedPlan.PRO : UserSelectedPlan.BUSINESS_PRO;
     const duration = billingPeriod === 'yearly' ? PlanDuration.YEARLY : PlanDuration.MONTHLY;
-    const amount = billingPeriod === 'yearly'
-      ? PLAN_PRICING[selectedPlan].yearly
-      : PLAN_PRICING[selectedPlan].monthly;
+    const amount =
+      billingPeriod === 'yearly'
+        ? PLAN_PRICING[selectedPlan].yearly
+        : PLAN_PRICING[selectedPlan].monthly;
 
     try {
       await initiatePayment(plan, duration, amount, cardData);

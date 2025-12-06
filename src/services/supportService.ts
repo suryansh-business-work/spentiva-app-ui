@@ -1,5 +1,6 @@
 import { postRequest, getRequest, putRequest, deleteRequest } from '../utils/http';
 import { endpoints } from '../config/api';
+import { parseResponseData, parseResponseMessage } from '../utils/response-parser';
 import {
   CreateTicketPayload,
   SupportTicket,
@@ -12,15 +13,9 @@ import {
 
 // Create support ticket
 export const createSupportTicket = async (payload: CreateTicketPayload): Promise<SupportTicket> => {
-  // Debug: Log auth token
-  const token = localStorage.getItem('authToken');
-  console.log('🔑 Auth Token:', token ? `${token.substring(0, 20)}...` : 'NOT FOUND');
-  console.log('📍 API Endpoint:', endpoints.support.createTicket);
-  console.log('📦 Payload:', payload);
-
   const response = await postRequest(endpoints.support.createTicket, payload);
-  console.log('✅ Response:', response.data);
-  return response.data.data.ticket;
+  const data = parseResponseData(response, {});
+  return (data as any)?.ticket || data;
 };
 
 // Get user's tickets or all tickets (admin)
@@ -39,13 +34,16 @@ export const getUserTickets = async (
     : endpoints.support.getTickets;
 
   const response = await getRequest(url);
-  return response.data.data;
+  return parseResponseData(response, { tickets: [], total: 0 }) as {
+    tickets: SupportTicket[];
+    total: number;
+  };
 };
 
 // Get ticket by ID
 export const getTicketById = async (ticketId: string): Promise<SupportTicket> => {
   const response = await getRequest(endpoints.support.getTicketById(ticketId));
-  return response.data.data;
+  return parseResponseData(response, {}) as SupportTicket;
 };
 
 // Update ticket status
@@ -54,7 +52,8 @@ export const updateTicketStatus = async (
   status: UpdateStatusPayload
 ): Promise<SupportTicket> => {
   const response = await putRequest(endpoints.support.updateStatus(ticketId), status);
-  return response.data.data.ticket;
+  const data = parseResponseData(response, {});
+  return (data as any)?.ticket || data;
 };
 
 // Add attachment to ticket
@@ -63,7 +62,8 @@ export const addAttachmentToTicket = async (
   attachment: AttachmentMetadata
 ): Promise<SupportTicket> => {
   const response = await postRequest(endpoints.support.addAttachment(ticketId), attachment);
-  return response.data.data.ticket;
+  const data = parseResponseData(response, {});
+  return (data as any)?.ticket || data;
 };
 
 // Add update message to ticket
@@ -72,17 +72,18 @@ export const addUpdateToTicket = async (
   update: AddUpdatePayload
 ): Promise<SupportTicket> => {
   const response = await postRequest(endpoints.support.addUpdate(ticketId), update);
-  return response.data.data.ticket;
+  const data = parseResponseData(response, {});
+  return (data as any)?.ticket || data;
 };
 
 // Delete ticket (admin only)
 export const deleteTicket = async (ticketId: string): Promise<string> => {
   const response = await deleteRequest(endpoints.support.deleteTicket(ticketId));
-  return response.data.message;
+  return parseResponseMessage(response, 'Ticket deleted successfully');
 };
 
 // Get ticket statistics
 export const getTicketStats = async (): Promise<TicketStats> => {
   const response = await getRequest(endpoints.support.getStats);
-  return response.data.data;
+  return parseResponseData(response, {}) as TicketStats;
 };

@@ -1,5 +1,6 @@
 import { endpoints } from '../config/api';
 import { getRequest, postRequest, patchRequest, deleteRequest } from '../utils/http';
+import { parseResponseData, parsePaginatedResponse } from '../utils/response-parser';
 import {
   CreateRefundRequest,
   UpdateRefundStatusRequest,
@@ -7,6 +8,8 @@ import {
   RefundResponse,
   RefundsListResponse,
   RefundStatsResponse,
+  Refund,
+  RefundStatistics,
 } from '../types/refund';
 
 /**
@@ -14,7 +17,10 @@ import {
  */
 export const createRefund = async (data: CreateRefundRequest): Promise<RefundResponse> => {
   const response = await postRequest(endpoints.refund.create, data);
-  return response.data;
+  return {
+    success: true,
+    refund: parseResponseData(response, {}) as Refund,
+  };
 };
 
 /**
@@ -22,7 +28,10 @@ export const createRefund = async (data: CreateRefundRequest): Promise<RefundRes
  */
 export const getRefundById = async (refundId: string): Promise<RefundResponse> => {
   const response = await getRequest(endpoints.refund.getById(refundId));
-  return response.data;
+  return {
+    success: true,
+    refund: parseResponseData(response, {}) as Refund,
+  };
 };
 
 /**
@@ -30,7 +39,15 @@ export const getRefundById = async (refundId: string): Promise<RefundResponse> =
  */
 export const getRefundsByPayment = async (paymentId: string): Promise<RefundsListResponse> => {
   const response = await getRequest(endpoints.refund.getByPayment(paymentId));
-  return response.data;
+  const paginatedData = parsePaginatedResponse(response, 'refunds');
+
+  return {
+    success: true,
+    refunds: paginatedData.items,
+    total: paginatedData.total,
+    page: 1,
+    limit: 10,
+  };
 };
 
 /**
@@ -41,7 +58,15 @@ export const getUserRefunds = async (
   params?: RefundQueryParams
 ): Promise<RefundsListResponse> => {
   const response = await getRequest(endpoints.refund.getUserRefunds(userId), params);
-  return response.data;
+  const paginatedData = parsePaginatedResponse(response, 'refunds');
+
+  return {
+    success: true,
+    refunds: paginatedData.items,
+    total: paginatedData.total,
+    page: params?.page || 1,
+    limit: params?.limit || 10,
+  };
 };
 
 /**
@@ -49,7 +74,15 @@ export const getUserRefunds = async (
  */
 export const getAllRefunds = async (params?: RefundQueryParams): Promise<RefundsListResponse> => {
   const response = await getRequest(endpoints.refund.getAll, params);
-  return response.data;
+  const paginatedData = parsePaginatedResponse(response, 'refunds');
+
+  return {
+    success: true,
+    refunds: paginatedData.items,
+    total: paginatedData.total,
+    page: params?.page || 1,
+    limit: params?.limit || 10,
+  };
 };
 
 /**
@@ -60,7 +93,10 @@ export const updateRefundStatus = async (
   data: UpdateRefundStatusRequest
 ): Promise<RefundResponse> => {
   const response = await patchRequest(endpoints.refund.updateStatus(refundId), data);
-  return response.data;
+  return {
+    success: true,
+    refund: parseResponseData(response, {}) as Refund,
+  };
 };
 
 /**
@@ -68,7 +104,9 @@ export const updateRefundStatus = async (
  */
 export const deleteRefund = async (refundId: string): Promise<{ success: boolean }> => {
   const response = await deleteRequest(endpoints.refund.delete(refundId));
-  return response.data;
+  return {
+    success: parseResponseData(response, true) ?? true,
+  };
 };
 
 /**
@@ -76,5 +114,8 @@ export const deleteRefund = async (refundId: string): Promise<{ success: boolean
  */
 export const getRefundStats = async (): Promise<RefundStatsResponse> => {
   const response = await getRequest(endpoints.refund.stats);
-  return response.data;
+  return {
+    success: true,
+    stats: parseResponseData(response, {}) as RefundStatistics,
+  };
 };

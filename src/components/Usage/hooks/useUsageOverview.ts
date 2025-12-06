@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { endpoints } from '../../../config/api';
 import { getRequest } from '../../../utils/http';
+import { parseResponseData } from '../../../utils/response-parser';
 import { UsageOverview } from '../../../types/usage';
 
 interface UseUsageOverviewReturn {
@@ -24,7 +25,7 @@ export const useUsageOverview = (): UseUsageOverviewReturn => {
 
     try {
       const response = await getRequest(endpoints.usage.overview);
-      const usageData = response.data?.data || response.data;
+      const usageData = parseResponseData<UsageOverview | null>(response, null);
 
       // Validate data structure
       if (!usageData || !usageData.overall) {
