@@ -82,19 +82,30 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
       if (parsed.error) {
         addAssistantMessage(parsed.error);
       } else {
-        // Create the expense
-        const expense = await createExpense(parsed);
+        // Create the expense(s)
+        const expenses = await createExpense(parsed);
+        const count = expenses.length;
 
         // Add success message with expense details
-        addAssistantMessage(`✅ Expense logged successfully!`, expense);
+        const successMessage =
+          count === 1
+            ? '✅ Expense logged successfully!'
+            : `✅ ${count} expenses logged successfully!`;
+
+        addAssistantMessage(successMessage, expenses);
 
         // Notify parent component
         if (onExpenseAdded) {
           onExpenseAdded();
         }
 
-        // Show system notification
-        notifyExpenseAdded(expense.amount, expense.subcategory);
+        // Show system notification (for first expense or total if multiple)
+        if (count === 1) {
+          notifyExpenseAdded(expenses[0].amount, expenses[0].subcategory);
+        } else {
+          const totalAmount = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+          notifyExpenseAdded(totalAmount, `${count} expenses`);
+        }
 
         // Dispatch event for other components
         window.dispatchEvent(new Event('expenseUpdated'));

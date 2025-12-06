@@ -33,7 +33,14 @@ const Transactions: React.FC<TransactionsProps> = ({ trackerId }) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
 
-  const paymentMethods = ['Cash', 'Credit Card', 'Debit Card', 'UPI', 'Net Banking'];
+  const paymentMethods = [
+    'Cash',
+    'Credit Card',
+    'Debit Card',
+    'UPI',
+    'Net Banking',
+    'User not provided payment method',
+  ];
 
   // Data management hook
   const {

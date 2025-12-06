@@ -19,7 +19,12 @@ interface SupportDialogProps {
   ticketId?: string;
 }
 
-const SupportDialog: React.FC<SupportDialogProps> = ({ open, onClose, mode = 'create', ticketId }) => {
+const SupportDialog: React.FC<SupportDialogProps> = ({
+  open,
+  onClose,
+  mode = 'create',
+  ticketId,
+}) => {
   const [minimized, setMinimized] = useState(false);
   const [previewAttachment, setPreviewAttachment] = useState<Attachment | null>(null);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
@@ -74,11 +79,13 @@ const SupportDialog: React.FC<SupportDialogProps> = ({ open, onClose, mode = 'cr
 
     // Set uploading status with initial progress
     setAttachments(prev =>
-      prev.map(a => (a.id === id ? { ...a, uploadStatus: 'uploading' as const, uploadProgress: 0 } : a))
+      prev.map(a =>
+        a.id === id ? { ...a, uploadStatus: 'uploading' as const, uploadProgress: 0 } : a
+      )
     );
 
     try {
-      const uploadedData = await uploadFile(attachment.file, (progress) => {
+      const uploadedData = await uploadFile(attachment.file, progress => {
         // Update progress in real-time
         console.log('Progress callback received:', progress);
         setAttachments(prev =>
@@ -90,7 +97,9 @@ const SupportDialog: React.FC<SupportDialogProps> = ({ open, onClose, mode = 'cr
         // Set uploaded status with complete data
         setAttachments(prev =>
           prev.map(a =>
-            a.id === id ? { ...a, uploadStatus: 'uploaded' as const, uploadedData, uploadProgress: 100 } : a
+            a.id === id
+              ? { ...a, uploadStatus: 'uploaded' as const, uploadedData, uploadProgress: 100 }
+              : a
           )
         );
       } else {
@@ -137,22 +146,22 @@ const SupportDialog: React.FC<SupportDialogProps> = ({ open, onClose, mode = 'cr
               : '0px 24px 48px rgba(0, 0, 0, 0.2)',
             ...(minimized
               ? {
-                bottom: 16,
-                right: 16,
-                width: recording ? 400 : 320,
-                height: 56,
-                overflow: 'hidden',
-              }
+                  bottom: 16,
+                  right: 16,
+                  width: recording ? 400 : 320,
+                  height: 56,
+                  overflow: 'hidden',
+                }
               : {
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: '90%',
-                maxWidth: 900,
-                maxHeight: '90vh',
-                display: 'flex',
-                flexDirection: 'column',
-              }),
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: '90%',
+                  maxWidth: 900,
+                  maxHeight: '90vh',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }),
           }}
         >
           <SupportDialogHeader
@@ -194,7 +203,14 @@ const SupportDialog: React.FC<SupportDialogProps> = ({ open, onClose, mode = 'cr
                   />
 
                   {(mode === 'view' || mode === 'update') && ticket && ticket.updates && (
-                    <Box sx={{ p: 2.5, borderTop: 1, borderColor: 'divider', bgcolor: 'background.default' }}>
+                    <Box
+                      sx={{
+                        p: 2.5,
+                        borderTop: 1,
+                        borderColor: 'divider',
+                        bgcolor: 'background.default',
+                      }}
+                    >
                       <TicketTimeline
                         ticketId={ticket.ticketId}
                         updates={ticket.updates}

@@ -133,11 +133,7 @@ const AdminSupport: React.FC = () => {
         <Typography variant="h5" fontWeight={700}>
           Support Tickets
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={handleCreateClick}
-        >
+        <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateClick}>
           Create Ticket
         </Button>
       </Box>
@@ -239,7 +235,11 @@ const AdminSupport: React.FC = () => {
                   </TableCell>
                   <TableCell>
                     <Box sx={{ display: 'flex', gap: 0.5 }}>
-                      <IconButton size="small" onClick={() => handleViewTicket(ticket)} title="View">
+                      <IconButton
+                        size="small"
+                        onClick={() => handleViewTicket(ticket)}
+                        title="View"
+                      >
                         <VisibilityIcon fontSize="small" />
                       </IconButton>
                       <IconButton size="small" onClick={() => handleEditClick(ticket)} title="Edit">

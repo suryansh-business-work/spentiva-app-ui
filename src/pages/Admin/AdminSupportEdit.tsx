@@ -108,10 +108,7 @@ const AdminSupportEdit: React.FC = () => {
   return (
     <Box>
       <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
-        <Button
-          startIcon={<ArrowBackIcon />}
-          onClick={() => navigate('/admin/support')}
-        >
+        <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/admin/support')}>
           Back to Tickets
         </Button>
         <Typography variant="h5" fontWeight={700}>
@@ -142,7 +139,7 @@ const AdminSupportEdit: React.FC = () => {
               <Select
                 value={formData.status}
                 label="Status"
-                onChange={(e) => handleChange('status', e.target.value)}
+                onChange={e => handleChange('status', e.target.value)}
               >
                 <MenuItem value="Open">Open</MenuItem>
                 <MenuItem value="InProgress">In Progress</MenuItem>
@@ -162,12 +159,7 @@ const AdminSupportEdit: React.FC = () => {
               </Select>
             </FormControl>
 
-            <TextField
-              label="Subject"
-              fullWidth
-              value={formData.subject}
-              disabled
-            />
+            <TextField label="Subject" fullWidth value={formData.subject} disabled />
 
             <TextField
               label="Description"

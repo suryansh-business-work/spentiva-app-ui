@@ -17,9 +17,9 @@ const WelcomeAnimation: React.FC<WelcomeAnimationProps> = ({ userName }) => {
   React.useEffect(() => {
     // Load animation data from public directory
     fetch('/animations/bot.json')
-      .then((response) => response.json())
-      .then((data) => setBotAnimation(data))
-      .catch((error) => console.error('Error loading bot animation:', error));
+      .then(response => response.json())
+      .then(data => setBotAnimation(data))
+      .catch(error => console.error('Error loading bot animation:', error));
   }, []);
 
   return (

@@ -26,9 +26,9 @@ const GreetingHeader: React.FC = () => {
   useEffect(() => {
     // Load animation data from public directory
     fetch('/animations/hi.json')
-      .then((response) => response.json())
-      .then((data) => setHiAnimation(data))
-      .catch((error) => console.error('Error loading animation:', error));
+      .then(response => response.json())
+      .then(data => setHiAnimation(data))
+      .catch(error => console.error('Error loading animation:', error));
 
     // Get user from localStorage
     try {

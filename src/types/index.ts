@@ -4,7 +4,7 @@ export interface Expense {
   category: string;
   subcategory: string;
   categoryId: string;
-  paymentMethod: string;
+  paymentMethod?: string;
   description?: string;
   timestamp: string;
   createdAt?: string;
@@ -15,7 +15,8 @@ export interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
-  expense?: Expense;
+  expense?: Expense; // Legacy support
+  expenses?: Expense[]; // New array support
   timestamp: Date;
 }
 
@@ -24,7 +25,7 @@ export interface ParsedExpense {
   category: string;
   subcategory: string;
   categoryId: string;
-  paymentMethod: string;
+  paymentMethod?: string;
   description?: string;
   timestamp?: string;
 }

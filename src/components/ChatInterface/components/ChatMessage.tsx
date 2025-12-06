@@ -136,7 +136,11 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, userPhotoUrl, userNa
           )}
 
           {/* Expense Card (if expense data is present) */}
-          {message.expense && <ExpenseCard expense={message.expense} />}
+          {(message.expenses || message.expense) && (
+            <ExpenseCard
+              expenses={message.expenses || (message.expense ? [message.expense] : [])}
+            />
+          )}
 
           {/* Double-tick indicator for user messages */}
           {isUser && (

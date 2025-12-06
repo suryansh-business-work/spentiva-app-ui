@@ -81,7 +81,9 @@ export const useTransactionsFilters = ({
   }, [safeExpenses, searchTerm, categoryFilter, paymentFilter, sortBy]);
 
   const filterCategories = Array.from(new Set(safeExpenses.map(e => e.category)));
-  const filterPaymentMethods = Array.from(new Set(safeExpenses.map(e => e.paymentMethod)));
+  const filterPaymentMethods = Array.from(
+    new Set(safeExpenses.map(e => e.paymentMethod).filter((pm): pm is string => pm !== undefined))
+  );
 
   return {
     filteredExpenses,

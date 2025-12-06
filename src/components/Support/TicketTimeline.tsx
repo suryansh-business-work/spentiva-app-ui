@@ -134,7 +134,7 @@ const TicketTimeline: React.FC<TicketTimelineProps> = ({ ticketId, updates, onUp
           size="small"
           placeholder="Type your message here..."
           value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
+          onChange={e => setNewMessage(e.target.value)}
           disabled={isSubmitting}
         />
         <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>

@@ -55,7 +55,7 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
       setAmount(expense.amount.toString());
       setCategory(expense.category);
       setSubcategory(expense.subcategory);
-      setPaymentMethod(expense.paymentMethod);
+      setPaymentMethod(expense.paymentMethod || '');
       setDescription(expense.description || '');
 
       // Set subcategories for the selected category

@@ -49,49 +49,51 @@ export const useExpenseActions = (trackerId?: string) => {
       } catch (error: any) {
         console.error('Error parsing expense:', error);
 
-        // Check if error is related to category parsing
-        // API returns: { data: { error: "message about category" } }
-        const apiError = error.response?.data?.data?.error || error.response?.data?.error || '';
-        const errorMessage = error.response?.data?.message || error.message || '';
+        // Extract error details from API response
+        const apiData = error.response?.data?.data || {};
+        const apiMessage =
+          apiData.message ||
+          error.response?.data?.message ||
+          error.message ||
+          'Failed to parse expense';
+        const missingCategories = apiData.missingCategories || [];
 
-        if (
-          apiError.toLowerCase().includes('category') ||
-          errorMessage.toLowerCase().includes('category')
-        ) {
-          throw new Error(
-            `CATEGORY_ERROR:: Please ensure the payment method (cash, card, etc.) is included in the user message. Use only existing categories. To add a new one, <a href="/tracker/${trackerId}/settings" style="color: #14B8A6; text-decoration: underline; cursor: pointer;">click here</a>.`
-          );
+        // If missing categories, add "click here" link to the API message
+        if (missingCategories.length > 0) {
+          const errorWithLink = `CATEGORY_ERROR:: ${apiMessage} <a href="/tracker/${trackerId}/settings" style="color: #14B8A6; text-decoration: underline; cursor: pointer;">Click here</a> to add categories.`;
+          throw new Error(errorWithLink);
         }
 
-        throw new Error(errorMessage || 'Failed to parse expense');
+        // For all other errors, just show the API message as-is
+        throw new Error(apiMessage);
       }
     },
     [trackerId]
   );
 
   /**
-   * Create a new expense
+   * Create new expense(s) - supports single or multiple
    */
   const createExpense = useCallback(
-    async (parsedData: ParsedExpense): Promise<Expense> => {
+    async (parsedData: ParsedExpense): Promise<Expense[]> => {
       if (!trackerId) {
         throw new Error('Tracker ID is required');
       }
 
       const expenseData: CreateExpenseData = {
-        ...parsedData,
+        expenses: parsedData.expenses,
         trackerId,
       };
 
       try {
         const response = await postRequest(endpoints.expenses.create, expenseData);
-        const expense = response.data?.data?.expense || response.data?.expense;
+        const expenses = response.data?.data?.expenses || [];
 
-        if (!expense) {
+        if (!expenses || expenses.length === 0) {
           throw new Error('Invalid response from server');
         }
 
-        return expense;
+        return expenses;
       } catch (error) {
         console.error('Error creating expense:', error);
         throw new Error('Failed to create expense');

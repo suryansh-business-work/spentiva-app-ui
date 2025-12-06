@@ -62,10 +62,7 @@ const AdminSupportCreate: React.FC = () => {
   return (
     <Box>
       <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
-        <Button
-          startIcon={<ArrowBackIcon />}
-          onClick={() => navigate('/admin/support')}
-        >
+        <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/admin/support')}>
           Back to Tickets
         </Button>
         <Typography variant="h5" fontWeight={700}>
@@ -83,7 +80,7 @@ const AdminSupportCreate: React.FC = () => {
               <Select
                 value={formData.type}
                 label="Ticket Type"
-                onChange={(e) => handleChange('type', e.target.value)}
+                onChange={e => handleChange('type', e.target.value)}
               >
                 <MenuItem value="PaymentRelated">Payment Related</MenuItem>
                 <MenuItem value="BugInApp">Bug In App</MenuItem>
@@ -98,7 +95,7 @@ const AdminSupportCreate: React.FC = () => {
               fullWidth
               required
               value={formData.subject}
-              onChange={(e) => handleChange('subject', e.target.value)}
+              onChange={e => handleChange('subject', e.target.value)}
               placeholder="Brief description of the issue"
             />
 
@@ -109,7 +106,7 @@ const AdminSupportCreate: React.FC = () => {
               multiline
               rows={6}
               value={formData.description}
-              onChange={(e) => handleChange('description', e.target.value)}
+              onChange={e => handleChange('description', e.target.value)}
               placeholder="Detailed explanation of the issue..."
             />
 
@@ -121,11 +118,7 @@ const AdminSupportCreate: React.FC = () => {
               >
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                variant="contained"
-                disabled={loading}
-              >
+              <Button type="submit" variant="contained" disabled={loading}>
                 {loading ? 'Creating...' : 'Create Ticket'}
               </Button>
             </Box>

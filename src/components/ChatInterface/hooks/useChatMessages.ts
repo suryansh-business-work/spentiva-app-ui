@@ -56,11 +56,11 @@ export const useChatMessages = (_trackerId: string | undefined) => {
     let usageData: UsageData = storedUsage
       ? JSON.parse(storedUsage)
       : {
-        userId: currentUserId,
-        totalMessages: 0,
-        trackerUsage: {},
-        currentMonth,
-      };
+          userId: currentUserId,
+          totalMessages: 0,
+          trackerUsage: {},
+          currentMonth,
+        };
 
     // Reset if new month OR different user
     if (usageData.currentMonth !== currentMonth || usageData.userId !== currentUserId) {
@@ -153,12 +153,12 @@ export const useChatMessages = (_trackerId: string | undefined) => {
    * Add an assistant message
    */
   const addAssistantMessage = useCallback(
-    (content: string, expense?: any): Message => {
+    (content: string, expenses?: any): Message => {
       const message: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content,
-        expense,
+        expenses, // Support array of expenses
         timestamp: new Date(),
       };
       addMessage(message);

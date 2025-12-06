@@ -34,9 +34,9 @@ const SupportDialogHeader: React.FC<SupportDialogHeaderProps> = ({
   React.useEffect(() => {
     // Load animation data from public directory
     fetch('/animations/recording.json')
-      .then((response) => response.json())
-      .then((data) => setRecordingAnimation(data))
-      .catch((error) => console.error('Error loading recording animation:', error));
+      .then(response => response.json())
+      .then(data => setRecordingAnimation(data))
+      .catch(error => console.error('Error loading recording animation:', error));
   }, []);
 
   return (
