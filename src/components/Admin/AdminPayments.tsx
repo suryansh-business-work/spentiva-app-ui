@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Paper,
@@ -13,129 +13,144 @@ import {
   Button,
   useTheme,
   Typography,
+  CircularProgress,
+  Alert,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Stack,
 } from '@mui/material';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import RefundIcon from '@mui/icons-material/MoneyOff';
-import RefundDialog, { type PaymentLog } from './RefundDialog';
-
-// Dummy payment data
-const DUMMY_PAYMENTS: PaymentLog[] = [
-  {
-    id: 'PAY-001',
-    userId: 'USER-101',
-    userName: 'John Doe',
-    userEmail: 'john@example.com',
-    plan: 'pro',
-    amount: 86.4,
-    billingPeriod: 'yearly',
-    status: 'success',
-    createdAt: '2024-12-01T10:30:00Z',
-  },
-  {
-    id: 'PAY-002',
-    userId: 'USER-102',
-    userName: 'Jane Smith',
-    userEmail: 'jane@example.com',
-    plan: 'businesspro',
-    amount: 19,
-    billingPeriod: 'monthly',
-    status: 'success',
-    createdAt: '2024-12-02T14:20:00Z',
-  },
-  {
-    id: 'PAY-003',
-    userId: 'USER-103',
-    userName: 'Bob Johnson',
-    userEmail: 'bob@example.com',
-    plan: 'pro',
-    amount: 9,
-    billingPeriod: 'monthly',
-    status: 'pending',
-    createdAt: '2024-12-03T09:15:00Z',
-  },
-  {
-    id: 'PAY-004',
-    userId: 'USER-104',
-    userName: 'Alice Williams',
-    userEmail: 'alice@example.com',
-    plan: 'businesspro',
-    amount: 182.4,
-    billingPeriod: 'yearly',
-    status: 'success',
-    createdAt: '2024-11-28T16:45:00Z',
-  },
-  {
-    id: 'PAY-005',
-    userId: 'USER-105',
-    userName: 'Charlie Brown',
-    userEmail: 'charlie@example.com',
-    plan: 'pro',
-    amount: 86.4,
-    billingPeriod: 'yearly',
-    status: 'refunded',
-    refundedAmount: 86.4,
-    createdAt: '2024-11-25T11:00:00Z',
-    refundedAt: '2024-11-30T10:00:00Z',
-  },
-];
+import { usePayments } from './hooks/usePayments';
+import { useRefunds } from './hooks/useRefunds';
+import { Payment, PaymentState } from '../../types/payment';
+import RefundDialog from './RefundDialog';
 
 const AdminPayments: React.FC = () => {
   const theme = useTheme();
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [payments, setPayments] = useState<PaymentLog[]>(DUMMY_PAYMENTS);
+  const {
+    payments,
+    total,
+    page,
+    limit,
+    loading,
+    error,
+    fetchPayments,
+    setPage,
+    setLimit
+  } = usePayments();
+
+  const { createRefund } = useRefunds();
+
   const [refundDialogOpen, setRefundDialogOpen] = useState(false);
-  const [selectedPayment, setSelectedPayment] = useState<PaymentLog | null>(null);
+  const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
+  const [statusFilter, setStatusFilter] = useState<PaymentState | 'all'>('all');
+
+  // Fetch payments on mount and when filters change
+  useEffect(() => {
+    const params = {
+      state: statusFilter !== 'all' ? statusFilter : undefined,
+    };
+    fetchPayments(params);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [statusFilter]);
 
   const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage);
+    fetchPayments({
+      state: statusFilter !== 'all' ? statusFilter : undefined,
+      page: newPage + 1,
+    });
   };
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
+    const newLimit = parseInt(event.target.value, 10);
+    setLimit(newLimit);
     setPage(0);
+    fetchPayments({
+      state: statusFilter !== 'all' ? statusFilter : undefined,
+      page: 1,
+      limit: newLimit,
+    });
   };
 
-  const handleRefundClick = (payment: PaymentLog) => {
+  const handleRefundClick = (payment: Payment) => {
     setSelectedPayment(payment);
     setRefundDialogOpen(true);
   };
 
-  const handleRefund = (paymentId: string, amount: number, reason: string) => {
-    // Mock refund processing
-    setPayments(prevPayments =>
-      prevPayments.map(payment =>
-        payment.id === paymentId
-          ? {
-              ...payment,
-              status: 'refunded' as const,
-              refundedAmount: amount,
-              refundedAt: new Date().toISOString(),
-            }
-          : payment
-      )
-    );
-    console.log('Refund processed:', { paymentId, amount, reason });
+  const handleRefund = async (paymentId: string, amount: number, reason: string) => {
+    try {
+      await createRefund({
+        paymentId,
+        amount,
+        reason,
+      });
+      // Refresh payments after successful refund
+      fetchPayments({
+        state: statusFilter !== 'all' ? statusFilter : undefined,
+      });
+    } catch (err) {
+      console.error('Refund error:', err);
+    }
   };
 
-  const getStatusColor = (status: PaymentLog['status']) => {
-    switch (status) {
-      case 'success':
+  const getStatusColor = (state: PaymentState) => {
+    switch (state) {
+      case PaymentState.SUCCESS:
         return 'success';
-      case 'pending':
+      case PaymentState.PROCESSING:
+      case PaymentState.INITIATED:
         return 'warning';
-      case 'failed':
+      case PaymentState.FAILED:
+      case PaymentState.EXPIRED:
         return 'error';
-      case 'refunded':
+      case PaymentState.CANCELLED:
         return 'default';
       default:
         return 'default';
     }
   };
 
-  const paginatedPayments = payments.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-
   return (
     <Box>
+      {/* Filters and Actions */}
+      <Stack direction="row" spacing={2} mb={3} alignItems="center">
+        <FormControl size="small" sx={{ minWidth: 200 }}>
+          <InputLabel>Filter by Status</InputLabel>
+          <Select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as PaymentState | 'all')}
+            label="Filter by Status"
+          >
+            <MenuItem value="all">All Payments</MenuItem>
+            <MenuItem value={PaymentState.SUCCESS}>Success</MenuItem>
+            <MenuItem value={PaymentState.PROCESSING}>Processing</MenuItem>
+            <MenuItem value={PaymentState.INITIATED}>Initiated</MenuItem>
+            <MenuItem value={PaymentState.FAILED}>Failed</MenuItem>
+            <MenuItem value={PaymentState.EXPIRED}>Expired</MenuItem>
+            <MenuItem value={PaymentState.CANCELLED}>Cancelled</MenuItem>
+          </Select>
+        </FormControl>
+
+        <Button
+          variant="outlined"
+          startIcon={<RefreshIcon />}
+          onClick={() => fetchPayments({ state: statusFilter !== 'all' ? statusFilter : undefined })}
+          disabled={loading}
+        >
+          Refresh
+        </Button>
+      </Stack>
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+      )}
+
       <TableContainer
         component={Paper}
         elevation={0}
@@ -149,90 +164,88 @@ const AdminPayments: React.FC = () => {
             }}
           >
             <TableRow>
-              <TableCell>
-                <strong>Payment ID</strong>
-              </TableCell>
-              <TableCell>
-                <strong>User</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Plan</strong>
-              </TableCell>
-              <TableCell align="right">
-                <strong>Amount</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Billing</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Status</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Date</strong>
-              </TableCell>
-              <TableCell align="center">
-                <strong>Actions</strong>
-              </TableCell>
+              <TableCell><strong>Payment ID</strong></TableCell>
+              <TableCell><strong>User</strong></TableCell>
+              <TableCell><strong>Plan</strong></TableCell>
+              <TableCell align="right"><strong>Amount</strong></TableCell>
+              <TableCell><strong>Duration</strong></TableCell>
+              <TableCell><strong>Method</strong></TableCell>
+              <TableCell><strong>Status</strong></TableCell>
+              <TableCell><strong>Date</strong></TableCell>
+              <TableCell align="center"><strong>Actions</strong></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedPayments.map(payment => (
-              <TableRow key={payment.id} hover>
-                <TableCell>{payment.id}</TableCell>
-                <TableCell>
-                  {payment.userName}
-                  <Typography variant="caption" display="block" color="text.secondary">
-                    {payment.userEmail}
-                  </Typography>
-                </TableCell>
-                <TableCell>{payment.plan.toUpperCase()}</TableCell>
-                <TableCell align="right">
-                  ${payment.amount.toFixed(2)}
-                  {payment.refundedAmount && (
-                    <Typography variant="caption" display="block" color="error">
-                      -${payment.refundedAmount.toFixed(2)}
-                    </Typography>
-                  )}
-                </TableCell>
-                <TableCell>{payment.billingPeriod === 'yearly' ? 'Annual' : 'Monthly'}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={payment.status}
-                    color={getStatusColor(payment.status)}
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell>{new Date(payment.createdAt).toLocaleDateString()}</TableCell>
-                <TableCell align="center">
-                  {payment.status === 'success' && (
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      color="warning"
-                      startIcon={<RefundIcon />}
-                      onClick={() => handleRefundClick(payment)}
-                    >
-                      Refund
-                    </Button>
-                  )}
-                  {payment.status === 'refunded' && (
-                    <Typography variant="caption" color="text.secondary">
-                      Refunded on {new Date(payment.refundedAt!).toLocaleDateString()}
-                    </Typography>
-                  )}
+            {loading && (!payments || payments.length === 0) ? (
+              <TableRow>
+                <TableCell colSpan={9} align="center" sx={{ py: 5 }}>
+                  <CircularProgress size={40} />
                 </TableCell>
               </TableRow>
-            ))}
+            ) : !payments || payments.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={9} align="center" sx={{ py: 5 }}>
+                  <Typography color="text.secondary">No payments found</Typography>
+                </TableCell>
+              </TableRow>
+            ) : (
+              payments.map((payment) => (
+                <TableRow key={payment._id} hover>
+                  <TableCell>
+                    <Typography variant="body2" fontFamily="monospace">
+                      {payment._id.slice(-8)}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    {typeof payment.userId === 'object' ? payment.userId.name : payment.userName || 'N/A'}
+                    <Typography variant="caption" display="block" color="text.secondary">
+                      {typeof payment.userId === 'object' ? payment.userId.email : payment.userEmail || 'N/A'}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>{payment.userSelectedPlan.toUpperCase()}</TableCell>
+                  <TableCell align="right">
+                    {payment.currency} {payment.amount.toFixed(2)}
+                  </TableCell>
+                  <TableCell>
+                    {payment.planDuration === 'yearly' ? 'Annual' : 'Monthly'}
+                  </TableCell>
+                  <TableCell>{payment.paymentUsing}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={payment.paymentState}
+                      color={getStatusColor(payment.paymentState)}
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    {new Date(payment.createdAt).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell align="center">
+                    {payment.paymentState === PaymentState.SUCCESS && (
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        color="warning"
+                        startIcon={<RefundIcon />}
+                        onClick={() => handleRefundClick(payment)}
+                      >
+                        Refund
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
         <TablePagination
           component="div"
-          count={payments.length}
-          page={page}
+          count={total ?? 0}
+          page={page ?? 0}
           onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
+          rowsPerPage={limit ?? 10}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[5, 10, 25, 50]}
         />
       </TableContainer>
 

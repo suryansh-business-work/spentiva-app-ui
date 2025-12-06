@@ -18,17 +18,20 @@ import {
   Chip,
   Stack,
   Paper,
+  Alert,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Lottie from 'lottie-react';
 import CreditCardForm from './CreditCardForm';
+import { usePaymentDialog } from './hooks/usePaymentDialog';
 import {
   PLAN_NAMES,
   PLAN_PRICING,
   type BillingPeriod,
   type PlanType,
 } from '../../config/planConfig';
+import { UserSelectedPlan, PlanDuration, CardStore } from '../../types/payment';
 
 interface PaymentDialogProps {
   open: boolean;
@@ -43,10 +46,10 @@ const PaymentDialog: React.FC<PaymentDialogProps> = ({ open, onClose, selectedPl
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [activeStep, setActiveStep] = useState(0);
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>('yearly');
-  const [processing, setProcessing] = useState(false);
-  const [success, setSuccess] = useState(false);
   const [paymentAnim, setPaymentAnim] = useState<any>(null);
   const [successAnim, setSuccessAnim] = useState<any>(null);
+
+  const { processing, success, error, initiatePayment, reset } = usePaymentDialog();
 
   useEffect(() => {
     fetch('/animations/payment_animation.json')
@@ -64,22 +67,29 @@ const PaymentDialog: React.FC<PaymentDialogProps> = ({ open, onClose, selectedPl
   useEffect(() => {
     if (open) {
       setActiveStep(0);
-      setBillingPeriod('yearly'); // Default to yearly
-      setProcessing(false);
-      setSuccess(false);
+      setBillingPeriod('yearly');
+      reset();
     }
-  }, [open]);
+  }, [open, reset]);
 
-  const handlePaymentSubmit = () => {
-    setProcessing(true);
-    setTimeout(() => {
-      setProcessing(false);
-      setSuccess(true);
+  const handlePaymentSubmit = async (cardData: CardStore) => {
+    if (!selectedPlan || selectedPlan === 'free') return;
+
+    const plan = selectedPlan === 'pro' ? UserSelectedPlan.PRO : UserSelectedPlan.BUSINESS_PRO;
+    const duration = billingPeriod === 'yearly' ? PlanDuration.YEARLY : PlanDuration.MONTHLY;
+    const amount = billingPeriod === 'yearly'
+      ? PLAN_PRICING[selectedPlan].yearly
+      : PLAN_PRICING[selectedPlan].monthly;
+
+    try {
+      await initiatePayment(plan, duration, amount, cardData);
+      // Success handled by hook
       setTimeout(() => {
-        setSuccess(false);
         onClose();
       }, 2500);
-    }, 2000);
+    } catch (err) {
+      console.error('Payment submission error:', err);
+    }
   };
 
   const handleClose = () => {
@@ -148,6 +158,9 @@ const PaymentDialog: React.FC<PaymentDialogProps> = ({ open, onClose, selectedPl
           <Typography variant="h6" sx={{ fontWeight: 600, mt: 2 }}>
             Processing Payment...
           </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            Please wait while we process your payment
+          </Typography>
         </Box>
       </Dialog>
     );
@@ -179,6 +192,13 @@ const PaymentDialog: React.FC<PaymentDialogProps> = ({ open, onClose, selectedPl
       <Divider />
 
       <DialogContent sx={{ pt: 3, pb: 4 }}>
+        {/* Error Alert */}
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }} onClose={reset}>
+            {error}
+          </Alert>
+        )}
+
         {/* Stepper */}
         <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
           {STEPS.map(label => (
@@ -388,6 +408,7 @@ const PaymentDialog: React.FC<PaymentDialogProps> = ({ open, onClose, selectedPl
                 onClick={handleBack}
                 startIcon={<ArrowBackIcon />}
                 sx={{ flex: 1 }}
+                disabled={processing}
               >
                 Back
               </Button>

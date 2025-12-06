@@ -17,20 +17,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import { Formik, Form, Field } from 'formik';
 import * as yup from 'yup';
-
-export interface PaymentLog {
-  id: string;
-  userId: string;
-  userName: string;
-  userEmail: string;
-  plan: 'pro' | 'businesspro';
-  amount: number;
-  billingPeriod: 'monthly' | 'yearly';
-  status: 'success' | 'pending' | 'failed' | 'refunded';
-  refundedAmount?: number;
-  createdAt: string;
-  refundedAt?: string;
-}
+import { Payment } from '../../types/payment';
 
 interface RefundFormValues {
   refundAmount: number;
@@ -40,7 +27,7 @@ interface RefundFormValues {
 interface RefundDialogProps {
   open: boolean;
   onClose: () => void;
-  payment: PaymentLog | null;
+  payment: Payment | null;
   onRefund: (paymentId: string, amount: number, reason: string) => void;
 }
 
@@ -53,8 +40,8 @@ const RefundDialog: React.FC<RefundDialogProps> = ({ open, onClose, payment, onR
     refundAmount: yup
       .number()
       .required('Refund amount is required')
-      .min(1, 'Minimum refund amount is $1')
-      .max(payment.amount, `Maximum refund amount is $${payment.amount}`),
+      .min(1, 'Minimum refund amount is 1')
+      .max(payment.amount, `Maximum refund amount is ${payment.amount}`),
     reason: yup
       .string()
       .required('Refund reason is required')
@@ -67,7 +54,7 @@ const RefundDialog: React.FC<RefundDialogProps> = ({ open, onClose, payment, onR
   };
 
   const handleSubmit = (values: RefundFormValues) => {
-    onRefund(payment.id, values.refundAmount, values.reason);
+    onRefund(payment._id, values.refundAmount, values.reason);
     onClose();
   };
 
@@ -105,17 +92,23 @@ const RefundDialog: React.FC<RefundDialogProps> = ({ open, onClose, payment, onR
                   Payment Information
                 </Typography>
                 <Typography variant="caption" display="block">
-                  <strong>User:</strong> {payment.userName} ({payment.userEmail})
+                  <strong>User:</strong>{' '}
+                  {typeof payment.userId === 'object'
+                    ? `${payment.userId.name} (${payment.userId.email})`
+                    : `${payment.userName || 'N/A'} (${payment.userEmail || 'N/A'})`}
                 </Typography>
                 <Typography variant="caption" display="block">
-                  <strong>Plan:</strong> {payment.plan.toUpperCase()} -{' '}
-                  {payment.billingPeriod === 'yearly' ? 'Annual' : 'Monthly'}
+                  <strong>Plan:</strong> {payment.userSelectedPlan.toUpperCase()} -{' '}
+                  {payment.planDuration === 'yearly' ? 'Annual' : 'Monthly'}
                 </Typography>
                 <Typography variant="caption" display="block">
-                  <strong>Payment Amount:</strong> ${payment.amount.toFixed(2)}
+                  <strong>Payment Amount:</strong> {payment.currency} {payment.amount.toFixed(2)}
                 </Typography>
                 <Typography variant="caption" display="block">
                   <strong>Payment Date:</strong> {new Date(payment.createdAt).toLocaleDateString()}
+                </Typography>
+                <Typography variant="caption" display="block">
+                  <strong>Payment ID:</strong> {payment._id}
                 </Typography>
               </Alert>
 
@@ -124,7 +117,7 @@ const RefundDialog: React.FC<RefundDialogProps> = ({ open, onClose, payment, onR
                 {() => (
                   <TextField
                     fullWidth
-                    label="Refund Amount (USD)"
+                    label={`Refund Amount (${payment.currency})`}
                     type="number"
                     value={values.refundAmount}
                     onChange={e => setFieldValue('refundAmount', parseFloat(e.target.value))}
@@ -153,10 +146,10 @@ const RefundDialog: React.FC<RefundDialogProps> = ({ open, onClose, payment, onR
               >
                 <Stack direction="row" justifyContent="space-between" spacing={2}>
                   <Typography variant="caption" color="text.secondary">
-                    Minimum: $1.00
+                    Minimum: {payment.currency} 1.00
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    Maximum: ${payment.amount.toFixed(2)}
+                    Maximum: {payment.currency} {payment.amount.toFixed(2)}
                   </Typography>
                 </Stack>
               </Box>

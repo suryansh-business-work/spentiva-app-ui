@@ -1,19 +1,51 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Box, Grid, useTheme, Paper, Button, Stack } from '@mui/material';
+import {
+  Container,
+  Typography,
+  Box,
+  Grid,
+  useTheme,
+  Paper,
+  Button,
+  Stack,
+  Tabs,
+  Tab,
+} from '@mui/material';
 import Lottie from 'lottie-react';
 import EmailIcon from '@mui/icons-material/Email';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
+import ReceiptIcon from '@mui/icons-material/Receipt';
 import ActivePlanDisplay from '../components/Billing/ActivePlanDisplay';
 import PlanBox from '../components/Billing/PlanBox';
 import DowngradeWarningDialog from '../components/Billing/DowngradeWarningDialog';
 import PaymentDialog from '../components/Billing/PaymentDialog';
+import PaymentHistory from '../components/Billing/PaymentHistory';
 import SupportDialog from '../components/Support/SupportDialog';
 import { endpoints } from '../config/api';
 import { getRequest } from '../utils/http';
+import { useAuth } from '../contexts/AuthContext';
 import { type PlanType } from '../config/planConfig';
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => {
+  return (
+    <div role="tabpanel" hidden={value !== index}>
+      {value === index && <Box>{children}</Box>}
+    </div>
+  );
+};
 
 const Billing: React.FC = () => {
   const theme = useTheme();
+  const { user } = useAuth();
+  const [currentTab, setCurrentTab] = useState(0);
   const [currentPlan, setCurrentPlan] = useState<PlanType>('free');
   const [trackerCount, setTrackerCount] = useState(0);
   const [messageCount, setMessageCount] = useState(0);
@@ -74,7 +106,7 @@ const Billing: React.FC = () => {
   };
 
   const handleUpgrade = (plan: PlanType) => {
-    if (plan === 'free') return; // Free plan doesn't need payment
+    if (plan === 'free') return;
     setSelectedPlan(plan);
     setPaymentDialogOpen(true);
   };
@@ -85,10 +117,13 @@ const Billing: React.FC = () => {
   };
 
   const confirmDowngrade = () => {
-    // TODO: Implement actual downgrade API call
     console.log('Downgrading to:', selectedPlan);
     setDowngradeDialogOpen(false);
     setSelectedPlan(null);
+  };
+
+  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
+    setCurrentTab(newValue);
   };
 
   if (loading) {
@@ -131,52 +166,107 @@ const Billing: React.FC = () => {
           Billing & Subscription
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Manage your plan and view usage
+          Manage your plan, upgrade or view payment history
         </Typography>
       </Box>
 
-      {/* Active Plan Display */}
-      <Box sx={{ mb: 4 }}>
-        <ActivePlanDisplay
-          plan={currentPlan}
-          trackerCount={trackerCount}
-          messageCount={messageCount}
-        />
-      </Box>
+      {/* Tabs */}
+      <Paper
+        elevation={0}
+        sx={{
+          borderRadius: 2,
+          border: `1px solid ${theme.palette.divider}`,
+          overflow: 'hidden',
+        }}
+      >
+        <Tabs
+          value={currentTab}
+          onChange={handleTabChange}
+          variant="fullWidth"
+          sx={{
+            borderBottom: `1px solid ${theme.palette.divider}`,
+            bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+          }}
+        >
+          <Tab
+            icon={<AccountBoxIcon />}
+            iconPosition="start"
+            label="Your Plan"
+            sx={{ fontWeight: 600 }}
+          />
+          <Tab
+            icon={<CreditCardIcon />}
+            iconPosition="start"
+            label="Plans"
+            sx={{ fontWeight: 600 }}
+          />
+          <Tab
+            icon={<ReceiptIcon />}
+            iconPosition="start"
+            label="Payment Logs"
+            sx={{ fontWeight: 600 }}
+          />
+        </Tabs>
 
-      {/* Plan Boxes */}
-      <Grid container spacing={3}>
-        <Grid size={{ xs: 12, md: 4 }}>
-          <PlanBox
-            plan="free"
-            currentPlan={currentPlan}
-            onUpgrade={handleUpgrade}
-            onDowngrade={handleDowngrade}
-          />
-        </Grid>
-        <Grid size={{ xs: 12, md: 4 }}>
-          <PlanBox
-            plan="pro"
-            currentPlan={currentPlan}
-            onUpgrade={handleUpgrade}
-            onDowngrade={handleDowngrade}
-          />
-        </Grid>
-        <Grid size={{ xs: 12, md: 4 }}>
-          <PlanBox
-            plan="businesspro"
-            currentPlan={currentPlan}
-            onUpgrade={handleUpgrade}
-            onDowngrade={handleDowngrade}
-          />
-        </Grid>
-      </Grid>
+        {/* Tab Panels */}
+        <Box sx={{ p: 3 }}>
+          {/* Tab 1: Your Plan */}
+          <TabPanel value={currentTab} index={0}>
+            <ActivePlanDisplay
+              plan={currentPlan}
+              trackerCount={trackerCount}
+              messageCount={messageCount}
+            />
+          </TabPanel>
+
+          {/* Tab 2: Plans */}
+          <TabPanel value={currentTab} index={1}>
+            <Grid container spacing={3}>
+              <Grid size={{ xs: 12, md: 4 }}>
+                <PlanBox
+                  plan="free"
+                  currentPlan={currentPlan}
+                  onUpgrade={handleUpgrade}
+                  onDowngrade={handleDowngrade}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 4 }}>
+                <PlanBox
+                  plan="pro"
+                  currentPlan={currentPlan}
+                  onUpgrade={handleUpgrade}
+                  onDowngrade={handleDowngrade}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 4 }}>
+                <PlanBox
+                  plan="businesspro"
+                  currentPlan={currentPlan}
+                  onUpgrade={handleUpgrade}
+                  onDowngrade={handleDowngrade}
+                />
+              </Grid>
+            </Grid>
+          </TabPanel>
+
+          {/* Tab 3: Payment Logs */}
+          <TabPanel value={currentTab} index={2}>
+            {user?.id ? (
+              <PaymentHistory userId={user.id} />
+            ) : (
+              <Typography color="text.secondary" textAlign="center" py={4}>
+                Please log in to view payment history
+              </Typography>
+            )}
+          </TabPanel>
+        </Box>
+      </Paper>
 
       {/* Support Section */}
       <Paper
         elevation={0}
         sx={{
-          mt: 6,
+          mt: 4,
           p: 4,
           borderRadius: 3,
           border: `1px solid ${theme.palette.divider}`,

@@ -93,4 +93,24 @@ export const endpoints = {
   imagekit: {
     upload: `${getApiUrl()}/imagekit/upload`,
   },
+  payment: {
+    create: `${getApiUrl()}/payment`,
+    getById: (paymentId: string) => `${getApiUrl()}/payment/${paymentId}`,
+    getUserPayments: (userId: string) => `${getApiUrl()}/payment/user/${userId}`,
+    updateState: (paymentId: string) => `${getApiUrl()}/payment/${paymentId}/state`,
+    getAll: `${getApiUrl()}/payment`,
+    delete: (paymentId: string) => `${getApiUrl()}/payment/${paymentId}`,
+    stats: `${getApiUrl()}/payment/stats`,
+    expirePending: `${getApiUrl()}/payment/expire-pending`,
+  },
+  refund: {
+    create: `${getApiUrl()}/refund`,
+    getById: (refundId: string) => `${getApiUrl()}/refund/${refundId}`,
+    getByPayment: (paymentId: string) => `${getApiUrl()}/refund/payment/${paymentId}`,
+    getUserRefunds: (userId: string) => `${getApiUrl()}/refund/user/${userId}`,
+    updateStatus: (refundId: string) => `${getApiUrl()}/refund/${refundId}/status`,
+    getAll: `${getApiUrl()}/refund`,
+    delete: (refundId: string) => `${getApiUrl()}/refund/${refundId}`,
+    stats: `${getApiUrl()}/refund/stats`,
+  },
 };
